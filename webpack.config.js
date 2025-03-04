@@ -1,12 +1,16 @@
-import { resolve, dirname } from 'path';
+import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import TerserPlugin from 'terser-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+
+const _dirname = dirname(fileURLToPath(import.meta.url));
 
 const webpackConfigForDevelopment = {
     devtool: 'inline-source-map',
     mode: 'development',
     entry: {
         background: './src/js/background/background.ts',
+        handler: './src/js/content/handler.ts',
         options_page: './src/js/options/options.tsx',
     },
     module: {
@@ -52,8 +56,33 @@ const webpackConfigForDevelopment = {
     },
     output: {
         filename: '[name].js',
-        path: resolve(dirname(fileURLToPath(import.meta.url)), 'dist'),
+        path: resolve(_dirname, 'dist'),
     },
+    plugins: [
+        new CopyWebpackPlugin({
+          patterns: [
+            {
+              from: join(_dirname, 'src', 'manifest.json'),
+              to: join(_dirname, 'dist'),
+            },
+            {
+              context: 'src/images',
+              from: '**/*.png',
+              to: join(_dirname, 'dist', 'images'),
+            },
+            {
+              context: 'src/font',
+              from: '**/*.*',
+              to: join(_dirname, 'dist', 'font'),
+            },
+            {
+              context: 'src/options_page',
+              from: join('**', '*.*'),
+              to: join(_dirname, 'dist', 'options_page'),
+            },
+          ],
+        }),
+    ],    
 };
 
 export default (_env, argv) => {
