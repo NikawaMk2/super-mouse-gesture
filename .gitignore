@@ -1,0 +1,27 @@
+# System Files
+.DS_Store
+
+# Node.js
+node_modules/
+yarn-error.log
+# package-lock.json # 必要に応じてコメントアウトを解除
+# yarn.lock # 必要に応じてコメントアウトを解除
+
+# Build Output
+dist/
+build/
+out/
+*.crx
+
+# Logs
+*.log
+
+# Environment Variables
+.env
+*.env.local
+
+# Python Cache
+__pycache__/
+venv/
+# Other
+manifest.json.lock
