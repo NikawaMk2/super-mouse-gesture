@@ -2,12 +2,12 @@ import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import TerserPlugin from 'terser-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
+import webpack from 'webpack';
 
 const _dirname = dirname(fileURLToPath(import.meta.url));
 
-const webpackConfigForDevelopment = {
+const baseWebpackConfig = {
     devtool: 'inline-source-map',
-    mode: 'development',
     entry: {
         background: './src/js/background/background.ts',
         handler: './src/js/content/handler.ts',
@@ -86,14 +86,40 @@ const webpackConfigForDevelopment = {
 };
 
 export default (_env, argv) => {
-    if (argv.mode !== 'production') {
-        return webpackConfigForDevelopment;
+    const mode = argv.mode;
+    if (mode === 'development') {
+        return createwebPackConfigForDevelopment(mode);
+    } else if (mode === 'production'){
+        return createwebPackConfigForProduction(mode);
+    }else{
+        return createwebPackConfigForDevelopment('development');
     }
+};
 
+function createwebPackConfigForDevelopment(mode) {
+    const webpackConfigForDevelopment = {
+        ...baseWebpackConfig,
+        mode: mode,
+    };
+    webpackConfigForDevelopment.plugins.push(
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': mode,
+        })
+    );
+
+    return webpackConfigForDevelopment;
+}
+
+function createwebPackConfigForProduction(mode) {
     const webpackConfigForProduction = {
         ...baseWebpackConfig,
-        mode: 'production',
+        mode: mode,
     };
+    webpackConfigForProduction.plugins.push(
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': mode,
+        })
+    );
 
     webpackConfigForProduction.optimization.minimize = true;
     webpackConfigForProduction.optimization.minimizer = [
@@ -105,7 +131,7 @@ export default (_env, argv) => {
                 },
             },
         })
-        ];
+    ];
 
     return webpackConfigForProduction;
-};
+}
