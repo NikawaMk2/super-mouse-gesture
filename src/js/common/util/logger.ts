@@ -1,8 +1,8 @@
-export default class Logger {
-    private static isDevelopment = process.env.NODE_ENV === 'development' ? true : false;
+import Environment from './environment';
 
+export default class Logger {
     static debug(message: String) {
-        if(!this.isDevelopment) {
+        if(!Environment.isDevelopment()) {
             return;
         }
 
