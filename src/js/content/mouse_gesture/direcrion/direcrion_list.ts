@@ -9,10 +9,19 @@ export default class DirectionList {
             throw new Error(`同一の値が連続しています ${direcrionList.join(', ')}`);
         }
         
+        if(direcrionList.some(x => x === Direction.None)) {
+            throw new Error(`Direction.Noneが含まれています ${direcrionList.join(', ')}`);
+        }
+
         this.direcrionList = direcrionList;
     }
 
     pushNewDirection(direcrion: Direction): void {
+        if(direcrion === Direction.None) {
+        Logger.debug(`Direction.Noneが含まれるため、要素追加しない`)
+            return;
+        }
+
         if(this.direcrionList.length > 0 && this.direcrionList[this.direcrionList.length - 1] === direcrion) {
             return;
         }
@@ -20,6 +29,10 @@ export default class DirectionList {
         this.direcrionList.push(direcrion);
 
         Logger.debug(`DirectionListの要素追加 ${direcrion}`)
+    }
+
+    clear(): void {
+        this.direcrionList = [];
     }
 
     toString(): string {

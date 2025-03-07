@@ -51,6 +51,14 @@ describe('DirectionListクラスのテスト', () => {
                 Direction.Up
             ])).toThrow();
         });
+
+        it('Direcrion.Noneが含まれるリストを引数に指定すると例外がスローされること', () => {
+            expect(() => new DirectionList([
+                Direction.Right,
+                Direction.None,
+                Direction.Left
+            ])).toThrow();
+        });
     });
 
     describe('equalsメソッドのテスト', () => {
@@ -131,6 +139,18 @@ describe('DirectionListクラスのテスト', () => {
                 Direction.Left,
                 Direction.Up
             ]);
+            expect(direcrionList.equals(checkList)).toBe(true);
+        });
+
+        it('Direcrion.Noneが引数に指定された場合、要素を追加できないこと', () => {
+            //arrange
+            const direcrionList = new DirectionList([]);
+    
+            //act
+            direcrionList.pushNewDirection(Direction.None);
+    
+            //assert
+            const checkList = new DirectionList([]);
             expect(direcrionList.equals(checkList)).toBe(true);
         });
     });
