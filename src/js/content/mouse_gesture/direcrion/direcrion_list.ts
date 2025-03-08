@@ -1,10 +1,12 @@
 import Logger from '../../../common/util/logger';
 import { Direction } from './direction';
+import DirectionConverter from './direction_converter';
 
 export default class DirectionList {
     direcrionList: Direction[];
 
-    constructor(direcrionList: Direction[]) {
+    constructor(direcrionTextList: string[]) {
+        const direcrionList = direcrionTextList.map(x => DirectionConverter.convert(x));
         if(this.hasMultiValueConsecutively(direcrionList)) {
             throw new Error(`同一の値が連続しています ${direcrionList.join(', ')}`);
         }
@@ -55,7 +57,7 @@ export default class DirectionList {
         return true
     }
 
-    private hasMultiValueConsecutively(direcrionList: Direction[]): boolean {
+    private hasMultiValueConsecutively(direcrionList: string[]): boolean {
         for (let i = 0; i < direcrionList.length - 1; i++) {
             if (direcrionList[i] === direcrionList[i + 1]) {
                 return true;
