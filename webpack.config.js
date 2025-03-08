@@ -10,7 +10,7 @@ const baseWebpackConfig = {
     devtool: 'inline-source-map',
     entry: {
         background: './src/js/background/background.ts',
-        handler: './src/js/content/handler.ts',
+        content_script: './src/js/content/content_script.ts',
         options_page: './src/js/options/options.tsx',
     },
     module: {
