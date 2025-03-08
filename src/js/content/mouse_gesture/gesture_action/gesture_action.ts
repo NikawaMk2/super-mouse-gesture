@@ -1,0 +1,3 @@
+interface GestureAction {
+    doAction(): void;
+}
