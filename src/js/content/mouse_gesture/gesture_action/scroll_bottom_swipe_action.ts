@@ -5,5 +5,6 @@ import Logger from '../../../common/util/logger';
 export default class ScrollBottomGestureAction implements GestureAction {
     doAction(): void {
         Logger.debug('「ページの一番下へ」のジェスチャーを実行');
+        window.scrollTo(0, document.documentElement.scrollHeight);
     }
 }
