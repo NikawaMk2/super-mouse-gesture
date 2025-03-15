@@ -3,9 +3,9 @@ import { ChromeGestureSettingsLoader } from '../../common/api/setting/gesture_se
 import { GestureSettingsLoader } from '../../common/api/setting/gesture_setting/loader/gesture_settings_loader';
 import Logger from '../../common/utils/logger';
 import GestureIndicator from '../components/gesture_indicaror';
-import DirectionList from './direcrion/direcrion_list';
+import DirectionList from '../models/direcrion/direcrion_list';
 import { GestureActionFactory } from './gesture_action/gesture_action_factory';
-import Point from './point';
+import Point from '../models/point/point';
 
 export default class MouseGesture {
     private readonly settingsLoader: GestureSettingsLoader = new ChromeGestureSettingsLoader();

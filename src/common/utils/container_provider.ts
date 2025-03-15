@@ -17,7 +17,7 @@ import { MessageSender } from '../messaging/message_sender';
 
 export const TYPES = {
     MessageSender: Symbol.for('MessageSender')
-};
+} as const;
 
 export default class ContainerProvider {
     private static _container: Container | null = null;

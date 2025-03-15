@@ -1,8 +1,8 @@
-import { GestureSettingsLoader } from '../../../src/js/common/setting/gesture_settings/gesture_settings_loader';
-import GestureSettings from '../../../src/js/common/setting/gesture_setting/gesture_settings';
-import DirectionList from '../../../src/js/content/mouse_gesture/direcrion/direcrion_list';
-import { Direction } from '../../../src/js/content/mouse_gesture/direcrion/direction';
-import { GestureType } from '../../../src/js/common/setting/gesture_setting/gesture_type';
+import { GestureSettingsLoader } from '../../../src/common/api/setting/gesture_setting/loader/gesture_settings_loader';
+import GestureSettings from '../../../src/common/api/setting/gesture_setting/gesture_settings';
+import DirectionList from '../../../src/content/models/direcrion/direcrion_list';
+import { Direction } from '../../../src/content/models/direcrion/direction';
+import { Gesture } from '../../../src/common/api/setting/gesture_setting/gesture_type';
 import * as TypeMoq from 'typemoq';
 
 describe('GestureSettingsクラスのテスト', () => {
@@ -17,7 +17,7 @@ describe('GestureSettingsクラスのテスト', () => {
 
             const settings = await mockSettingData.object.getSettings();
             const gestureType = settings.getGestureType(direcrionList);
-            expect(gestureType === GestureType.ScrollDown).toBe(true);
+            expect(gestureType === Gesture.ScrollDown).toBe(true);
         });
 
         it('引数のDirectionListからGestureTypeを取得できること(Direction2つ)', async () => {
@@ -25,7 +25,7 @@ describe('GestureSettingsクラスのテスト', () => {
 
             const settings = await mockSettingData.object.getSettings();
             const gestureType = settings.getGestureType(direcrionList);
-            expect(gestureType === GestureType.ScrollTop).toBe(true);
+            expect(gestureType === Gesture.ScrollTop).toBe(true);
         });
     });
 });

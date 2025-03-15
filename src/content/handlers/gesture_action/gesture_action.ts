@@ -1,3 +1,3 @@
-interface GestureAction {
-    doAction(): void;
+export interface GestureAction {
+    doAction(): Promise<void>;
 }

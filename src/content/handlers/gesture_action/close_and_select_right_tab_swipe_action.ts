@@ -1,14 +1,18 @@
-import { injectable } from 'inversify';
+import { injectable, inject } from 'inversify';
 import Logger from '../../../common/utils/logger';
-import ContainerProvider from '../../../common/utils/container_provider';
+import * as message_sender from '../../../common/messaging/message_sender';
 import { BackgroundMessage } from '../../../common/messaging/types/background_message_type';
-import { BackgroundMessenger } from '../../../common/messaging/background_messenger';
+import { TYPES } from '../../../common/utils/container_provider';
+import { GestureAction } from './gesture_action';
 
 @injectable()
 export default class CloseAndSelectRightTabGestureAction implements GestureAction {
-    doAction(): void {
+    constructor(
+        @inject(TYPES.MessageSender) private readonly messenger: message_sender.MessageSender
+    ) {}
+
+    async doAction(): Promise<void> {
         Logger.debug('「このタブを閉じて右のタブを選択」のジェスチャーを実行');
-        const messenger = ContainerProvider.container.get(BackgroundMessenger);
-        messenger.sendMessage(BackgroundMessage.CloseAndSelectRightTab);
+        await this.messenger.sendMessage(BackgroundMessage.CloseAndSelectRightTab);
     }
 }

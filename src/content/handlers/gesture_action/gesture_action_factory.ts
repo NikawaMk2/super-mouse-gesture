@@ -1,8 +1,10 @@
+import 'reflect-metadata';
 import { Gesture, GestureType } from "../../../common/api/setting/gesture_setting/gesture_type";
 import ContainerProvider from "../../../common/utils/container_provider";
 import BackToPreviousGestureAction from "./back_to_previous_swipe_action";
 import CloseAndSelectLeftTabGestureAction from "./close_and_select_left_tab_swipe_action";
 import CloseAndSelectRightTabGestureAction from "./close_and_select_right_tab_swipe_action";
+import { GestureAction } from "./gesture_action";
 import GoToNextGestureAction from "./go_to_next_swipe_action";
 import NoAction from "./no_action";
 import ScrollBottomGestureAction from "./scroll_bottom_swipe_action";
