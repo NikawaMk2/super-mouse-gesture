@@ -1,0 +1,42 @@
+import { Gesture, GestureType } from "../../../common/api/setting/gesture_setting/gesture_type";
+import ContainerProvider from "../../../common/utils/container_provider";
+import BackToPreviousGestureAction from "./back_to_previous_swipe_action";
+import CloseAndSelectLeftTabGestureAction from "./close_and_select_left_tab_swipe_action";
+import CloseAndSelectRightTabGestureAction from "./close_and_select_right_tab_swipe_action";
+import GoToNextGestureAction from "./go_to_next_swipe_action";
+import NoAction from "./no_action";
+import ScrollBottomGestureAction from "./scroll_bottom_swipe_action";
+import ScrollDownGestureAction from "./scroll_down_swipe_action";
+import ScrollTopGestureAction from "./scroll_top_swipe_action";
+import ScrollUpGestureAction from "./scroll_up_swipe_action";
+import SelectLeftTabGestureAction from "./select_left_tab_swipe_action";
+import SelectRightTabGestureAction from "./select_right_tab_swipe_action";
+
+export class GestureActionFactory {
+    static createGestureAction(gestureType: GestureType): GestureAction {
+        switch (gestureType) {
+            case Gesture.BackToPrevious:
+                return ContainerProvider.container.get(BackToPreviousGestureAction);
+            case Gesture.SelectRightTab:
+                return ContainerProvider.container.get(SelectRightTabGestureAction);
+            case Gesture.SelectLeftTab:
+                return ContainerProvider.container.get(SelectLeftTabGestureAction);
+            case Gesture.CloseAndSelectRightTab:
+                return ContainerProvider.container.get(CloseAndSelectRightTabGestureAction);
+            case Gesture.CloseAndSelectLeftTab:
+                return ContainerProvider.container.get(CloseAndSelectLeftTabGestureAction);
+            case Gesture.ScrollUp:
+                return ContainerProvider.container.get(ScrollUpGestureAction);
+            case Gesture.ScrollDown:
+                return ContainerProvider.container.get(ScrollDownGestureAction);
+            case Gesture.GoToNext:
+                return ContainerProvider.container.get(GoToNextGestureAction);
+            case Gesture.ScrollTop:
+                return ContainerProvider.container.get(ScrollTopGestureAction);
+            case Gesture.ScrollBottom:
+                return ContainerProvider.container.get(ScrollBottomGestureAction);
+            case Gesture.None:
+                return ContainerProvider.container.get(NoAction);
+        }
+    }
+}

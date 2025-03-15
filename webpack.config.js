@@ -9,9 +9,9 @@ const _dirname = dirname(fileURLToPath(import.meta.url));
 const baseWebpackConfig = {
     devtool: 'inline-source-map',
     entry: {
-        background: './src/js/background/background.ts',
-        content_script: './src/js/content/content_script.ts',
-        options_page: './src/js/options/options.tsx',
+        background: './src/background/index.ts',
+        content_script: './src/content/index.ts',
+        options_page: './src/options/index.tsx',
     },
     module: {
         rules: [
@@ -62,23 +62,13 @@ const baseWebpackConfig = {
         new CopyWebpackPlugin({
           patterns: [
             {
-              from: join(_dirname, 'src', 'manifest.json'),
+              from: join(_dirname, 'manifest.json'),
               to: join(_dirname, 'dist'),
             },
             {
-              context: 'src/images',
-              from: '**/*.png',
-              to: join(_dirname, 'dist', 'images'),
-            },
-            {
-              context: 'src/font',
-              from: '**/*.*',
-              to: join(_dirname, 'dist', 'font'),
-            },
-            {
-              context: 'src/options_page',
-              from: join('**', '*.*'),
-              to: join(_dirname, 'dist', 'options_page'),
+                context: 'src/options',
+                from: join(_dirname, 'src/options', 'index.html'),
+                to: join(_dirname, 'dist', 'options_page'),
             },
           ],
         }),
@@ -103,7 +93,7 @@ function createwebPackConfigForDevelopment(mode) {
     };
     webpackConfigForDevelopment.plugins.push(
         new webpack.DefinePlugin({
-            'process.env.NODE_ENV': mode,
+            'process.env.NODE_ENV': JSON.stringify(mode),
         })
     );
 
@@ -117,14 +107,14 @@ function createwebPackConfigForProduction(mode) {
     };
     webpackConfigForProduction.plugins.push(
         new webpack.DefinePlugin({
-            'process.env.NODE_ENV': mode,
+            'process.env.NODE_ENV': JSON.stringify(mode),
         })
     );
 
     webpackConfigForProduction.optimization.minimize = true;
     webpackConfigForProduction.optimization.minimizer = [
         new TerserPlugin({
-            extractComments: 'all',
+            extractComments: false,
             terserOptions: {
                 compress: {
                     drop_console: true,
