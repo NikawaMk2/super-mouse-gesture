@@ -1,5 +1,5 @@
-import DirectionList from '../../../../content/handlers/direcrion/direcrion_list';
-import { Direction } from '../../../../content/handlers/direcrion/direction';
+import DirectionList from '../../../../content/models/direcrion/direcrion_list';
+import { Direction } from '../../../../content/models/direcrion/direction';
 import GestureSetting from './gesture_setting';
 import { Gesture, GestureType } from './gesture_type';
 import GestureTypeConverter from './gestute_type_converter';

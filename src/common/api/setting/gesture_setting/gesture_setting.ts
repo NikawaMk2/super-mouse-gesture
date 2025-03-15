@@ -1,4 +1,4 @@
-import DirectionList from '../../../../content/handlers/direcrion/direcrion_list';
+import DirectionList from '../../../../content/models/direcrion/direcrion_list';
 import { GestureType } from './gesture_type';
 
 export default class GestureSetting {
