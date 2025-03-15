@@ -11,9 +11,12 @@ import SelectLeftTabGestureAction from '../../content/handlers/gesture_action/se
 import SelectRightTabGestureAction from '../../content/handlers/gesture_action/select_right_tab_swipe_action';
 import ScrollBottomGestureAction from '../../content/handlers/gesture_action/scroll_bottom_swipe_action';
 import ScrollTopGestureAction from '../../content/handlers/gesture_action/scroll_top_swipe_action';
+import NoAction from '../../content/handlers/gesture_action/no_action';
+import { BackgroundMessenger } from '../messaging/background_messenger';
+import { MessageSender } from '../messaging/message_sender';
 
 export const TYPES = {
-    //SettingData: Symbol.for('SettingData')
+    MessageSender: Symbol.for('MessageSender')
 };
 
 export default class ContainerProvider {
@@ -38,5 +41,10 @@ export default class ContainerProvider {
         this.container.bind(GoToNextGestureAction).toSelf().inSingletonScope();
         this.container.bind(ScrollTopGestureAction).toSelf().inSingletonScope();
         this.container.bind(ScrollBottomGestureAction).toSelf().inSingletonScope();
+        this.container.bind(NoAction).toSelf().inSingletonScope();
+
+        this.container.bind(BackgroundMessenger).toSelf().inSingletonScope();
+
+        this.container.bind<MessageSender>(TYPES.MessageSender).to(BackgroundMessenger).inSingletonScope();
     }
 }

@@ -1,9 +1,17 @@
-import { injectable } from 'inversify';
+import { injectable, inject } from 'inversify';
 import Logger from '../../../common/utils/logger';
+import * as message_sender from '../../../common/messaging/message_sender';
+import { BackgroundMessage } from '../../../common/messaging/types/background_message_type';
+import { TYPES } from '../../../common/utils/container_provider';
 
 @injectable()
 export default class SelectRightTabGestureAction implements GestureAction {
-    doAction(): void {
+    constructor(
+        @inject(TYPES.MessageSender) private readonly messenger: message_sender.MessageSender
+    ) {}
+
+    async doAction(): Promise<void> {
         Logger.debug('「右のタブを選択」のジェスチャーを実行');
+        await this.messenger.sendMessage(BackgroundMessage.SelectRightTab);
     }
 }
