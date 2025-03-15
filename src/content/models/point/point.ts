@@ -1,5 +1,5 @@
-import { Direction, DirectionType } from './direcrion/direction';
-import Distance from './distance';
+import { Direction, DirectionType } from '../direcrion/direction';
+import Distance from '../distance/distance';
 
 export default class Point {
     private x: number;
