@@ -1,5 +1,5 @@
-import DirectionList from '../../../src/js/content/mouse_gesture/direcrion/direcrion_list'
-import { Direction } from '../../../src/js/content/mouse_gesture/direcrion/direction'
+import DirectionList from '../../../../src/content/models/direcrion/direcrion_list'
+import { Direction } from '../../../../src/content/models/direcrion/direction'
 
 describe('DirectionListクラスのテスト', () => {
     describe('コンストラクタのテスト', () => {
