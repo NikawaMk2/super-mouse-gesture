@@ -4,7 +4,9 @@ import GestureSettings from '../gesture_settings';
 import { GestureSettingsLoader } from './gesture_settings_loader';
 
 export class ChromeGestureSettingsLoader implements GestureSettingsLoader {
-    private gestuteSettings: GestureSettings = GestureSettings.emptySettings();
+    // TODO: 設定情報から読み込めるようにする
+    //private gestuteSettings: GestureSettings = GestureSettings.emptySettings();
+    private gestuteSettings: GestureSettings = GestureSettings.defaultSettings();
     
     getSettings(): Promise<GestureSettings> {
         return new Promise((resolve, reject) => {
