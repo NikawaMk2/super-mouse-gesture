@@ -1,8 +1,10 @@
 import { Gesture, GestureType } from '../../common/api/setting/gesture_setting/gesture_type';
+import Logger from '../../common/utils/logger';
 
 export default class GestureIndicator {
     private gestureIndicator: HTMLElement;
     private currentGesture: GestureType = Gesture.None;
+    private contextMenuEnabled: boolean = true;
 
     constructor() {
         // ジェスチャーの表示領域を作成
@@ -14,13 +16,15 @@ export default class GestureIndicator {
         this.gestureIndicator.style.background = 'rgba(0, 0, 0, 0.7)';
         this.gestureIndicator.style.color = 'white';
         this.gestureIndicator.style.zIndex = '9999';
-        // TODO: 実装する
-        //document.body.appendChild(this.gestureIndicator);
+        document.body.appendChild(this.gestureIndicator);
+        
+        Logger.debug('ジェスチャーインジケーター初期化完了');
     }
 
     reset() {
         this.currentGesture = Gesture.None;
         this.gestureIndicator.textContent = '';
+        this.contextMenuEnabled = false;
     }
 
     update(gesture: GestureType) {
@@ -30,5 +34,10 @@ export default class GestureIndicator {
 
     clear() {
         this.gestureIndicator.textContent = '';
+        this.contextMenuEnabled = true;
+    }
+
+    isContextMenuEnabled(): boolean {
+        return this.contextMenuEnabled;
     }
 }
