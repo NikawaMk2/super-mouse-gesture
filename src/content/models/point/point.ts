@@ -28,9 +28,9 @@ export default class Point {
         const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
         if (this.isVerticalMovement(angle)) {
-            return this.isRightMovement(dx) ? Direction.Right : Direction.Left;
-        } else {
             return this.isDownMovement(dy) ? Direction.Down : Direction.Up;
+        } else {
+            return this.isRightMovement(dx) ? Direction.Right : Direction.Left;
         }
     }
 
@@ -39,10 +39,10 @@ export default class Point {
     }
 
     private isRightMovement(dx: number): boolean {
-        return dx > 0;
+        return dx < 0;
     }
 
     private isDownMovement(dy: number): boolean {
-        return dy > 0;
+        return dy < 0;
     }
 }
