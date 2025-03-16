@@ -15,6 +15,7 @@ import { BackgroundMessenger } from '../messaging/background_messenger';
 import { MessageSender } from '../messaging/message_sender';
 import { ChromeTabOperator } from '../../background/services/chrome_tab_operator';
 import TYPES from './types';
+import Logger from './logger';
 
 export { default as TYPES } from './types';
 
@@ -24,46 +25,65 @@ export default class ContainerProvider {
 
     static getContentScriptContainer(): Container {
         if (!this.contentScriptContainer) {
-            this.contentScriptContainer = new Container({ defaultScope: "Singleton" });
-            this.initializeContentScript(this.contentScriptContainer);
+            this.contentScriptContainer = this.initializeContentScript();
         }
         return this.contentScriptContainer;
     }
 
     static getBackgroundContainer(): Container {
         if (!this.backgroundContainer) {
-            this.backgroundContainer = new Container({ defaultScope: "Singleton" });
-            this.initializeBackground(this.backgroundContainer);
+            this.backgroundContainer = this.initializeBackground();
         }
         return this.backgroundContainer;
     }
 
-    private static initializeContentScript(container: Container): void {
+    private static initializeContentScript(): Container {
         try {
+            const container = new Container({ defaultScope: "Singleton" });
+            
             // 基本サービスを最初にバインド
-            container.bind(BackgroundMessenger).toSelf();
-            container.bind<MessageSender>(TYPES.MessageSender).to(BackgroundMessenger);
+            container.bind(BackgroundMessenger).toSelf().inSingletonScope();
+            container.bind<MessageSender>(TYPES.MessageSender).to(BackgroundMessenger).inSingletonScope();
 
             // アクションをバインド
-            container.bind(CloseAndSelectLeftTabGestureAction).toSelf();
-            container.bind(CloseAndSelectRightTabGestureAction).toSelf();
-            container.bind(SelectLeftTabGestureAction).toSelf();
-            container.bind(SelectRightTabGestureAction).toSelf();
-            container.bind(BackToPreviousGestureAction).toSelf();
-            container.bind(ScrollUpGestureAction).toSelf();
-            container.bind(ScrollDownGestureAction).toSelf();
-            container.bind(GoToNextGestureAction).toSelf();
-            container.bind(ScrollTopGestureAction).toSelf();
-            container.bind(ScrollBottomGestureAction).toSelf();
-            container.bind(NoAction).toSelf();
+            const actions = [
+                CloseAndSelectLeftTabGestureAction,
+                CloseAndSelectRightTabGestureAction,
+                SelectLeftTabGestureAction,
+                SelectRightTabGestureAction,
+                BackToPreviousGestureAction,
+                ScrollUpGestureAction,
+                ScrollDownGestureAction,
+                GoToNextGestureAction,
+                ScrollTopGestureAction,
+                ScrollBottomGestureAction,
+                NoAction
+            ];
 
-            console.log('Content script container initialized with bindings');
+            actions.forEach(action => {
+                container.bind(action).toSelf().inSingletonScope();
+            });
+
+            Logger.debug('コンテンツスクリプトコンテナ初期化完了');
+
+            return container;
         } catch (error) {
-            console.error('Error initializing container:', error);
+            Logger.error(`コンテンツスクリプトコンテナ初期化エラー: ${error}`);
+            throw error;
         }
     }
 
-    private static initializeBackground(container: Container): void {
-        container.bind<ChromeTabOperator>(TYPES.ChromeTabOperator).to(ChromeTabOperator);
+    private static initializeBackground(): Container {
+        try {
+            const container = new Container({ defaultScope: "Singleton" });
+            
+            container.bind<ChromeTabOperator>(TYPES.ChromeTabOperator).to(ChromeTabOperator);
+            Logger.debug('バックグラウンドコンテナ初期化完了');
+
+            return container;
+        } catch (error) {
+            Logger.error(`バックグラウンドコンテナ初期化エラー: ${error}`);
+            throw error;
+        }
     }
 }
