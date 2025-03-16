@@ -18,27 +18,27 @@ export class GestureActionFactory {
     static createGestureAction(gestureType: GestureType): GestureAction {
         switch (gestureType) {
             case Gesture.BackToPrevious:
-                return ContainerProvider.container.get(BackToPreviousGestureAction);
+                return ContainerProvider.getContentScriptContainer().get(BackToPreviousGestureAction);
             case Gesture.SelectRightTab:
-                return ContainerProvider.container.get(SelectRightTabGestureAction);
+                return ContainerProvider.getContentScriptContainer().get(SelectRightTabGestureAction);
             case Gesture.SelectLeftTab:
-                return ContainerProvider.container.get(SelectLeftTabGestureAction);
+                return ContainerProvider.getContentScriptContainer().get(SelectLeftTabGestureAction);
             case Gesture.CloseAndSelectRightTab:
-                return ContainerProvider.container.get(CloseAndSelectRightTabGestureAction);
+                return ContainerProvider.getContentScriptContainer().get(CloseAndSelectRightTabGestureAction);
             case Gesture.CloseAndSelectLeftTab:
-                return ContainerProvider.container.get(CloseAndSelectLeftTabGestureAction);
+                return ContainerProvider.getContentScriptContainer().get(CloseAndSelectLeftTabGestureAction);
             case Gesture.ScrollUp:
-                return ContainerProvider.container.get(ScrollUpGestureAction);
+                return ContainerProvider.getContentScriptContainer().get(ScrollUpGestureAction);
             case Gesture.ScrollDown:
-                return ContainerProvider.container.get(ScrollDownGestureAction);
+                return ContainerProvider.getContentScriptContainer().get(ScrollDownGestureAction);
             case Gesture.GoToNext:
-                return ContainerProvider.container.get(GoToNextGestureAction);
+                return ContainerProvider.getContentScriptContainer().get(GoToNextGestureAction);
             case Gesture.ScrollTop:
-                return ContainerProvider.container.get(ScrollTopGestureAction);
+                return ContainerProvider.getContentScriptContainer().get(ScrollTopGestureAction);
             case Gesture.ScrollBottom:
-                return ContainerProvider.container.get(ScrollBottomGestureAction);
+                return ContainerProvider.getContentScriptContainer().get(ScrollBottomGestureAction);
             case Gesture.None:
-                return ContainerProvider.container.get(NoAction);
+                return ContainerProvider.getContentScriptContainer().get(NoAction);
         }
     }
 }

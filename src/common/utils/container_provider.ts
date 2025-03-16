@@ -20,31 +20,46 @@ export const TYPES = {
 } as const;
 
 export default class ContainerProvider {
-    private static _container: Container | null = null;
+    private static contentScriptContainer: Container | null = null;
+    private static backgroundContainer: Container | null = null;
 
-    static get container(): Container {
-        if (!this._container) {
-            this._container = new Container();
-            this.initialize();
+    static getContentScriptContainer(): Container {
+        if (!this.contentScriptContainer) {
+            this.contentScriptContainer = new Container();
+            this.initializeContentScript(this.contentScriptContainer);
         }
-        return this._container;
+        return this.contentScriptContainer;
     }
 
-    static initialize(): void {
-        this.container.bind(BackToPreviousGestureAction).toSelf().inSingletonScope();
-        this.container.bind(SelectRightTabGestureAction).toSelf().inSingletonScope();
-        this.container.bind(SelectLeftTabGestureAction).toSelf().inSingletonScope();
-        this.container.bind(CloseAndSelectRightTabGestureAction).toSelf().inSingletonScope();
-        this.container.bind(CloseAndSelectLeftTabGestureAction).toSelf().inSingletonScope();
-        this.container.bind(ScrollUpGestureAction).toSelf().inSingletonScope();
-        this.container.bind(ScrollDownGestureAction).toSelf().inSingletonScope();
-        this.container.bind(GoToNextGestureAction).toSelf().inSingletonScope();
-        this.container.bind(ScrollTopGestureAction).toSelf().inSingletonScope();
-        this.container.bind(ScrollBottomGestureAction).toSelf().inSingletonScope();
-        this.container.bind(NoAction).toSelf().inSingletonScope();
+    static getBackgroundContainer(): Container {
+        if (!this.backgroundContainer) {
+            this.backgroundContainer = new Container();
+            this.initializeBackground(this.backgroundContainer);
+        }
+        return this.backgroundContainer;
+    }
 
-        this.container.bind(BackgroundMessenger).toSelf().inSingletonScope();
+    private static initializeContentScript(container: Container): void {
+        container.bind(BackToPreviousGestureAction).toSelf().inSingletonScope();
+        container.bind(SelectRightTabGestureAction).toSelf().inSingletonScope();
+        container.bind(SelectLeftTabGestureAction).toSelf().inSingletonScope();
+        container.bind(CloseAndSelectRightTabGestureAction).toSelf().inSingletonScope();
+        container.bind(CloseAndSelectLeftTabGestureAction).toSelf().inSingletonScope();
+        container.bind(ScrollUpGestureAction).toSelf().inSingletonScope();
+        container.bind(ScrollDownGestureAction).toSelf().inSingletonScope();
+        container.bind(GoToNextGestureAction).toSelf().inSingletonScope();
+        container.bind(ScrollTopGestureAction).toSelf().inSingletonScope();
+        container.bind(ScrollBottomGestureAction).toSelf().inSingletonScope();
+        container.bind(NoAction).toSelf().inSingletonScope();
+        container.bind(BackgroundMessenger).toSelf().inSingletonScope();
+        container.bind<MessageSender>(TYPES.MessageSender).to(BackgroundMessenger).inSingletonScope();
+    }
 
-        this.container.bind<MessageSender>(TYPES.MessageSender).to(BackgroundMessenger).inSingletonScope();
+    private static initializeBackground(container: Container): void {
+        // バックグラウンド用の依存関係をここに追加
+        // 例：
+        // container.bind(BackgroundService).toSelf().inSingletonScope();
+        // container.bind(TabManager).toSelf().inSingletonScope();
+        // など
     }
 }
