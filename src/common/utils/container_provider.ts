@@ -1,6 +1,5 @@
-import 'reflect-metadata';
+import '../utils/reflect_metadata';
 import { Container } from 'inversify';
-import "reflect-metadata";
 import BackToPreviousGestureAction from '../../content/handlers/gesture_action/back_to_previous_swipe_action';
 import CloseAndSelectLeftTabGestureAction from '../../content/handlers/gesture_action/close_and_select_left_tab_swipe_action';
 import CloseAndSelectRightTabGestureAction from '../../content/handlers/gesture_action/close_and_select_right_tab_swipe_action';
@@ -15,11 +14,9 @@ import NoAction from '../../content/handlers/gesture_action/no_action';
 import { BackgroundMessenger } from '../messaging/background_messenger';
 import { MessageSender } from '../messaging/message_sender';
 import { ChromeTabOperator } from '../../background/services/chrome_tab_operator';
+import TYPES from './types';
 
-export const TYPES = {
-    MessageSender: Symbol.for('MessageSender'),
-    ChromeTabOperator: Symbol.for('ChromeTabOperator')
-} as const;
+export { default as TYPES } from './types';
 
 export default class ContainerProvider {
     private static contentScriptContainer: Container | null = null;
@@ -27,7 +24,7 @@ export default class ContainerProvider {
 
     static getContentScriptContainer(): Container {
         if (!this.contentScriptContainer) {
-            this.contentScriptContainer = new Container();
+            this.contentScriptContainer = new Container({ defaultScope: "Singleton" });
             this.initializeContentScript(this.contentScriptContainer);
         }
         return this.contentScriptContainer;
@@ -35,29 +32,38 @@ export default class ContainerProvider {
 
     static getBackgroundContainer(): Container {
         if (!this.backgroundContainer) {
-            this.backgroundContainer = new Container();
+            this.backgroundContainer = new Container({ defaultScope: "Singleton" });
             this.initializeBackground(this.backgroundContainer);
         }
         return this.backgroundContainer;
     }
 
     private static initializeContentScript(container: Container): void {
-        container.bind(BackToPreviousGestureAction).toSelf().inSingletonScope();
-        container.bind(SelectRightTabGestureAction).toSelf().inSingletonScope();
-        container.bind(SelectLeftTabGestureAction).toSelf().inSingletonScope();
-        container.bind(CloseAndSelectRightTabGestureAction).toSelf().inSingletonScope();
-        container.bind(CloseAndSelectLeftTabGestureAction).toSelf().inSingletonScope();
-        container.bind(ScrollUpGestureAction).toSelf().inSingletonScope();
-        container.bind(ScrollDownGestureAction).toSelf().inSingletonScope();
-        container.bind(GoToNextGestureAction).toSelf().inSingletonScope();
-        container.bind(ScrollTopGestureAction).toSelf().inSingletonScope();
-        container.bind(ScrollBottomGestureAction).toSelf().inSingletonScope();
-        container.bind(NoAction).toSelf().inSingletonScope();
-        container.bind(BackgroundMessenger).toSelf().inSingletonScope();
-        container.bind<MessageSender>(TYPES.MessageSender).to(BackgroundMessenger).inSingletonScope();
+        try {
+            // 基本サービスを最初にバインド
+            container.bind(BackgroundMessenger).toSelf();
+            container.bind<MessageSender>(TYPES.MessageSender).to(BackgroundMessenger);
+
+            // アクションをバインド
+            container.bind(CloseAndSelectLeftTabGestureAction).toSelf();
+            container.bind(CloseAndSelectRightTabGestureAction).toSelf();
+            container.bind(SelectLeftTabGestureAction).toSelf();
+            container.bind(SelectRightTabGestureAction).toSelf();
+            container.bind(BackToPreviousGestureAction).toSelf();
+            container.bind(ScrollUpGestureAction).toSelf();
+            container.bind(ScrollDownGestureAction).toSelf();
+            container.bind(GoToNextGestureAction).toSelf();
+            container.bind(ScrollTopGestureAction).toSelf();
+            container.bind(ScrollBottomGestureAction).toSelf();
+            container.bind(NoAction).toSelf();
+
+            console.log('Content script container initialized with bindings');
+        } catch (error) {
+            console.error('Error initializing container:', error);
+        }
     }
 
     private static initializeBackground(container: Container): void {
-        container.bind<ChromeTabOperator>(TYPES.ChromeTabOperator).to(ChromeTabOperator).inSingletonScope();
+        container.bind<ChromeTabOperator>(TYPES.ChromeTabOperator).to(ChromeTabOperator);
     }
 }
