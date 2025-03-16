@@ -1,7 +1,6 @@
-import { Container } from 'inversify';
-
 export const TYPES = {
-    MessageSender: Symbol.for('MessageSender')
+    MessageSender: Symbol.for('MessageSender'),
+    ChromeTabOperator: Symbol.for('ChromeTabOperator')
 };
 
 const mockGetContentScriptContainer = jest.fn(() => null);

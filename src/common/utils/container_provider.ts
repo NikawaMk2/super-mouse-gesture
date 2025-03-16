@@ -14,9 +14,11 @@ import ScrollTopGestureAction from '../../content/handlers/gesture_action/scroll
 import NoAction from '../../content/handlers/gesture_action/no_action';
 import { BackgroundMessenger } from '../messaging/background_messenger';
 import { MessageSender } from '../messaging/message_sender';
+import { ChromeTabOperator } from '../../background/services/chrome_tab_operator';
 
 export const TYPES = {
-    MessageSender: Symbol.for('MessageSender')
+    MessageSender: Symbol.for('MessageSender'),
+    ChromeTabOperator: Symbol.for('ChromeTabOperator')
 } as const;
 
 export default class ContainerProvider {
@@ -56,10 +58,6 @@ export default class ContainerProvider {
     }
 
     private static initializeBackground(container: Container): void {
-        // バックグラウンド用の依存関係をここに追加
-        // 例：
-        // container.bind(BackgroundService).toSelf().inSingletonScope();
-        // container.bind(TabManager).toSelf().inSingletonScope();
-        // など
+        container.bind<ChromeTabOperator>(TYPES.ChromeTabOperator).to(ChromeTabOperator).inSingletonScope();
     }
 }
