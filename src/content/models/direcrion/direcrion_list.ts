@@ -30,7 +30,7 @@ export default class DirectionList {
 
         this.direcrionList.push(direcrion);
 
-        Logger.debug(`DirectionListの要素追加 ${direcrion}`)
+        Logger.debug(`DirectionListの要素追加 "${direcrion}", 追加後: ${this.toString()}`)
     }
 
     clear(): void {
