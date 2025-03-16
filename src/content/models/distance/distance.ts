@@ -1,3 +1,5 @@
+import Logger from '../../../common/utils/logger';
+
 export default class Distance {
     private readonly MIN_MOVE_DISTANCE = 10;
 
