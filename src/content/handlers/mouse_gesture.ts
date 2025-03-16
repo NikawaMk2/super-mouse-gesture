@@ -6,8 +6,10 @@ import GestureIndicator from '../components/gesture_indicaror';
 import DirectionList from '../models/direcrion/direcrion_list';
 import { GestureActionFactory } from './gesture_action/gesture_action_factory';
 import Point from '../models/point/point';
+import '../../common/utils/reflect_metadata';
+import { MouseButton } from '../../common/const/mouse_button';
 
-export default class MouseGesture {
+export default class MouseGesture {   
     private readonly settingsLoader: GestureSettingsLoader = new ChromeGestureSettingsLoader();
     private isDragging: boolean = false;
     private gestureStart: Point | null = null;
@@ -17,25 +19,47 @@ export default class MouseGesture {
     private gestureIndicator: GestureIndicator = new GestureIndicator();
 
     constructor(private element: HTMLElement) {
+        console.log('MouseGestureのコンストラクタ呼び出し');
         if (!this.element) {
             Logger.error('elementが設定されていません');
             return;
         }
 
-        this.element.addEventListener('mousedown', this.handleMouseDown);
-        this.element.addEventListener('mousemove', this.handleMouseMove);
-        this.element.addEventListener('mouseup', this.handleMouseUp);
-        this.element.addEventListener('mouseleave', this.handleMouseUp);
+        // キャプチャフェーズでイベントを捕捉
+        this.element.addEventListener('mousedown', this.handleMouseDown, true);
+        this.element.addEventListener('mousemove', this.handleMouseMove, true);
+        this.element.addEventListener('mouseup', this.handleMouseUp, true);
+        this.element.addEventListener('mouseleave', this.handleMouseUp, true);
+        
+        console.log('MouseGesture 初期化:', this.element);
     }
 
     public dispose() {
-        this.element.removeEventListener('mousedown', this.handleMouseDown);
-        this.element.removeEventListener('mousemove', this.handleMouseMove);
-        this.element.removeEventListener('mouseup', this.handleMouseUp);
-        this.element.removeEventListener('mouseleave', this.handleMouseUp);
+        // 既にクリーンアップ済みの場合は何もしない
+        if (!this.element) {
+            return;
+        }
+
+        Logger.debug('マウスジェスチャーのクリーンアップを開始');
+
+        try {
+            // イベントリスナーの削除
+            this.element.removeEventListener('mousedown', this.handleMouseDown, true);
+            this.element.removeEventListener('mousemove', this.handleMouseMove, true);
+            this.element.removeEventListener('mouseup', this.handleMouseUp, true);
+            this.element.removeEventListener('mouseleave', this.handleMouseUp, true);
+
+            Logger.debug('マウスジェスチャーのクリーンアップが完了しました');
+        } catch (error) {
+            Logger.error(`クリーンアップ中にエラーが発生しました: ${error}`);
+        }
     }
     
     private handleMouseDown = (event: MouseEvent) => {
+        if (event.button !== MouseButton.Right) {
+            return;
+        }
+
         this.isDragging = true;
         this.movementHistory.clear();
         this.gestureStart = new Point(event);
