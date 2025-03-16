@@ -2,7 +2,7 @@ import { injectable, inject } from 'inversify';
 import Logger from '../../../common/utils/logger';
 import * as message_sender from '../../../common/messaging/message_sender';
 import { BackgroundMessage } from '../../../common/messaging/types/background_message_type';
-import { TYPES } from '../../../common/utils/container_provider';
+import TYPES from '../../../common/utils/types';
 import { GestureAction } from './gesture_action';
 
 @injectable()

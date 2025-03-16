@@ -1,6 +1,6 @@
 import { injectable, inject } from 'inversify';
 import Logger from '../../../common/utils/logger';
-import { TYPES } from '../../../common/utils/container_provider';
+import TYPES from '../../../common/utils/types';
 import { BackgroundGestureAction } from './background_gesture_action';
 import { ChromeTabOperator } from '../../services/chrome_tab_operator';
 

@@ -1,15 +1,15 @@
-import 'reflect-metadata';
+import '../../../common/utils/reflect_metadata';
 import { injectable, inject } from 'inversify';
 import Logger from '../../../common/utils/logger';
-import * as message_sender from '../../../common/messaging/message_sender';
+import type { MessageSender } from '../../../common/messaging/message_sender';
 import { BackgroundMessage } from '../../../common/messaging/types/background_message_type';
-import { TYPES } from '../../../common/utils/container_provider';
-import { GestureAction } from './gesture_action';
+import TYPES from '../../../common/utils/types';
+import type { GestureAction } from './gesture_action';
 
 @injectable()
 export default class CloseAndSelectLeftTabGestureAction implements GestureAction {
     constructor(
-        @inject(TYPES.MessageSender) private readonly messenger: message_sender.MessageSender
+        @inject(TYPES.MessageSender) private readonly messenger: MessageSender
     ) {}
 
     async doAction(): Promise<void> {
