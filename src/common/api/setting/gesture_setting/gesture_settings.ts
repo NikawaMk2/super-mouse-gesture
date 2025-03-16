@@ -13,9 +13,9 @@ export default class GestureSettings {
         new GestureSetting(Gesture.ScrollTop, new DirectionList([Direction.Down, Direction.Up])),
         new GestureSetting(Gesture.ScrollBottom, new DirectionList([Direction.Up, Direction.Down])),
         new GestureSetting(Gesture.SelectRightTab, new DirectionList([Direction.Up, Direction.Right])),
-        new GestureSetting(Gesture.SelectLeftTab, new DirectionList([Direction.Up, Direction.Right])),
+        new GestureSetting(Gesture.SelectLeftTab, new DirectionList([Direction.Up, Direction.Left])),
         new GestureSetting(Gesture.CloseAndSelectRightTab, new DirectionList([Direction.Down, Direction.Right])),
-        new GestureSetting(Gesture.CloseAndSelectLeftTab, new DirectionList([Direction.Down, Direction.Right])),
+        new GestureSetting(Gesture.CloseAndSelectLeftTab, new DirectionList([Direction.Down, Direction.Left])),
     ];
 
     private gestureSettings: GestureSetting[];
