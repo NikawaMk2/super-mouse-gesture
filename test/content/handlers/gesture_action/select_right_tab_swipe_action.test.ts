@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Container } from 'inversify';
 import { MessageSender } from '../../../../src/common/messaging/message_sender';
-import { BackgroundMessage } from '../../../../src/common/messaging/types/background_message_type';
+import BackgroundMessage from '../../../../src/common/messaging/types/background_message_type';
 import Logger from '../../../../src/common/utils/logger';
 import SelectRightTabGestureAction from '../../../../src/content/handlers/gesture_action/select_right_tab_swipe_action';
 

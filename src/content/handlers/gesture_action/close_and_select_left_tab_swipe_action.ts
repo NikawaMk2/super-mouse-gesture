@@ -2,7 +2,7 @@ import '../../../common/utils/reflect_metadata';
 import { injectable, inject } from 'inversify';
 import Logger from '../../../common/utils/logger';
 import type { MessageSender } from '../../../common/messaging/message_sender';
-import { BackgroundMessage } from '../../../common/messaging/types/background_message_type';
+import BackgroundMessage from '../../../common/messaging/types/background_message_type';
 import TYPES from '../../../common/utils/types';
 import type { GestureAction } from './gesture_action';
 

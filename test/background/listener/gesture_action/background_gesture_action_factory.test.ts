@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { BackgroundGestureActionFactory } from '../../../../src/background/listener/gesture_action/background_gesture_action_factory';
-import { BackgroundMessage } from '../../../../src/common/messaging/types/background_message_type';
+import BackgroundMessage from '../../../../src/common/messaging/types/background_message_type';
 import BackgroundSelectRightTabGestureAction from '../../../../src/background/listener/gesture_action/background_select_right_tab_swipe_action';
 import BackgroundSelectLeftTabGestureAction from '../../../../src/background/listener/gesture_action/background_select_left_tab_swipe_action';
 import BackgroundCloseAndSelectRightTabGestureAction from '../../../../src/background/listener/gesture_action/background_close_and_select_right_tab_swipe_action';

@@ -14,6 +14,10 @@ import NoAction from '../../content/handlers/gesture_action/no_action';
 import { BackgroundMessenger } from '../messaging/background_messenger';
 import { MessageSender } from '../messaging/message_sender';
 import { ChromeTabOperator } from '../../background/services/chrome_tab_operator';
+import BackgroundSelectRightTabGestureAction from '../../background/listener/gesture_action/background_select_right_tab_swipe_action';
+import BackgroundSelectLeftTabGestureAction from '../../background/listener/gesture_action/background_select_left_tab_swipe_action';
+import BackgroundCloseAndSelectRightTabGestureAction from '../../background/listener/gesture_action/background_close_and_select_right_tab_swipe_action';
+import BackgroundCloseAndSelectLeftTabGestureAction from '../../background/listener/gesture_action/background_close_and_select_left_tab_swipe_action';
 import TYPES from './types';
 import Logger from './logger';
 
@@ -77,7 +81,21 @@ export default class ContainerProvider {
         try {
             const container = new Container({ defaultScope: "Singleton" });
             
-            container.bind<ChromeTabOperator>(TYPES.ChromeTabOperator).to(ChromeTabOperator);
+            // 基本サービスをバインド
+            container.bind<ChromeTabOperator>(TYPES.ChromeTabOperator).to(ChromeTabOperator).inSingletonScope();
+
+            // バックグラウンドアクションをバインド
+            const backgroundActions = [
+                BackgroundSelectRightTabGestureAction,
+                BackgroundSelectLeftTabGestureAction,
+                BackgroundCloseAndSelectRightTabGestureAction,
+                BackgroundCloseAndSelectLeftTabGestureAction
+            ];
+
+            backgroundActions.forEach(action => {
+                container.bind(action).toSelf().inSingletonScope();
+            });
+
             Logger.debug('バックグラウンドコンテナ初期化完了');
 
             return container;
