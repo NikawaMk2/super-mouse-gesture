@@ -38,17 +38,16 @@ const baseWebpackConfig = {
     optimization: {
         minimize: false,
         splitChunks: {
-        cacheGroups: {
-            vendors: {
-            chunks: 'all',
-            test: /[\\/]node_modules[\\/]/,
+            cacheGroups: {
+                vendors: {
+                    chunks: (chunk) => chunk.name !== 'content_script',
+                    test: /[\\/]node_modules[\\/]/,
+                },
             },
-        },
-
-        chunks: 'async',
-        minChunks: 1,
-        minSize: 30000,
-        name: false,
+            chunks: 'async',
+            minChunks: 1,
+            minSize: 30000,
+            name: false,
         },
     },
     resolve: {

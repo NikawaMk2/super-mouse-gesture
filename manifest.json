@@ -4,10 +4,6 @@
     "description": "スーパードラッグ機能付きマウスジェスチャー",
     "version": "0.1",
     "icons": {
-      "16": "images/icon-16.png",
-      "32": "images/icon-32.png",
-      "48": "images/icon-48.png",
-      "128": "images/icon-128.png"
     },
     "permissions": [
         "tabs",
@@ -23,13 +19,12 @@
                 "<all_urls>"
             ],
             "css": [
-                "font/flaticon.css"
             ],
             "js": [
                 "content_script.js"
             ],
             "all_frames": true,
-            "run_at": "document_idle"
+            "run_at": "document_start"
         }
     ],
     "web_accessible_resources": [
@@ -42,5 +37,5 @@
             ]
         }
     ],
-    "options_page": "options_page/options_page.html"
+    "options_page": "options_page/index.html"
 }
