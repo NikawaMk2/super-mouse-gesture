@@ -42,8 +42,6 @@ export default class DirectionList {
     }
     
     equals(other: DirectionList): boolean {
-        Logger.debug(`DirectionListの比較 ${this.toString()} === ${other.toString()}`)
-
         if(this.direcrionList.length !== other.direcrionList.length) {
             return false;
         }
