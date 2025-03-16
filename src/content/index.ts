@@ -1,7 +1,8 @@
 import '../common/utils/reflect_metadata';
 import MouseGesture from './handlers/mouse_gesture';
+import Logger from '../common/utils/logger';
 
-console.log('Content script loaded');
+Logger.debug('コンテンツスクリプト初期化開始');
 
 let mouseGesture: MouseGesture | null = null;
 
@@ -14,21 +15,22 @@ const shouldInitialize = () => {
 const initializeMouseGesture = () => {
     // トップレベルフレーム以外では初期化しない
     if (!shouldInitialize()) {
-        console.log('Skipping initialization in non-top frame');
+        Logger.debug('非トップフレームでは初期化をスキップ');
         return;
     }
 
     // 既存のインスタンスがある場合は初期化しない
     if (mouseGesture) {
-        console.log('Mouse gesture already initialized');
+        Logger.debug('マウスジェスチャーは既に初期化済み');
         return;
     }
 
     try {
-        console.log('Initializing mouse gesture');
+        Logger.debug('マウスジェスチャー初期化開始');
         mouseGesture = new MouseGesture(document.body);
+        Logger.debug('マウスジェスチャー初期化完了');
     } catch (error) {
-        console.error('Error initializing mouse gesture:', error);
+        Logger.error(`マウスジェスチャー初期化エラー: ${error}`);
     }
 };
 
@@ -46,6 +48,7 @@ const cleanup = () => {
     if (mouseGesture) {
         mouseGesture.dispose();
         mouseGesture = null;
+        Logger.debug('マウスジェスチャークリーンアップ完了');
     }
 };
 
