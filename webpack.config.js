@@ -61,7 +61,7 @@ const baseWebpackConfig = {
         new CopyWebpackPlugin({
           patterns: [
             {
-              from: join(_dirname, 'manifest.json'),
+              from: join(_dirname, 'src/manifest.json'),
               to: join(_dirname, 'dist'),
             },
             {
