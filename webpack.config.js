@@ -2,16 +2,16 @@ import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import TerserPlugin from 'terser-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
+import webpack from 'webpack';
 
 const _dirname = dirname(fileURLToPath(import.meta.url));
 
-const webpackConfigForDevelopment = {
+const baseWebpackConfig = {
     devtool: 'inline-source-map',
-    mode: 'development',
     entry: {
-        background: './src/js/background/background.ts',
-        handler: './src/js/content/handler.ts',
-        options_page: './src/js/options/options.tsx',
+        background: './src/background/index.ts',
+        content_script: './src/content/index.ts',
+        options_page: './src/options/index.tsx',
     },
     module: {
         rules: [
@@ -38,17 +38,16 @@ const webpackConfigForDevelopment = {
     optimization: {
         minimize: false,
         splitChunks: {
-        cacheGroups: {
-            vendors: {
-            chunks: 'all',
-            test: /[\\/]node_modules[\\/]/,
+            cacheGroups: {
+                vendors: {
+                    chunks: (chunk) => chunk.name !== 'content_script',
+                    test: /[\\/]node_modules[\\/]/,
+                },
             },
-        },
-
-        chunks: 'async',
-        minChunks: 1,
-        minSize: 30000,
-        name: false,
+            chunks: 'async',
+            minChunks: 1,
+            minSize: 30000,
+            name: false,
         },
     },
     resolve: {
@@ -62,23 +61,13 @@ const webpackConfigForDevelopment = {
         new CopyWebpackPlugin({
           patterns: [
             {
-              from: join(_dirname, 'src', 'manifest.json'),
+              from: join(_dirname, 'manifest.json'),
               to: join(_dirname, 'dist'),
             },
             {
-              context: 'src/images',
-              from: '**/*.png',
-              to: join(_dirname, 'dist', 'images'),
-            },
-            {
-              context: 'src/font',
-              from: '**/*.*',
-              to: join(_dirname, 'dist', 'font'),
-            },
-            {
-              context: 'src/options_page',
-              from: join('**', '*.*'),
-              to: join(_dirname, 'dist', 'options_page'),
+                context: 'src/options',
+                from: join(_dirname, 'src/options', 'index.html'),
+                to: join(_dirname, 'dist', 'options_page'),
             },
           ],
         }),
@@ -86,26 +75,52 @@ const webpackConfigForDevelopment = {
 };
 
 export default (_env, argv) => {
-    if (argv.mode !== 'production') {
-        return webpackConfigForDevelopment;
+    const mode = argv.mode;
+    if (mode === 'development') {
+        return createwebPackConfigForDevelopment(mode);
+    } else if (mode === 'production'){
+        return createwebPackConfigForProduction(mode);
+    }else{
+        return createwebPackConfigForDevelopment('development');
     }
+};
 
+function createwebPackConfigForDevelopment(mode) {
+    const webpackConfigForDevelopment = {
+        ...baseWebpackConfig,
+        mode: mode,
+    };
+    webpackConfigForDevelopment.plugins.push(
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify(mode),
+        })
+    );
+
+    return webpackConfigForDevelopment;
+}
+
+function createwebPackConfigForProduction(mode) {
     const webpackConfigForProduction = {
         ...baseWebpackConfig,
-        mode: 'production',
+        mode: mode,
     };
+    webpackConfigForProduction.plugins.push(
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify(mode),
+        })
+    );
 
     webpackConfigForProduction.optimization.minimize = true;
     webpackConfigForProduction.optimization.minimizer = [
         new TerserPlugin({
-            extractComments: 'all',
+            extractComments: false,
             terserOptions: {
                 compress: {
                     drop_console: true,
                 },
             },
         })
-        ];
+    ];
 
     return webpackConfigForProduction;
-};
+}

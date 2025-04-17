@@ -1,0 +1,22 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# テストコード
+* テストケースは日本語で記載する。
+* テストコードのファイル名は`<テスト対象のファイル名>.test.<テスト対象のクラスのファイルの拡張子> とする。
+* テストコードの作成先は`test/` 配下かつテスト対象のファイルが配置されている位置と同一となるようにする。
+## 例
+message_util.tsのテストコードを作成する場合
+```
+.
+├── src/
+│   └── common/
+│       └── utils/
+│         └── message_util.ts
+└── test/
+    └── common/
+        └── utils/
+          └── message_util.test.ts
+```
