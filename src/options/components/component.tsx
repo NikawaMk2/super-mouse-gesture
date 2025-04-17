@@ -1,8 +1,8 @@
-import React from 'react';
+import { FC } from 'react';
 
-const Options: React.FC = () => {
+const Options: FC = () => {
   return (
-    <div>
+    <div className="options-container">
       <h1>Super Mouse Gesture Options</h1>
       {/* オプション設定の UI をここに記述 */}
     </div>

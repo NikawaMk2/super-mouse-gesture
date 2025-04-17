@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom/client';
-import Options from './component';
+import Options from './components/component';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
