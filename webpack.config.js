@@ -12,6 +12,7 @@ const baseWebpackConfig = {
         background: './src/background/index.ts',
         content_script: './src/content/index.ts',
         options_page: './src/options/index.tsx',
+        popup: './src/popup/index.tsx',
     },
     module: {
         rules: [
@@ -68,6 +69,11 @@ const baseWebpackConfig = {
                 context: 'src/options',
                 from: join(_dirname, 'src/options', 'index.html'),
                 to: join(_dirname, 'dist', 'options_page'),
+            },
+            {
+                context: 'src/popup',
+                from: join(_dirname, 'src/popup', 'index.html'),
+                to: join(_dirname, 'dist', 'popup'),
             },
           ],
         }),

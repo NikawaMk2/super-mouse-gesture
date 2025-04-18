@@ -5,6 +5,12 @@
     "version": "0.1",
     "icons": {
     },
+    "action": {
+        "default_icon": {
+        },
+        "default_title": "Super Mouse Gesture",
+        "default_popup": "popup/index.html"
+    },
     "permissions": [
         "tabs",
         "sessions",
