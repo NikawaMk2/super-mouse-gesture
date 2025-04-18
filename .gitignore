@@ -25,3 +25,4 @@ __pycache__/
 venv/
 # Other
 manifest.json.lock
+document/
