@@ -1,3 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
 # ディレクトリ・ファイル構成
 構成は以下の通りとする。
 ```bash

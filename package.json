@@ -38,6 +38,7 @@
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "babel": "^5.8.38",
+    "inversify": "^7.5.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "types": "^0.1.1",
