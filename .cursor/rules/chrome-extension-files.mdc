@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 # ディレクトリ・ファイル構成
 構成は以下の通りとする。
@@ -35,3 +35,6 @@ alwaysApply: false
 │       └── utils/       # 共通処理
 └── test/                 # テストコード
 ```
+
+# ファイル名
+ファイル名はスネークケースとする。
