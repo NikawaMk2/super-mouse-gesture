@@ -1,12 +1,7 @@
 ---
 description: 
-globs: 
+globs: test/**/*.ts
 alwaysApply: false
----
----
-description: 
-globs: 
-alwaysApply: true
 ---
 # テストコード
 * テストケースは日本語で記載する。

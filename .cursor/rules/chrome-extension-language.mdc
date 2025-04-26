@@ -1,12 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
----
----
-description: 
-globs: src/**/*.ts,test/**/*.ts
-alwaysApply: false
+alwaysApply: true
 ---
 # 言語・ライブラリ
 * 言語: TypeScriptで開発を行う。
