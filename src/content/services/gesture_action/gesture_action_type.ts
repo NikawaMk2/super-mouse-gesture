@@ -24,6 +24,7 @@ export const GestureActionType = {
   MINIMIZE_WINDOW: 'minimizeWindow',
   MAXIMIZE_WINDOW: 'maximizeWindow',
   TOGGLE_FULLSCREEN: 'toggleFullscreen',
+  NONE: 'none',
 } as const;
 
 export type GestureActionType = (typeof GestureActionType)[keyof typeof GestureActionType]; 
