@@ -1,8 +1,3 @@
----
-description: 
-globs: src/**/*.ts,test/**/*.ts
-alwaysApply: false
----
 # TypeScript コーディング規約
 
 ## 1. 型定義

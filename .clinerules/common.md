@@ -1,9 +1,4 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-- 実施したことを実施した理由含めて./.learned/cursor/.learned_yyyyMMdd.mdに追記すること。※yyyyMMdd(日付)は今日の日付とする。
+- 実施したことを実施した理由含めて./.learned/cline/.learned_yyyyMMdd.mdに追記すること。※yyyyMMdd(日付)は今日の日付とする。
 - 新規にクラスを追加する場合、追加後に以下を行うこと。
  * 追加したクラスをテストするテストコードを作成する。
  * 作成したテストコードを実行し、エラーが出ないことを確認する。
