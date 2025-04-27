@@ -1,5 +1,5 @@
-import { DragType } from '../../content/drag_type';
-import { Direction } from '../../content/direction';
+import { DragType } from '../../content/models/drag_type';
+import { Direction } from '../../content/models/direction';
 
 export type SuperDragSettings = {
   [type in DragType]: {
