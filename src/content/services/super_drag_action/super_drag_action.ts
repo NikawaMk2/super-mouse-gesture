@@ -1,5 +1,5 @@
-import { Direction } from "../../direction";
-import { DragType } from "../../drag_type";
+import { Direction } from "../../models/direction";
+import { DragType } from "../../models/drag_type";
 
 export interface SuperDragAction {
     execute(options: {
