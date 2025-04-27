@@ -1,17 +1,8 @@
 // Content Script → Background Script メッセージ
 export type ContentToBackgroundMessage =
   | { action: 'getSettings' }
-  | { action: 'executeGestureAction', payload: {
-      actionName: string,
-      params: Record<string, unknown>
-    } }
-  | { action: 'executeDragAction', payload: {
-      type: 'text' | 'link' | 'image',
-      direction: 'up' | 'right' | 'down' | 'left',
-      actionName: string,
-      params: Record<string, unknown>,
-      sourceTabId: number
-    } }
+  | { action: 'executeGestureAction', payload: GestureActionMessagePayload }
+  | { action: 'executeDragAction', payload: DragActionMessagePayload }
   | { action: 'updateHistory', payload: {
       gestureId: string,
       pattern: string,
@@ -22,6 +13,22 @@ export type ContentToBackgroundMessage =
 export type BackgroundToContentMessage =
   | { action: 'settingsUpdated', payload: Record<string, unknown> }
   | { action: 'toggleEnabled', payload: { enabled: boolean } };
+
+// Content Script(ジェスチャアクション) → Background Script メッセージペイロード
+export interface GestureActionMessagePayload {
+    actionName: string;
+    params: Record<string, any>;
+}
+
+// Content Script(スーパードラッグアクション) → Background Script メッセージペイロード
+export interface DragActionMessagePayload {
+    type: 'text' | 'link' | 'image';
+    direction: 'up' | 'right' | 'down' | 'left';
+    actionName: string;
+    params: Record<string, any>;
+    [key: string]: any;
+}
+
 
 // Content Script ← Background Script レスポンス
 export type ContentToBackgroundResponse =
