@@ -1,7 +1,10 @@
+import { Direction } from "../../direction";
+import { DragType } from "../../drag_type";
+
 export interface SuperDragAction {
     execute(options: {
-        type: 'text' | 'link' | 'image';
-        direction: 'up' | 'right' | 'down' | 'left';
+        type: DragType;
+        direction: Direction;
         actionName: string;
         params: Record<string, any>;
     }): Promise<void>;
