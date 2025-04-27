@@ -8,6 +8,7 @@ const config: Config.InitialOptions = {
     transform: {
         '^.+\\.tsx?$': 'ts-jest',
     },
+    setupFilesAfterEnv: ['<rootDir>/test/setup/jest.chrome.setup.ts'],
 };
 
 export default config; 
