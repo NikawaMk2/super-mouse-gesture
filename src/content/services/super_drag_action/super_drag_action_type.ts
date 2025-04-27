@@ -1,0 +1,16 @@
+export const SuperDragActionType = {
+    SEARCH_GOOGLE: 'searchGoogle',
+    SEARCH_BING: 'searchBing',
+    OPEN_AS_URL: 'openAsUrl',
+    COPY_TEXT: 'copyText',
+    OPEN_IN_BACKGROUND_TAB: 'openInBackgroundTab',
+    OPEN_IN_FOREGROUND_TAB: 'openInForegroundTab',
+    DOWNLOAD_LINK: 'downloadLink',
+    COPY_LINK_URL: 'copyLinkUrl',
+    OPEN_IMAGE_IN_NEW_TAB: 'openImageInNewTab',
+    DOWNLOAD_IMAGE: 'downloadImage',
+    SEARCH_IMAGE_GOOGLE: 'searchImageGoogle',
+    COPY_IMAGE_URL: 'copyImageUrl',
+} as const;
+
+export type SuperDragActionType = (typeof SuperDragActionType)[keyof typeof SuperDragActionType]; 
