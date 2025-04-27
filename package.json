@@ -23,6 +23,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.26.9",
     "@babel/preset-react": "^7.26.3",
+    "@types/chrome": "^0.0.317",
     "@types/inversify": "^2.0.32",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.13.14",
