@@ -1,8 +1,8 @@
-import { MouseGestureHandler } from '../../src/content/mouse_gesture_handler';
-import { MouseGestureSettingsService } from '../../src/content/services/gesture_action/settings/mouse_gesture_settings_service';
-import { GestureActionType } from '../../src/content/services/gesture_action/gesture_action_type';
-import { Direction } from '../../src/content/direction';
-import { DEFAULT_MOUSE_GESTURE_SETTINGS } from '../../src/common/constants/mouse_gesture_settings';
+import { MouseGestureHandler } from '../../../src/content/handlers/mouse_gesture_handler';
+import { MouseGestureSettingsService } from '../../../src/content/services/gesture_action/settings/mouse_gesture_settings_service';
+import { GestureActionType } from '../../../src/content/services/gesture_action/gesture_action_type';
+import { Direction } from '../../../src/content/models/direction';
+import { DEFAULT_MOUSE_GESTURE_SETTINGS } from '../../../src/common/constants/mouse_gesture_settings';
 
 const createServiceMock = (settings: any) => {
     return {
