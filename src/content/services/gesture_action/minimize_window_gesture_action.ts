@@ -1,22 +1,19 @@
 import { GestureAction } from './gesture_action';
 import Logger from '../../../common/logger/logger';
-import { MessageSender } from '../message/message_sender';
+import { ChromeMessageSender, IGestureActionMessageSender } from '../message/message_sender';
 
 export class MinimizeWindowGestureAction implements GestureAction {
-    private messageSender: MessageSender;
+    private messageSender: IGestureActionMessageSender;
 
-    constructor(messageSender: MessageSender) {
+    constructor(messageSender: IGestureActionMessageSender = new ChromeMessageSender()) {
         this.messageSender = messageSender;
     }
 
-    execute(): void {
+    async execute(): Promise<void> {
         Logger.debug('MinimizeWindowGestureAction: execute() が呼び出されました');
-        this.messageSender.sendMessage({
-            action: 'executeGestureAction',
-            payload: {
-                actionName: 'minimizeWindow',
-                params: {}
-            }
+        await this.messageSender.sendGestureAction({
+            actionName: 'minimizeWindow',
+            params: {}
         });
     }
 } 
