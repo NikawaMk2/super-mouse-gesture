@@ -61,3 +61,89 @@
     if (isValid)
       doSomething();
     ```
+
+## 5. リソース管理
+- リソース（イベントリスナー、タイマー、アニメーションフレームなど）は必ず適切にクリーンアップすること。
+- クラスがリソースを保持する場合は、`destroy`メソッドを実装し、そこでクリーンアップを行うこと。
+  - 良い例：
+    ```ts
+    class EventHandler {
+      private listeners: Set<() => void> = new Set();
+
+      constructor() {
+        this.addEventListeners();
+      }
+
+      private addEventListeners(): void {
+        document.addEventListener('click', this.handleClick);
+        this.listeners.add(() => {
+          document.removeEventListener('click', this.handleClick);
+        });
+      }
+
+      public destroy(): void {
+        for (const cleanup of this.listeners) {
+          cleanup();
+        }
+        this.listeners.clear();
+      }
+
+      private handleClick = (e: MouseEvent): void => {
+        // イベント処理
+      };
+    }
+    ```
+  - 悪い例：
+    ```ts
+    class EventHandler {
+      constructor() {
+        document.addEventListener('click', this.handleClick);
+      }
+
+      private handleClick(e: MouseEvent): void {
+        // イベント処理
+      }
+    }
+    ```
+
+## 6. 分岐処理の一般ルール
+- メソッド・関数・イベントリスナー・コールバック等で、外部から受け取るデータ（引数・メッセージ・リクエスト等）に対して分岐処理を行う場合は、以下の点に注意すること。
+  - 受信データがnull/undefinedまたは想定外の型・値の場合は、即座に処理を中断し、必要に応じてエラーやfalse等を返す。
+  - 識別子（例: action/type/command等）や条件ごとにif/else ifやswitchで明確に分岐し、どの分岐にも該当しない場合は明示的に処理を終了する（returnやbreak等）。
+  - これにより、不正なデータや未対応リクエスト受信時の安全性が向上し、予期せぬバグや例外発生を防止できる。
+  - 例：
+    ```ts
+    function handleRequest(request: any): boolean {
+      if (!request || typeof request !== 'object') {
+        return false;
+      }
+      if (request.type === 'A') {
+        // ...
+        return true;
+      } else if (request.type === 'B') {
+        // ...
+        return true;
+      }
+      // 未対応type
+      return false;
+    }
+    ```
+    
+    ```ts
+    // イベントリスナーやコールバックでも同様
+    someListener((message, sender, sendResponse) => {
+      if (!message || typeof message !== 'object') {
+        return false;
+      }
+      if (message.type === 'A') {
+        // ...
+        sendResponse({ result: 'ok' });
+        return true;
+      } else if (message.type === 'B') {
+        // ...
+        sendResponse({ result: 'ok' });
+        return true;
+      }
+      return false;
+    });
+    ```
