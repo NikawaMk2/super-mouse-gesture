@@ -1,17 +1,20 @@
 import { GestureActionFactory } from '../../../../src/content/services/gesture_action/gesture_action_factory';
 import { GestureActionType } from '../../../../src/content/services/gesture_action/gesture_action_type';
-import { ContainerProvider } from '../../../../src/common/provider/container_provider';
+import { ContentContainerProvider } from '../../../../src/content/provider/content_container_provider';
 
-jest.mock('../../../../src/common/provider/container_provider');
+jest.mock('../../../../src/content/provider/content_container_provider');
 
 // モック用ダミークラス
 class DummyAction {}
 
+// getメソッドのモックを分離
+const mockGet = jest.fn();
 const mockContainer = {
-  get: jest.fn()
-};
+  get: mockGet
+} as unknown as import('inversify').Container;
 
-(ContainerProvider.getContainer as jest.Mock).mockReturnValue(mockContainer);
+// インスタンスメソッドのモック
+jest.spyOn(ContentContainerProvider.prototype, 'getContainer').mockReturnValue(mockContainer);
 
 describe('GestureActionFactory', () => {
   beforeEach(() => {
@@ -21,12 +24,12 @@ describe('GestureActionFactory', () => {
   it('各GestureActionTypeで正しいクラスインスタンスが返ること', () => {
     // 各アクションタイプに対してgetが呼ばれることを検証
     Object.values(GestureActionType).forEach(type => {
-      mockContainer.get.mockReturnValueOnce(DummyAction);
+      mockGet.mockReturnValueOnce(DummyAction);
       // requireの部分は実際のクラス名に依存するため、ここではgetが呼ばれることのみ検証
       const result = GestureActionFactory.create(type);
-      expect(mockContainer.get).toHaveBeenCalledTimes(1);
+      expect(mockGet).toHaveBeenCalledTimes(1);
       expect(result).toBe(DummyAction);
-      mockContainer.get.mockClear();
+      mockGet.mockClear();
     });
   });
 

@@ -1,9 +1,9 @@
-import { ContainerProvider } from '../../../common/provider/container_provider';
+import { ContentContainerProvider } from '../../provider/content_container_provider';
 import { GestureActionType } from './gesture_action_type';
 
 export class GestureActionFactory {
   static create(type: GestureActionType) {
-    const container = ContainerProvider.getContainer();
+    const container = new ContentContainerProvider().getContainer();
     switch (type) {
       case GestureActionType.GO_BACK:
         return container.get(require('./go_back_gesture_action').GoBackGestureAction);
