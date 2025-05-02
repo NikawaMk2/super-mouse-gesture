@@ -5,15 +5,23 @@ import { Point } from '../models/point';
 import { Direction } from '../models/direction';
 import { DragType } from '../models/drag_type';
 import { SuperDragSettingsService } from '../services/super_drag_action/settings/super_drag_settings_service';
+import { GestureTrail } from './gesture_trail';
+import { ActionNotification } from './action_notification';
 
 export class SuperDragHandler {
     private isDrag: boolean = false;
     private dragStartPos: Point = Point.NONE;
     private dragType: DragType = DragType.NONE;
     private superDragSettingsService: SuperDragSettingsService;
+    private gestureTrailRenderer: GestureTrail;
 
     constructor(superDragSettingsService: SuperDragSettingsService) {
         this.superDragSettingsService = superDragSettingsService;
+        this.gestureTrailRenderer = new GestureTrail({
+            color: 'rgba(0, 0, 255, 0.5)',
+            width: 3,
+            zIndex: 999999
+        });
     }
 
     public onMouseDown(e: MouseEvent) {
@@ -34,6 +42,7 @@ export class SuperDragHandler {
         this.isDrag = true;
         this.dragStartPos = new Point(e.clientX, e.clientY);
         Logger.debug('スーパードラッグ開始', { type: this.dragType, x: e.clientX, y: e.clientY });
+        this.gestureTrailRenderer.startDrawing(this.dragStartPos);
     }
 
     public onDragStart(e: DragEvent) {
@@ -42,8 +51,23 @@ export class SuperDragHandler {
     }
 
     public onDrag(e: DragEvent) {
-        // ドラッグ方向検知・UI表示は今後実装
-        // TODO: ドラッグ方向UI表示（UI表示クラス呼び出し）
+        if (!this.isDrag || this.dragType === 'none' || this.dragStartPos.isNone()) return;
+        this.gestureTrailRenderer.updateTrail(new Point(e.clientX, e.clientY));
+
+        // アクション名をリアルタイム表示
+        const currentPoint = new Point(e.clientX, e.clientY);
+        const direction = this.dragStartPos.getDirection(currentPoint);
+        if (direction && direction !== Direction.NONE) {
+            this.getSuperDragActionName(this.dragType, direction).then((actionName) => {
+                if (actionName) {
+                    ActionNotification.show(actionName);
+                } else {
+                    ActionNotification.hide();
+                }
+            });
+        } else {
+            ActionNotification.hide();
+        }
     }
 
     public async onDragEnd(e: DragEvent) {
@@ -53,6 +77,7 @@ export class SuperDragHandler {
         Logger.info('ドラッグ終了', { type: this.dragType, direction });
 
         if (direction === Direction.NONE) {
+            ActionNotification.hide();
             return;
         }
 
@@ -65,18 +90,27 @@ export class SuperDragHandler {
                 actionName,
                 params: {}
             });
-            // TODO: スーパードラッグアクション通知表示（UI表示クラス呼び出し）
+            // アクション通知UIを非表示
+            ActionNotification.hide();
         } catch (err) {
             Logger.warn('未対応のスーパードラッグアクション', { type: this.dragType, direction });
+            ActionNotification.hide();
         }
 
         this.isDrag = false;
         this.dragType = DragType.NONE;
         this.dragStartPos = Point.NONE;
+        this.gestureTrailRenderer.clearTrail();
     }
 
     public isActive(): boolean {
         return this.isDrag;
+    }
+
+    public destroy(): void {
+        this.gestureTrailRenderer.destroy();
+        ActionNotification.destroy();
+        Logger.debug('SuperDragHandler インスタンス破棄');
     }
 
     // 設定に応じてスーパードラッグアクション名を決定
