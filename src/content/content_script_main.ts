@@ -68,4 +68,18 @@ export class ContentScriptMain {
     private onDragEnd = async (e: DragEvent) => {
         await this.superDragHandler.onDragEnd(e);
     };
+
+    public destroy(): void {
+        document.removeEventListener('mousedown', this.onMouseDown);
+        document.removeEventListener('mousemove', this.onMouseMove);
+        document.removeEventListener('mouseup', this.onMouseUp);
+        document.removeEventListener('contextmenu', this.onContextMenu, true);
+        document.removeEventListener('dragstart', this.onDragStart);
+        document.removeEventListener('drag', this.onDrag);
+        document.removeEventListener('dragend', this.onDragEnd);
+        
+        this.mouseGestureHandler.destroy();
+        this.superDragHandler.destroy();
+        Logger.debug('ContentScriptMain インスタンス破棄');
+    }
 } 
