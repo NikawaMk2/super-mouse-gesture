@@ -2,31 +2,26 @@ import { Point } from '../models/point';
 import Logger from '../../common/logger/logger';
 
 export interface GestureTrailOptions {
-    color?: string;
-    width?: number;
-    zIndex?: number;
-    opacity?: number;
-    lineCap?: CanvasLineCap;
-    lineJoin?: CanvasLineJoin;
+    color: string;
+    width: number;
+    zIndex: number;
 }
 
 export class GestureTrail {
     private canvas: HTMLCanvasElement | null = null;
     private context: CanvasRenderingContext2D | null = null;
-    private trailColor: string = 'rgba(255, 0, 0, 0.5)';
-    private trailWidth: number = 3;
-    private zIndex: number = 999999;
+    private trailColor: string;
+    private trailWidth: number;
+    private zIndex: number;
     private lineCap: CanvasLineCap = 'round';
     private lineJoin: CanvasLineJoin = 'round';
     private lastPoint: Point | null = null;
     private animationFrameId: number | null = null;
 
-    constructor(options?: GestureTrailOptions) {
-        if (options?.color) this.trailColor = options.color;
-        if (options?.width) this.trailWidth = options.width;
-        if (options?.zIndex) this.zIndex = options.zIndex;
-        if (options?.lineCap) this.lineCap = options.lineCap;
-        if (options?.lineJoin) this.lineJoin = options.lineJoin;
+    constructor(options: GestureTrailOptions) {
+        this.trailColor = options.color;
+        this.trailWidth = options.width;
+        this.zIndex = options.zIndex;
     }
 
     public startDrawing(startPoint: Point): void {
@@ -136,4 +131,4 @@ export class GestureTrail {
         window.removeEventListener('resize', this.handleResize);
         Logger.debug('GestureTrail インスタンス破棄');
     }
-} 
+}
