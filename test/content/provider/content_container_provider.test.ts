@@ -1,5 +1,5 @@
 import { Container } from 'inversify';
-import { ContainerProvider } from '../../../src/common/provider/container_provider';
+import { ContentContainerProvider } from '../../../src/content/provider/content_container_provider';
 import Logger from '../../../src/common/logger/logger';
 
 // Loggerのモック
@@ -25,11 +25,11 @@ jest.mock('inversify', () => {
   };
 });
 
-describe('ContainerProvider', () => {
+describe('ContentContainerProvider', () => {
   beforeEach(() => {
-    // テスト前にContainerProviderをリセット
+    // テスト前にContentContainerProviderをリセット
     // privateなcontainerをリセットするため、リフレクションを使用
-    Object.defineProperty(ContainerProvider, 'container', {
+    Object.defineProperty(ContentContainerProvider, 'container', {
       value: null,
       writable: true
     });
@@ -41,7 +41,7 @@ describe('ContainerProvider', () => {
   describe('getContainer', () => {
     it('初回呼び出し時にコンテナを初期化すること', () => {
       // 実行
-      const container = ContainerProvider.getContainer();
+      const container = new ContentContainerProvider().getContainer();
       
       // 検証
       expect(Container).toHaveBeenCalledTimes(1);
@@ -50,13 +50,13 @@ describe('ContainerProvider', () => {
 
     it('2回目以降の呼び出しで既存のコンテナを返すこと', () => {
       // 1回目の呼び出し
-      const firstContainer = ContainerProvider.getContainer();
+      const firstContainer = new ContentContainerProvider().getContainer();
       
       // モックをリセット
       jest.clearAllMocks();
       
       // 2回目の呼び出し
-      const secondContainer = ContainerProvider.getContainer();
+      const secondContainer = new ContentContainerProvider().getContainer();
       
       // 検証
       expect(Container).not.toHaveBeenCalled(); // 新しいインスタンスが作成されていないこと
@@ -71,7 +71,7 @@ describe('ContainerProvider', () => {
       
       // 実行と検証
       expect(() => {
-        ContainerProvider.getContainer();
+        new ContentContainerProvider().getContainer();
       }).toThrow('テスト用エラー');
       
       // Loggerが呼ばれたことを検証
@@ -81,9 +81,10 @@ describe('ContainerProvider', () => {
 
   describe('initialize', () => {
     it('新しいコンテナを初期化すること', () => {
-      // privateメソッドを呼び出すためにリフレクションを使用
-      const initializeMethod = ContainerProvider['initialize'];
-      const container = initializeMethod.call(ContainerProvider);
+      // privateメソッドを呼び出すために型アサーションでアクセス
+      const provider = new ContentContainerProvider();
+      const initializeMethod = (provider as any)['initialize'];
+      const container = initializeMethod.call(provider);
       
       // 検証
       expect(Container).toHaveBeenCalledTimes(1);
@@ -156,16 +157,17 @@ describe('ContainerProvider', () => {
         throw new Error('初期化エラー');
       });
       
-      // privateメソッドを呼び出すためにリフレクションを使用
-      const initializeMethod = ContainerProvider['initialize'];
+      // privateメソッドを呼び出すために型アサーションでアクセス
+      const provider = new ContentContainerProvider();
+      const initializeMethod = (provider as any)['initialize'];
       
       // 実行と検証
       expect(() => {
-        initializeMethod.call(ContainerProvider);
+        initializeMethod.call(provider);
       }).toThrow('初期化エラー');
       
       // Loggerのエラーメソッドが呼ばれたことを検証
-      expect(Logger.error).toHaveBeenCalledWith('バックグラウンドコンテナ初期化エラー: Error: 初期化エラー');
+      expect(Logger.error).toHaveBeenCalledWith('コンテンツスクリプト用コンテナ初期化エラー: Error: 初期化エラー');
     });
   });
 });
