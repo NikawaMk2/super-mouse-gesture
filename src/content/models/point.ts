@@ -14,6 +14,14 @@ export class Point {
         this.y = y;
     }
 
+    public getX(): number {
+        return this.x;
+    }
+
+    public getY(): number {
+        return this.y;
+    }
+
     public getDirection(to: Point): Direction {
         if (this.isNone()) {
             Logger.warn('Point.NONEに対してgetDirectionが呼び出されました');
@@ -24,8 +32,8 @@ export class Point {
             return Direction.NONE;
         }
 
-        const dx = to.x - this.x;
-        const dy = to.y - this.y;
+        const dx = to.getX() - this.getX();
+        const dy = to.getY() - this.getY();
 
         if (Math.abs(dx) >= Math.abs(dy)) {
             if (dx > this.THRESHOLD) return Direction.RIGHT;
