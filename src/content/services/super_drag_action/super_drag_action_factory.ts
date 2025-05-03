@@ -1,3 +1,4 @@
+import { Container } from 'inversify';
 import { SuperDragAction } from './super_drag_action';
 import { SuperDragActionType, SuperDragActionType as SuperDragActionTypeAlias } from './super_drag_action_type';
 import { SearchGoogleDragAction } from './text/search_google_drag_action';
@@ -14,32 +15,32 @@ import { SearchImageGoogleDragAction } from './image/search_image_google_drag_ac
 import { CopyImageUrlDragAction } from './image/copy_image_url_drag_action';
 
 export class SuperDragActionFactory {
-    static create(actionName: SuperDragActionTypeAlias): SuperDragAction {
+    static create(actionName: SuperDragActionTypeAlias, container: Container): SuperDragAction {
         switch (actionName) {
             case SuperDragActionType.SEARCH_GOOGLE:
-                return new SearchGoogleDragAction();
+                return container.get(SearchGoogleDragAction);
             case SuperDragActionType.SEARCH_BING:
-                return new SearchBingDragAction();
+                return container.get(SearchBingDragAction);
             case SuperDragActionType.OPEN_AS_URL:
-                return new OpenAsUrlDragAction();
+                return container.get(OpenAsUrlDragAction);
             case SuperDragActionType.COPY_TEXT:
-                return new CopyTextDragAction();
+                return container.get(CopyTextDragAction);
             case SuperDragActionType.OPEN_IN_BACKGROUND_TAB:
-                return new OpenInBackgroundTabDragAction();
+                return container.get(OpenInBackgroundTabDragAction);
             case SuperDragActionType.OPEN_IN_FOREGROUND_TAB:
-                return new OpenInForegroundTabDragAction();
+                return container.get(OpenInForegroundTabDragAction);
             case SuperDragActionType.DOWNLOAD_LINK:
-                return new DownloadLinkDragAction();
+                return container.get(DownloadLinkDragAction);
             case SuperDragActionType.COPY_LINK_URL:
-                return new CopyLinkUrlDragAction();
+                return container.get(CopyLinkUrlDragAction);
             case SuperDragActionType.OPEN_IMAGE_IN_NEW_TAB:
-                return new OpenImageInNewTabDragAction();
+                return container.get(OpenImageInNewTabDragAction);
             case SuperDragActionType.DOWNLOAD_IMAGE:
-                return new DownloadImageDragAction();
+                return container.get(DownloadImageDragAction);
             case SuperDragActionType.SEARCH_IMAGE_GOOGLE:
-                return new SearchImageGoogleDragAction();
+                return container.get(SearchImageGoogleDragAction);
             case SuperDragActionType.COPY_IMAGE_URL:
-                return new CopyImageUrlDragAction();
+                return container.get(CopyImageUrlDragAction);
             default:
                 throw new Error(`未対応のSuperDragAction: ${actionName}`);
         }
