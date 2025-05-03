@@ -26,7 +26,7 @@ describe('GestureActionFactory', () => {
     Object.values(GestureActionType).forEach(type => {
       mockGet.mockReturnValueOnce(DummyAction);
       // requireの部分は実際のクラス名に依存するため、ここではgetが呼ばれることのみ検証
-      const result = GestureActionFactory.create(type);
+      const result = GestureActionFactory.create(type, mockContainer);
       expect(mockGet).toHaveBeenCalledTimes(1);
       expect(result).toBe(DummyAction);
       mockGet.mockClear();
@@ -36,7 +36,7 @@ describe('GestureActionFactory', () => {
   it('未対応のGestureActionTypeでエラーとなること', () => {
     expect(() => {
       // 存在しないタイプを渡す
-      GestureActionFactory.create('unknown_type' as any);
+      GestureActionFactory.create('unknown_type' as any, mockContainer);
     }).toThrow('未対応のGestureActionType: unknown_type');
   });
 }); 

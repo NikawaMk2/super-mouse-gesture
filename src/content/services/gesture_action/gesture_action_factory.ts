@@ -1,9 +1,8 @@
-import { ContentContainerProvider } from '../../provider/content_container_provider';
+import { Container } from 'inversify';
 import { GestureActionType } from './gesture_action_type';
 
 export class GestureActionFactory {
-  static create(type: GestureActionType) {
-    const container = new ContentContainerProvider().getContainer();
+  static create(type: GestureActionType, container: Container) {
     switch (type) {
       case GestureActionType.GO_BACK:
         return container.get(require('./go_back_gesture_action').GoBackGestureAction);
@@ -55,6 +54,8 @@ export class GestureActionFactory {
         return container.get(require('./maximize_window_gesture_action').MaximizeWindowGestureAction);
       case GestureActionType.TOGGLE_FULLSCREEN:
         return container.get(require('./toggle_fullscreen_gesture_action').ToggleFullscreenGestureAction);
+      case GestureActionType.NONE:
+        return container.get(require('./none_gesture_action').NoneGestureAction);
       default:
         throw new Error(`未対応のGestureActionType: ${type}`);
     }
