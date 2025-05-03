@@ -43,6 +43,7 @@ import { CopyTextDragAction } from '../services/super_drag_action/text/copy_text
 import { OpenAsUrlDragAction } from '../services/super_drag_action/text/open_as_url_drag_action';
 import { SearchBingDragAction } from '../services/super_drag_action/text/search_bing_drag_action';
 import { IContainerProvider } from '../../common/provider/i_container_provider';
+import { NoneGestureAction } from '../services/gesture_action/none_gesture_action';
 
 export class ContentContainerProvider implements IContainerProvider {
     private container: Container | null = null;
@@ -84,6 +85,7 @@ export class ContentContainerProvider implements IContainerProvider {
             container.bind(MinimizeWindowGestureAction).toSelf().inSingletonScope();
             container.bind(MaximizeWindowGestureAction).toSelf().inSingletonScope();
             container.bind(ToggleFullscreenGestureAction).toSelf().inSingletonScope();
+            container.bind(NoneGestureAction).toSelf().inSingletonScope();
 
             // --- SuperDragAction（画像） ---
             container.bind(DownloadImageDragAction).toSelf().inSingletonScope();
