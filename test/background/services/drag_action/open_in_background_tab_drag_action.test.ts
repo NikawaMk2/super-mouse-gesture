@@ -3,7 +3,8 @@ import Logger from '../../../../src/common/logger/logger';
 
 describe('OpenInBackgroundTabDragAction', () => {
     const createMock = jest.fn();
-    const tabOperatorMock = { createTab: createMock };
+    const updateMock = jest.fn();
+    const tabOperatorMock = { createTab: createMock, updateCurrentTab: updateMock };
     const originalTabs = global.chrome?.tabs;
     const originalRuntime = global.chrome?.runtime;
     beforeAll(() => {
