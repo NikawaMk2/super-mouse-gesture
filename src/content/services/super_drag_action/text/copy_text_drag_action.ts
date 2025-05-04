@@ -16,7 +16,7 @@ export class CopyTextDragAction implements SuperDragAction {
         }
         try {
             await navigator.clipboard.writeText(text);
-            Logger.info('テキストをクリップボードにコピーしました', { text });
+            Logger.debug('テキストをクリップボードにコピーしました', { text });
         } catch (e) {
             Logger.error('テキストのコピーに失敗しました', { error: e, text });
         }

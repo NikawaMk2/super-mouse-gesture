@@ -4,7 +4,7 @@ import { IClipboardService } from '../../../../src/background/services/clipboard
 
 describe('CopyTextDragAction', () => {
     let clipboardWriteTextSpy: jest.Mock;
-    let loggerInfoSpy: jest.SpyInstance;
+    let loggerDebugSpy: jest.SpyInstance;
     let loggerWarnSpy: jest.SpyInstance;
     let loggerErrorSpy: jest.SpyInstance;
     let clipboardServiceMock: IClipboardService;
@@ -12,7 +12,7 @@ describe('CopyTextDragAction', () => {
     beforeEach(() => {
         clipboardWriteTextSpy = jest.fn();
         clipboardServiceMock = { writeText: clipboardWriteTextSpy };
-        loggerInfoSpy = jest.spyOn(Logger, 'info').mockImplementation(() => {});
+        loggerDebugSpy = jest.spyOn(Logger, 'debug').mockImplementation(() => {});
         loggerWarnSpy = jest.spyOn(Logger, 'warn').mockImplementation(() => {});
         loggerErrorSpy = jest.spyOn(Logger, 'error').mockImplementation(() => {});
     });
@@ -31,8 +31,8 @@ describe('CopyTextDragAction', () => {
         };
         await action.execute(payload);
         expect(clipboardWriteTextSpy).toHaveBeenCalledWith('テストコピー');
-        expect(loggerInfoSpy).toHaveBeenCalledWith('CopyTextDragAction: execute() が呼び出されました', { payload });
-        expect(loggerInfoSpy).toHaveBeenCalledWith('テキストをクリップボードにコピーしました', { text: 'テストコピー' });
+        expect(loggerDebugSpy).toHaveBeenCalledWith('CopyTextDragAction: execute() が呼び出されました', { payload });
+        expect(loggerDebugSpy).toHaveBeenCalledWith('テキストをクリップボードにコピーしました', { text: 'テストコピー' });
     });
 
     it('text未指定時は警告ログが出る', async () => {
