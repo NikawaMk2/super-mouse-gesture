@@ -120,7 +120,7 @@ describe('SuperDragHandler', () => {
         jest.spyOn(Point.prototype, 'getDirection').mockReturnValue(Direction.RIGHT);
         const dragE = createDragEvent('dragend', 'DIV', 50, 10);
         await handler.onDragEnd(dragE as any);
-        expect(mockFactoryCreate).toHaveBeenCalledWith('searchGoogle');
+        expect(mockFactoryCreate.mock.calls[0][0]).toBe(SuperDragActionType.SEARCH_GOOGLE);
         expect(mockAction.execute).toHaveBeenCalledWith(expect.objectContaining({ type: 'text', direction: Direction.RIGHT, actionName: 'searchGoogle' }));
     });
 

@@ -74,7 +74,7 @@ export class SuperDragHandler {
         if (!this.isDrag || this.dragType === 'none' || this.dragStartPos.isNone()) return;
         const currentPoint = new Point(e.clientX, e.clientY);
         const direction = this.dragStartPos.getDirection(currentPoint);
-        Logger.info('ドラッグ終了', { type: this.dragType, direction });
+        Logger.debug('ドラッグ終了', { type: this.dragType, direction });
 
         if (direction === Direction.NONE) {
             ActionNotification.hide();
@@ -83,7 +83,7 @@ export class SuperDragHandler {
 
         try {
             const actionName = await this.getSuperDragActionName(this.dragType, direction);
-            const action = SuperDragActionFactory.create(actionName as SuperDragActionType);
+            const action = SuperDragActionFactory.create(actionName as SuperDragActionType, new (require('../provider/content_container_provider').ContentContainerProvider)().getContainer());
             action.execute({
                 type: this.dragType,
                 direction,
