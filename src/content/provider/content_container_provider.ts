@@ -46,13 +46,13 @@ import { IContainerProvider } from '../../common/provider/i_container_provider';
 import { NoneGestureAction } from '../services/gesture_action/none_gesture_action';
 
 export class ContentContainerProvider implements IContainerProvider {
-    private container: Container | null = null;
+    private static container: Container | null = null;
 
     getContainer(): Container {
-        if (this.container === null) {
-            this.container = this.initialize();
+        if (ContentContainerProvider.container === null) {
+            ContentContainerProvider.container = this.initialize();
         }
-        return this.container;
+        return ContentContainerProvider.container;
     }
 
     private initialize(): Container {
@@ -105,7 +105,7 @@ export class ContentContainerProvider implements IContainerProvider {
 
             return container;
         } catch (error) {
-            Logger.error(`バックグラウンドコンテナ初期化エラー: ${error}`);
+            Logger.error(`コンテンツスクリプト用コンテナ初期化エラー: ${error}`);
             throw error;
         }
     }
