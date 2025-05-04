@@ -4,7 +4,7 @@ import Logger from '../../../common/logger/logger';
 
 export class SearchBingDragAction implements DragAction {
     async execute(payload: DragActionMessagePayload): Promise<void> {
-        Logger.info('SearchBingDragAction: execute() が呼び出されました', { payload });
+        Logger.debug('SearchBingDragAction: execute() が呼び出されました', { payload });
         const text = payload.params.text;
         const urlTemplate = payload.params.url || 'https://www.bing.com/search?q=%s';
         if (!text) {

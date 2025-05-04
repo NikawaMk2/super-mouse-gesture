@@ -2,7 +2,7 @@ import { SearchBingDragAction } from '../../../../src/background/services/drag_a
 import Logger from '../../../../src/common/logger/logger';
 
 describe('SearchBingDragAction', () => {
-    let loggerInfoSpy: jest.SpyInstance;
+    let loggerDebugSpy: jest.SpyInstance;
     let loggerWarnSpy: jest.SpyInstance;
     const createTabMock = jest.fn();
     const originalTabs = global.chrome?.tabs;
@@ -17,7 +17,7 @@ describe('SearchBingDragAction', () => {
     });
     beforeEach(() => {
         jest.clearAllMocks();
-        loggerInfoSpy = jest.spyOn(Logger, 'info').mockImplementation(() => {});
+        loggerDebugSpy = jest.spyOn(Logger, 'debug').mockImplementation(() => {});
         loggerWarnSpy = jest.spyOn(Logger, 'warn').mockImplementation(() => {});
     });
 
@@ -31,7 +31,7 @@ describe('SearchBingDragAction', () => {
         };
         await action.execute(payload);
         expect(createTabMock).toHaveBeenCalledWith({ url: 'https://www.bing.com/search?q=%E3%83%86%E3%82%B9%E3%83%88' });
-        expect(loggerInfoSpy).toHaveBeenCalledWith('SearchBingDragAction: execute() が呼び出されました', { payload });
+        expect(loggerDebugSpy).toHaveBeenCalledWith('SearchBingDragAction: execute() が呼び出されました', { payload });
     });
 
     it('text未指定時はchrome.tabs.createされず警告ログが出る', async () => {
