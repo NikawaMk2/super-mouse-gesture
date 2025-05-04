@@ -4,7 +4,7 @@ import Logger from '../../../common/logger/logger';
 
 export class SearchGoogleDragAction implements DragAction {
     async execute(payload: DragActionMessagePayload): Promise<void> {
-        Logger.info('SearchGoogleDragAction: execute() が呼び出されました', { payload });
+        Logger.debug('SearchGoogleDragAction: execute() が呼び出されました', { payload });
         const text = payload.params.text;
         const urlTemplate = payload.params.url || 'https://www.google.com/search?q=%s';
         if (!text) {
