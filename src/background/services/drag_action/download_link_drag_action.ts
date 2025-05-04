@@ -9,7 +9,7 @@ export class DownloadLinkDragAction implements DragAction {
         this.downloadService = downloadService;
     }
     async execute(payload: DragActionMessagePayload): Promise<void> {
-        Logger.info('DownloadLinkDragAction: execute() が呼び出されました', { payload });
+        Logger.debug('DownloadLinkDragAction: execute() が呼び出されました', { payload });
         const url = payload.params.url;
         if (!url) {
             Logger.warn('ダウンロードするリンクURLが指定されていません', { payload });
