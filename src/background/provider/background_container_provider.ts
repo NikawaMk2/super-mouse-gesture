@@ -19,6 +19,8 @@ import { OpenInForegroundTabDragAction } from '../services/drag_action/open_in_f
 import { DownloadLinkDragAction } from '../services/drag_action/download_link_drag_action';
 import { OpenImageInNewTabDragAction } from '../services/drag_action/open_image_in_new_tab_drag_action';
 import { DownloadImageDragAction } from '../services/drag_action/download_image_drag_action';
+import { SearchImageGoogleDragAction } from '../services/drag_action/search_image_google_drag_action';
+import { CopyImageUrlDragAction } from '../services/drag_action/copy_image_url_drag_action';
 
 export class BackgroundContainerProvider implements IContainerProvider {
     private static container: Container | null = null;
@@ -66,6 +68,14 @@ export class BackgroundContainerProvider implements IContainerProvider {
             container.bind(DownloadImageDragAction).toDynamicValue((ctx: any) => {
                 const downloadService = (ctx.container as import('inversify').Container).get('IDownloadService') as IDownloadService;
                 return new DownloadImageDragAction(downloadService);
+            }).inSingletonScope();
+            container.bind(SearchImageGoogleDragAction).toDynamicValue((ctx: any) => {
+                const tabOperator = (ctx.container as import('inversify').Container).get('ITabOperator') as ITabOperator;
+                return new SearchImageGoogleDragAction(tabOperator);
+            }).inSingletonScope();
+            container.bind(CopyImageUrlDragAction).toDynamicValue((ctx: any) => {
+                const clipboardService = (ctx.container as import('inversify').Container).get('IClipboardService') as IClipboardService;
+                return new CopyImageUrlDragAction(clipboardService);
             }).inSingletonScope();
             return container;
         } catch (error) {
