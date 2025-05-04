@@ -16,7 +16,7 @@ export class CopyLinkUrlDragAction implements SuperDragAction {
         }
         try {
             await navigator.clipboard.writeText(url);
-            Logger.info('リンクURLをクリップボードにコピーしました', { url });
+            Logger.debug('リンクURLをクリップボードにコピーしました', { url });
         } catch (e) {
             Logger.error('リンクURLのコピーに失敗しました', { error: e, url });
         }

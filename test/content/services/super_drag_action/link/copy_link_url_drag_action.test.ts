@@ -28,7 +28,7 @@ describe('CopyLinkUrlDragAction', () => {
         loggerErrorMock.mockClear();
     });
 
-    it('url指定時はclipboard.writeTextとinfoログが呼ばれること', async () => {
+    it('url指定時はclipboard.writeTextとdebugログが呼ばれること', async () => {
         const action = new CopyLinkUrlDragAction();
         await action.execute({
             type: 'link',
@@ -37,7 +37,7 @@ describe('CopyLinkUrlDragAction', () => {
             params: { url: 'https://example.com/link' },
         });
         expect(writeTextMock).toHaveBeenCalledWith('https://example.com/link');
-        expect(loggerInfoMock).toHaveBeenCalled();
+        expect(loggerDebugMock).toHaveBeenCalled();
     });
 
     it('url未指定時はclipboard.writeTextされず警告ログが出ること', async () => {
