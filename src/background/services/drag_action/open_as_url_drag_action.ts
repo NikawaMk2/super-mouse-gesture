@@ -9,7 +9,7 @@ export class OpenAsUrlDragAction implements DragAction {
         this.tabOperator = tabOperator;
     }
     async execute(payload: DragActionMessagePayload): Promise<void> {
-        Logger.info('OpenAsUrlDragAction: execute() が呼び出されました', { payload });
+        Logger.debug('OpenAsUrlDragAction: execute() が呼び出されました', { payload });
         const text = payload.params.text;
         const newTab = payload.params.newTab ?? true;
         if (!text) {
