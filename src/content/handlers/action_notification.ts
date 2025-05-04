@@ -37,7 +37,7 @@ export class ActionNotification {
             div.style.pointerEvents = 'none';
             document.body.appendChild(div);
             this.notificationElem = div;
-            Logger.info('アクション通知UIを表示', { actionName });
+            Logger.debug('アクション通知UIを表示', { actionName });
         } catch (e) {
             Logger.error('アクション通知UIの表示に失敗', { error: (e as Error).message });
         }
@@ -50,7 +50,7 @@ export class ActionNotification {
         try {
             if (this.notificationElem) {
                 this.notificationElem.style.display = 'none';
-                Logger.info('アクション通知UIを非表示');
+                Logger.debug('アクション通知UIを非表示');
             }
         } catch (e) {
             Logger.error('アクション通知UIの非表示に失敗', { error: (e as Error).message });
@@ -64,7 +64,7 @@ export class ActionNotification {
         try {
             if (this.notificationElem && this.notificationElem.parentNode) {
                 this.notificationElem.parentNode.removeChild(this.notificationElem);
-                Logger.info('アクション通知UIをDOMから削除');
+                Logger.debug('アクション通知UIをDOMから削除');
             }
             this.notificationElem = null;
         } catch (e) {

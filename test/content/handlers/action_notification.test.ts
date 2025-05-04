@@ -15,13 +15,13 @@ describe('ActionNotification', () => {
     });
 
     it('showで通知が中央に表示される', () => {
-        const spyInfo = jest.spyOn(Logger, 'info');
+        const spyDebug = jest.spyOn(Logger, 'debug');
         ActionNotification.show('TestAction');
         const elem = document.getElementById('smg-action-notification');
         expect(elem).not.toBeNull();
         expect(elem?.textContent).toBe('TestAction');
         expect(elem?.style.display).toBe('flex');
-        expect(spyInfo).toHaveBeenCalledWith('アクション通知UIを表示', { actionName: 'TestAction' });
+        expect(spyDebug).toHaveBeenCalledWith('アクション通知UIを表示', { actionName: 'TestAction' });
     });
 
     it('showで既存通知があれば内容だけ更新', () => {
@@ -36,20 +36,20 @@ describe('ActionNotification', () => {
 
     it('hideで通知が非表示になる', () => {
         ActionNotification.show('TestAction');
-        const spyInfo = jest.spyOn(Logger, 'info');
+        const spyDebug = jest.spyOn(Logger, 'debug');
         ActionNotification.hide();
         const elem = document.getElementById('smg-action-notification');
         expect(elem?.style.display).toBe('none');
-        expect(spyInfo).toHaveBeenCalledWith('アクション通知UIを非表示');
+        expect(spyDebug).toHaveBeenCalledWith('アクション通知UIを非表示');
     });
 
     it('destroyで通知がDOMから削除される', () => {
         ActionNotification.show('TestAction');
-        const spyInfo = jest.spyOn(Logger, 'info');
+        const spyDebug = jest.spyOn(Logger, 'debug');
         ActionNotification.destroy();
         const elem = document.getElementById('smg-action-notification');
         expect(elem).toBeNull();
-        expect(spyInfo).toHaveBeenCalledWith('アクション通知UIをDOMから削除');
+        expect(spyDebug).toHaveBeenCalledWith('アクション通知UIをDOMから削除');
     });
 
     it('showで例外発生時にLogger.errorが呼ばれる', () => {
