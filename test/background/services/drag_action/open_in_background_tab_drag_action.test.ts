@@ -24,6 +24,7 @@ describe('OpenInBackgroundTabDragAction', () => {
     jest.spyOn(Logger, 'info').mockImplementation(jest.fn());
     jest.spyOn(Logger, 'warn').mockImplementation(jest.fn());
     jest.spyOn(Logger, 'error').mockImplementation(jest.fn());
+    jest.spyOn(Logger, 'debug').mockImplementation(jest.fn());
 
     it('url指定時はtabOperator.createTabがactive: falseで呼ばれる', async () => {
         createMock.mockResolvedValue({ id: 123 });
@@ -36,7 +37,7 @@ describe('OpenInBackgroundTabDragAction', () => {
         };
         await action.execute(payload);
         expect(createMock).toHaveBeenCalledWith('https://example.com', false);
-        expect(Logger.info).toHaveBeenCalledWith('バックグラウンドタブでリンクを開きました', { tabId: 123, url: 'https://example.com' });
+        expect(Logger.debug).toHaveBeenCalledWith('バックグラウンドタブでリンクを開きました', { tabId: 123, url: 'https://example.com' });
     });
 
     it('typeがlink以外はwarnログのみ', async () => {
