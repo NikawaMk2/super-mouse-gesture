@@ -16,7 +16,7 @@ export class CopyImageUrlDragAction implements SuperDragAction {
         }
         try {
             await navigator.clipboard.writeText(url);
-            Logger.info('画像URLをクリップボードにコピーしました', { url });
+            Logger.debug('画像URLをクリップボードにコピーしました', { url });
         } catch (e) {
             Logger.error('画像URLのコピーに失敗しました', { error: e, url });
         }

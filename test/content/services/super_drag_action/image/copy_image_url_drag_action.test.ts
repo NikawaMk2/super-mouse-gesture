@@ -28,7 +28,7 @@ describe('CopyImageUrlDragAction', () => {
         loggerErrorMock.mockClear();
     });
 
-    it('url指定時はclipboard.writeTextとinfoログが呼ばれること', async () => {
+    it('url指定時はclipboard.writeTextとdebugログが呼ばれること', async () => {
         const action = new CopyImageUrlDragAction();
         await action.execute({
             type: 'image',
@@ -37,7 +37,7 @@ describe('CopyImageUrlDragAction', () => {
             params: { url: 'https://example.com/image.png' },
         });
         expect(writeTextMock).toHaveBeenCalledWith('https://example.com/image.png');
-        expect(loggerInfoMock).toHaveBeenCalled();
+        expect(loggerDebugMock).toHaveBeenCalled();
     });
 
     it('url未指定時はclipboard.writeTextされず警告ログが出ること', async () => {
