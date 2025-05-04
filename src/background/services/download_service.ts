@@ -10,7 +10,7 @@ export class DownloadService implements IDownloadService {
         try {
             if (chrome.downloads) {
                 chrome.downloads.download({ url });
-                Logger.info('リンクのダウンロードを開始しました', { url });
+                Logger.debug('リンクのダウンロードを開始しました', { url });
             } else {
                 Logger.error('chrome.downloads APIが利用できません', { url });
             }

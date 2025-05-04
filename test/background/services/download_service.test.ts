@@ -2,13 +2,13 @@ import { DownloadService } from '../../../src/background/services/download_servi
 import Logger from '../../../src/common/logger/logger';
 
 describe('DownloadService', () => {
-    let loggerInfoSpy: jest.SpyInstance;
+    let loggerDebugSpy: jest.SpyInstance;
     let loggerWarnSpy: jest.SpyInstance;
     let loggerErrorSpy: jest.SpyInstance;
     let originalChrome: any;
 
     beforeEach(() => {
-        loggerInfoSpy = jest.spyOn(Logger, 'info').mockImplementation(() => {});
+        loggerDebugSpy = jest.spyOn(Logger, 'debug').mockImplementation(() => {});
         loggerWarnSpy = jest.spyOn(Logger, 'warn').mockImplementation(() => {});
         loggerErrorSpy = jest.spyOn(Logger, 'error').mockImplementation(() => {});
         originalChrome = global.chrome;
@@ -24,7 +24,7 @@ describe('DownloadService', () => {
         const service = new DownloadService();
         await service.download('https://example.com/file.txt');
         expect(global.chrome.downloads.download).toHaveBeenCalledWith({ url: 'https://example.com/file.txt' });
-        expect(loggerInfoSpy).toHaveBeenCalledWith('リンクのダウンロードを開始しました', { url: 'https://example.com/file.txt' });
+        expect(loggerDebugSpy).toHaveBeenCalledWith('リンクのダウンロードを開始しました', { url: 'https://example.com/file.txt' });
     });
 
     it('url未指定時は警告ログ', async () => {
