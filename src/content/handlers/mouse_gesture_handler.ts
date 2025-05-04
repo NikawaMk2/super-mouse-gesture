@@ -59,9 +59,9 @@ export class MouseGestureHandler {
         this.gestureTrailRenderer.clearTrail();
         const pattern = await this.analyzeGesturePattern(this.directionTrail);
         if (pattern) {
-            Logger.info('ジェスチャパターン認識', { pattern });
+            Logger.debug('ジェスチャパターン認識', { pattern });
             try {
-                const action = GestureActionFactory.create(pattern) as { execute: () => void };
+                const action = GestureActionFactory.create(pattern, new (require('../provider/content_container_provider').ContentContainerProvider)().getContainer()) as { execute: () => void };
                 action.execute();
                 // アクション通知UIを非表示
                 ActionNotification.hide();
