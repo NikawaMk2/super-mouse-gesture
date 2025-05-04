@@ -1,10 +1,19 @@
 import { IDragActionHandler } from './message_listener';
 import { DragActionMessagePayload } from '../../content/services/message/message_types';
 import Logger from '../../common/logger/logger';
+import { DragActionFactory } from './drag_action_factory';
+import { BackgroundContainerProvider } from '../provider/background_container_provider';
 
 export class DragActionHandler implements IDragActionHandler {
     async handle(payload: DragActionMessagePayload): Promise<void> {
-        Logger.info('スーパードラッグアクション受信', { payload });
-        // TODO: アクション名・typeごとに処理を分岐し、タブ操作等を実装
+        Logger.debug('スーパードラッグアクション受信', { payload });
+        try {
+            const container = new BackgroundContainerProvider().getContainer();
+            const action = DragActionFactory.create(payload.actionName, container);
+            await action.execute(payload);
+            Logger.debug('スーパードラッグアクション実行完了', { actionName: payload.actionName });
+        } catch (error: any) {
+            Logger.error('スーパードラッグアクション実行エラー', { error: error?.message, payload });
+        }
     }
 } 
