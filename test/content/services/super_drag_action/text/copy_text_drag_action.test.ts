@@ -37,7 +37,7 @@ describe('CopyTextDragAction', () => {
             params: { text: 'コピー内容' },
         });
         expect(writeTextMock).toHaveBeenCalledWith('コピー内容');
-        expect(loggerInfoMock).toHaveBeenCalled();
+        expect(loggerDebugMock).toHaveBeenCalled();
     });
 
     it('text未指定時はclipboard.writeTextされず警告ログが出ること', async () => {
