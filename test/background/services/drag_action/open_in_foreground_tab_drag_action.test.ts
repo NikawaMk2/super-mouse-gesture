@@ -3,13 +3,15 @@ import Logger from '../../../../src/common/logger/logger';
 
 describe('OpenInForegroundTabDragAction', () => {
     const createMock = jest.fn();
-    const tabOperatorMock = { createTab: createMock };
+    const updateCurrentTabMock = jest.fn();
+    const tabOperatorMock = { createTab: createMock, updateCurrentTab: updateCurrentTabMock };
     beforeEach(() => {
         jest.clearAllMocks();
     });
     jest.spyOn(Logger, 'info').mockImplementation(jest.fn());
     jest.spyOn(Logger, 'warn').mockImplementation(jest.fn());
     jest.spyOn(Logger, 'error').mockImplementation(jest.fn());
+    jest.spyOn(Logger, 'debug').mockImplementation(jest.fn());
 
     it('url指定時はtabOperator.createTabがactive: trueで呼ばれる', async () => {
         createMock.mockResolvedValue({ id: 123 });
@@ -22,7 +24,7 @@ describe('OpenInForegroundTabDragAction', () => {
         };
         await action.execute(payload);
         expect(createMock).toHaveBeenCalledWith('https://example.com', true);
-        expect(Logger.info).toHaveBeenCalledWith('フォアグラウンドタブでリンクを開きました', { tabId: 123, url: 'https://example.com' });
+        expect(Logger.debug).toHaveBeenCalledWith('フォアグラウンドタブでリンクを開きました', { tabId: 123, url: 'https://example.com' });
     });
 
     it('typeがlink以外はwarnログのみ', async () => {

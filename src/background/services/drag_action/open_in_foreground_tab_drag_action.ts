@@ -6,7 +6,7 @@ import { ITabOperator } from '../../../common/provider/tab_operator';
 export class OpenInForegroundTabDragAction implements DragAction {
     constructor(private tabOperator: ITabOperator) {}
     async execute(payload: DragActionMessagePayload): Promise<void> {
-        Logger.info('OpenInForegroundTabDragAction: execute() が呼び出されました', { payload });
+        Logger.debug('OpenInForegroundTabDragAction: execute() が呼び出されました', { payload });
         if (payload.type !== 'link') {
             Logger.warn('リンクタイプ以外は未対応です', { payload });
             return;
@@ -18,7 +18,7 @@ export class OpenInForegroundTabDragAction implements DragAction {
         }
         try {
             const tab = await this.tabOperator.createTab(url, true);
-            Logger.info('フォアグラウンドタブでリンクを開きました', { tabId: tab.id, url });
+            Logger.debug('フォアグラウンドタブでリンクを開きました', { tabId: tab.id, url });
         } catch (e: any) {
             Logger.error('フォアグラウンドタブでのリンクオープンに失敗', { error: e.message, url });
         }
