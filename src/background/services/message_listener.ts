@@ -4,6 +4,7 @@ import {
     GestureActionMessagePayload,
     DragActionMessagePayload
 } from '../../content/services/message/message_types';
+import { injectable, inject } from 'inversify';
 
 export interface IGestureActionHandler {
     handle(payload: GestureActionMessagePayload): Promise<void>;
@@ -13,13 +14,14 @@ export interface IDragActionHandler {
     handle(payload: DragActionMessagePayload): Promise<void>;
 }
 
+@injectable()
 export class MessageListener {
     private gestureActionHandler: IGestureActionHandler;
     private dragActionHandler: IDragActionHandler;
 
     constructor(
-        gestureActionHandler: IGestureActionHandler,
-        dragActionHandler: IDragActionHandler
+        @inject('IGestureActionHandler') gestureActionHandler: IGestureActionHandler,
+        @inject('IDragActionHandler') dragActionHandler: IDragActionHandler
     ) {
         this.gestureActionHandler = gestureActionHandler;
         this.dragActionHandler = dragActionHandler;
