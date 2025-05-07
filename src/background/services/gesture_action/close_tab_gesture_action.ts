@@ -1,9 +1,10 @@
 import { IGestureAction } from './gesture_action';
-import { ITabOperator } from '../../../common/provider/tab_operator';
+import type { ITabOperator } from '../../../common/provider/tab_operator';
 import Logger from '../../../common/logger/logger';
+import { inject } from 'inversify';
 
 export class CloseTabGestureAction implements IGestureAction {
-    constructor(private tabOperator: ITabOperator) {}
+    constructor(@inject('ITabOperator') private tabOperator: ITabOperator) {}
 
     async execute(): Promise<void> {
         Logger.debug('CloseTabGestureAction: execute() が呼び出されました');
