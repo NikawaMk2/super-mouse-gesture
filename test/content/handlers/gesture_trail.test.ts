@@ -166,7 +166,7 @@ describe('GestureTrail クラスのテスト', () => {
         expect(mockContext.lineTo).toHaveBeenCalledWith(15, 25); // scrollX/Y = 0
         expect(mockContext.stroke).toHaveBeenCalled();
         expect((gestureTrail as any).lastPoint).toBe(nextPoint);
-        expect(Logger.debug).toHaveBeenCalledWith('ジェスチャトレイル描画更新', { point: nextPoint });
+        expect(Logger.debug).not.toHaveBeenCalledWith();
     });
 
     test('updateTrail: 距離が近すぎる場合は描画しないこと', async () => {
@@ -181,7 +181,6 @@ describe('GestureTrail クラスのテスト', () => {
         expect(mockContext.lineTo).not.toHaveBeenCalled();
         expect(mockContext.stroke).not.toHaveBeenCalled();
         expect((gestureTrail as any).lastPoint).toBe(startPoint); // lastPoint は更新されない
-        expect(Logger.debug).not.toHaveBeenCalledWith('ジェスチャトレイル描画更新', expect.anything());
     });
 
     test('updateTrail: 描画が開始されていない場合は何もしないこと', () => {

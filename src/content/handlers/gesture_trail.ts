@@ -56,7 +56,9 @@ export class GestureTrail {
             this.context.lineTo(point.getX() - window.scrollX, point.getY() - window.scrollY);
             this.context.stroke();
             this.lastPoint = point;
-            Logger.debug('ジェスチャトレイル描画更新', { point: point });
+            // デバッグログ（ジェスチャトレイル描画更新）は、
+            // マウス移動ごとに大量に出力されコンソールが埋まるため、
+            // 実際の描画はブラウザ上で視覚的に確認できることから出力しません。
         });
     }
 
