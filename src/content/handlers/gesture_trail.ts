@@ -29,7 +29,7 @@ export class GestureTrail {
         if (!this.context || !this.canvas) return;
 
         this.context.beginPath();
-        this.context.moveTo(startPoint.getX() - window.scrollX, startPoint.getY() - window.scrollY);
+        this.context.moveTo(startPoint.getX(), startPoint.getY());
         this.lastPoint = startPoint;
         Logger.debug('ジェスチャトレイル描画開始', { point: startPoint });
     }
@@ -53,7 +53,7 @@ export class GestureTrail {
             // 最小距離を設定して描画を最適化
             if (distance < 2) return;
 
-            this.context.lineTo(point.getX() - window.scrollX, point.getY() - window.scrollY);
+            this.context.lineTo(point.getX(), point.getY());
             this.context.stroke();
             this.lastPoint = point;
             // デバッグログ（ジェスチャトレイル描画更新）は、
