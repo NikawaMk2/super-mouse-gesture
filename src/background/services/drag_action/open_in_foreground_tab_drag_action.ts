@@ -1,10 +1,11 @@
 import { DragAction } from './drag_action';
 import { DragActionMessagePayload } from '../../../content/services/message/message_types';
 import Logger from '../../../common/logger/logger';
-import { ITabOperator } from '../../../common/provider/tab_operator';
+import type { ITabOperator } from '../../../common/provider/tab_operator';
+import { inject } from 'inversify';
 
 export class OpenInForegroundTabDragAction implements DragAction {
-    constructor(private tabOperator: ITabOperator) {}
+    constructor(@inject('ITabOperator') private tabOperator: ITabOperator) {}
     async execute(payload: DragActionMessagePayload): Promise<void> {
         Logger.debug('OpenInForegroundTabDragAction: execute() が呼び出されました', { payload });
         if (payload.type !== 'link') {

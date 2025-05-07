@@ -1,11 +1,12 @@
 import { DragAction } from './drag_action';
 import { DragActionMessagePayload } from '../../../content/services/message/message_types';
 import Logger from '../../../common/logger/logger';
-import { IClipboardService } from '../clipboard/clipboard_service_interface';
+import type { IClipboardService } from '../clipboard/clipboard_service_interface';
+import { inject } from 'inversify';
 
 export class CopyImageUrlDragAction implements DragAction {
     private clipboardService: IClipboardService;
-    constructor(clipboardService: IClipboardService) {
+    constructor(@inject('IClipboardService') clipboardService: IClipboardService) {
         this.clipboardService = clipboardService;
     }
     async execute(payload: DragActionMessagePayload): Promise<void> {

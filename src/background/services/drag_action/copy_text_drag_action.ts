@@ -1,10 +1,11 @@
 import { DragActionMessagePayload } from '../../../content/services/message/message_types';
 import Logger from '../../../common/logger/logger';
 import { DragAction } from './drag_action';
-import { IClipboardService } from '../clipboard/clipboard_service_interface';
+import type { IClipboardService } from '../clipboard/clipboard_service_interface';
+import { inject } from 'inversify';
 
 export class CopyTextDragAction implements DragAction {
-    constructor(private clipboardService: IClipboardService) {}
+    constructor(@inject('IClipboardService') private clipboardService: IClipboardService) {}
     async execute(payload: DragActionMessagePayload): Promise<void> {
         Logger.debug('CopyTextDragAction: execute() が呼び出されました', { payload });
         const text = payload.params.text;

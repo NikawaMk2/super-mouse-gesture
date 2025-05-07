@@ -1,11 +1,12 @@
 import { DragAction } from './drag_action';
 import { DragActionMessagePayload } from '../../../content/services/message/message_types';
 import Logger from '../../../common/logger/logger';
-import { IDownloadService } from '../download_service_interface';
+import type { IDownloadService } from '../download_service_interface';
+import { inject } from 'inversify';
 
 export class DownloadLinkDragAction implements DragAction {
     private downloadService: IDownloadService;
-    constructor(downloadService: IDownloadService) {
+    constructor(@inject('IDownloadService') downloadService: IDownloadService) {
         this.downloadService = downloadService;
     }
     async execute(payload: DragActionMessagePayload): Promise<void> {
