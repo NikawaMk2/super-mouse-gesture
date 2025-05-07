@@ -4,7 +4,19 @@ import Logger from '../../../../src/common/logger/logger';
 describe('OpenInForegroundTabDragAction', () => {
     const createMock = jest.fn();
     const updateCurrentTabMock = jest.fn();
-    const tabOperatorMock = { createTab: createMock, updateCurrentTab: updateCurrentTabMock };
+    const tabOperatorMock = {
+        createTab: createMock,
+        updateCurrentTab: updateCurrentTabMock,
+        switchToNextTab: jest.fn(),
+        switchToPrevTab: jest.fn(),
+        togglePinActiveTab: jest.fn(),
+        toggleMuteActiveTab: jest.fn(),
+        closeActiveTab: jest.fn(),
+        closeTabsToRight: jest.fn(),
+        closeTabsToLeft: jest.fn(),
+        duplicateActiveTab: jest.fn(),
+        reopenClosedTab: jest.fn(),
+    };
     beforeEach(() => {
         jest.clearAllMocks();
     });
