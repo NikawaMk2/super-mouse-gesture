@@ -41,7 +41,6 @@ export class DragActionFactory {
                 return container.get(SearchImageGoogleDragAction);
             case DragActionType.COPY_IMAGE_URL:
                 return container.get(CopyImageUrlDragAction);
-            // TODO: 他のアクションクラスをここに追加
             default:
                 throw new Error(`未対応のDragActionType: ${actionName}`);
         }
