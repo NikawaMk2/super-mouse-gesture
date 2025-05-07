@@ -56,11 +56,32 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
   });
 }
 
-// ページアンロード時にdestroy
-window.addEventListener('unload', () => {
+// ページ遷移や主要要素の消失時にdestroy
+
+// 1. popstateイベント（SPA対応）
+window.addEventListener('popstate', () => {
   if (contentScriptMain) {
     contentScriptMain.destroy();
     contentScriptMain = null;
-    Logger.debug('unload: ContentScriptMainを破棄');
+    Logger.debug('popstate: ContentScriptMainを破棄');
   }
 });
+
+// 2. MutationObserverで主要要素の消失を監視
+// ここでは例としてbody配下のcanvas（ジェスチャトレイル用）や通知UIを監視
+const observeTargets = [
+  () => document.querySelector('canvas'), // ジェスチャトレイル用canvas
+  () => document.getElementById('smg-action-notification'), // 通知UI
+];
+
+const observer = new MutationObserver(() => {
+  // 主要要素が全て消えていたらdestroy
+  const allGone = observeTargets.every(fn => !fn());
+  if (allGone && contentScriptMain) {
+    contentScriptMain.destroy();
+    contentScriptMain = null;
+    Logger.debug('MutationObserver: ContentScriptMainを破棄');
+    observer.disconnect();
+  }
+});
+observer.observe(document.body, { childList: true, subtree: true });
