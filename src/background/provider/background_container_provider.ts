@@ -16,6 +16,7 @@ import { OpenImageInNewTabDragAction } from '../services/drag_action/open_image_
 import { DownloadImageDragAction } from '../services/drag_action/download_image_drag_action';
 import { SearchImageGoogleDragAction } from '../services/drag_action/search_image_google_drag_action';
 import { CopyImageUrlDragAction } from '../services/drag_action/copy_image_url_drag_action';
+import { CopyLinkUrlDragAction } from '../services/drag_action/copy_link_url_drag_action';
 import Logger from '../../common/logger/logger';
 import { NewTabGestureAction } from '../services/gesture_action/new_tab_gesture_action';
 import { CloseTabGestureAction } from '../services/gesture_action/close_tab_gesture_action';
@@ -57,39 +58,16 @@ export class BackgroundContainerProvider {
             container.bind(SearchBingDragAction).toSelf().inSingletonScope();
             container.bind(OpenAsUrlDragAction).toSelf().inSingletonScope();
             container.bind('IClipboardService').to(ClipboardService).inSingletonScope();
-            container.bind(CopyTextDragAction).toDynamicValue((ctx: any) => {
-                const clipboardService = ctx.container.get('IClipboardService');
-                return new CopyTextDragAction(clipboardService);
-            }).inSingletonScope();
+            container.bind(CopyTextDragAction).toSelf().inSingletonScope();
             container.bind('IDownloadService').to(DownloadService).inSingletonScope();
-            container.bind(OpenInBackgroundTabDragAction).toDynamicValue((ctx: any) => {
-                const tabOperator = ctx.container.get('ITabOperator');
-                return new OpenInBackgroundTabDragAction(tabOperator);
-            }).inSingletonScope();
-            container.bind(OpenInForegroundTabDragAction).toDynamicValue((ctx: any) => {
-                const tabOperator = ctx.container.get('ITabOperator');
-                return new OpenInForegroundTabDragAction(tabOperator);
-            }).inSingletonScope();
-            container.bind(DownloadLinkDragAction).toDynamicValue((ctx: any) => {
-                const downloadService = ctx.container.get('IDownloadService');
-                return new DownloadLinkDragAction(downloadService);
-            }).inSingletonScope();
-            container.bind(OpenImageInNewTabDragAction).toDynamicValue((ctx: any) => {
-                const tabOperator = ctx.container.get('ITabOperator');
-                return new OpenImageInNewTabDragAction(tabOperator);
-            }).inSingletonScope();
-            container.bind(DownloadImageDragAction).toDynamicValue((ctx: any) => {
-                const downloadService = ctx.container.get('IDownloadService');
-                return new DownloadImageDragAction(downloadService);
-            }).inSingletonScope();
-            container.bind(SearchImageGoogleDragAction).toDynamicValue((ctx: any) => {
-                const tabOperator = ctx.container.get('ITabOperator');
-                return new SearchImageGoogleDragAction(tabOperator);
-            }).inSingletonScope();
-            container.bind(CopyImageUrlDragAction).toDynamicValue((ctx: any) => {
-                const clipboardService = ctx.container.get('IClipboardService');
-                return new CopyImageUrlDragAction(clipboardService);
-            }).inSingletonScope();
+            container.bind(OpenInBackgroundTabDragAction).toSelf().inSingletonScope();
+            container.bind(OpenInForegroundTabDragAction).toSelf().inSingletonScope();
+            container.bind(DownloadLinkDragAction).toSelf().inSingletonScope();
+            container.bind(OpenImageInNewTabDragAction).toSelf().inSingletonScope();
+            container.bind(DownloadImageDragAction).toSelf().inSingletonScope();
+            container.bind(SearchImageGoogleDragAction).toSelf().inSingletonScope();
+            container.bind(CopyImageUrlDragAction).toSelf().inSingletonScope();
+            container.bind(CopyLinkUrlDragAction).toSelf().inSingletonScope();
             container.bind(NewTabGestureAction).toSelf().inSingletonScope();
             container.bind(CloseTabGestureAction).toSelf().inSingletonScope();
             container.bind(CloseTabToLeftGestureAction).toSelf().inSingletonScope();
