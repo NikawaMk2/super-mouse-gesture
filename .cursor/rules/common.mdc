@@ -18,3 +18,37 @@ alwaysApply: true
 - 複数の責務を持つクラスは、単一責任の原則に従い、ハンドラー等に分割すること。
 - 設定値が未保存の場合もデフォルト値で動作するように実装すること。
 - DragType/Direction等はnone対応を考慮し、型安全性・エラー防止を担保すること。
+
+## chrome API利用に関する設計指針
+- chrome.downloadsやchrome.tabs等、chrome拡張機能のAPIを利用する場合は、直接呼び出さず、必ず専用のクラスおよびインターフェースを実装し、そのクラス経由で呼び出すこと。
+- 例：DownloadService（IDownloadService）でchrome.downloadsをラップし、アプリケーション本体はDownloadService経由でダウンロード処理を行う。
+- 目的：テスト容易性・責務分離・拡張性・保守性の向上。
+
+### コード例
+```typescript
+// インターフェース定義
+export interface IDownloadService {
+    download(url: string): Promise<void>;
+}
+
+// 実装クラス
+export class DownloadService implements IDownloadService {
+    async download(url: string): Promise<void> {
+        if (!url) return;
+        if (chrome.downloads) {
+            chrome.downloads.download({ url });
+        }
+    }
+}
+
+// DIコンテナ登録例（inversify等）
+container.bind<IDownloadService>('IDownloadService').to(DownloadService).inSingletonScope();
+
+// 利用側（依存注入）
+class SomeAction {
+    constructor(private downloadService: IDownloadService) {}
+    async doDownload(url: string) {
+        await this.downloadService.download(url);
+    }
+}
+```
