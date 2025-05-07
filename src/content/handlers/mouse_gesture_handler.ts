@@ -58,7 +58,7 @@ export class MouseGestureHandler {
         this.isGesture = false;
         this.gestureTrailRenderer.clearTrail();
         const pattern = await this.analyzeGesturePattern(this.directionTrail);
-        if (pattern) {
+        if (pattern !== GestureActionType.NONE) {
             Logger.debug('ジェスチャパターン認識', { pattern });
             try {
                 const action = GestureActionFactory.create(pattern, new (require('../provider/content_container_provider').ContentContainerProvider)().getContainer()) as { execute: () => void };
@@ -94,6 +94,10 @@ export class MouseGestureHandler {
 
     // パターン解析: 方向列を文字列化し、設定値からアクション名を返す
     public async analyzeGesturePattern(directionTrail: Array<Direction>): Promise<GestureActionType> {
+        if (directionTrail.length === 0) {
+            return GestureActionType.NONE;
+        }
+
         const pattern = directionTrail.join(',');
         let settings = await this.mouseGestureSettingsService.getSettings();
         if (!settings) {
