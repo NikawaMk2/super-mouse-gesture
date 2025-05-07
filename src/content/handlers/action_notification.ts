@@ -3,6 +3,7 @@ import Logger from '../../common/logger/logger';
 export class ActionNotification {
     private static notificationId = 'smg-action-notification';
     private static notificationElem: HTMLDivElement | null = null;
+    private static lastActionName: string | null = null;
 
     /**
      * アクション名を中央に表示する
@@ -13,7 +14,10 @@ export class ActionNotification {
             if (this.notificationElem) {
                 this.notificationElem.textContent = actionName;
                 this.notificationElem.style.display = 'flex';
-                Logger.debug('アクション通知UIを更新', { actionName });
+                if (this.lastActionName !== actionName) {
+                    Logger.debug('アクション通知UIを更新', { actionName });
+                }
+                this.lastActionName = actionName;
                 return;
             }
             const div = document.createElement('div');
@@ -38,6 +42,7 @@ export class ActionNotification {
             document.body.appendChild(div);
             this.notificationElem = div;
             Logger.debug('アクション通知UIを表示', { actionName });
+            this.lastActionName = actionName;
         } catch (e) {
             Logger.error('アクション通知UIの表示に失敗', { error: (e as Error).message });
         }
@@ -51,6 +56,7 @@ export class ActionNotification {
             if (this.notificationElem) {
                 this.notificationElem.style.display = 'none';
                 Logger.debug('アクション通知UIを非表示');
+                this.lastActionName = null;
             }
         } catch (e) {
             Logger.error('アクション通知UIの非表示に失敗', { error: (e as Error).message });
@@ -67,6 +73,7 @@ export class ActionNotification {
                 Logger.debug('アクション通知UIをDOMから削除');
             }
             this.notificationElem = null;
+            this.lastActionName = null;
         } catch (e) {
             Logger.error('アクション通知UIのDOM削除に失敗', { error: (e as Error).message });
         }
