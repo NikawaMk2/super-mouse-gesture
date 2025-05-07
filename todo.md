@@ -1,0 +1,54 @@
+# コンテンツスクリプト
+- [X] content_script_main.tsのテストコード作成
+- [X] super_drag_handler.tsのテストコード作成
+- [X] ジェスチャトレイルクラス作成
+- [X] ジェスチャトレイルクラス呼び出しをmouse_gesture_handler.tsに実装(呼び出し元とする箇所はクラス上のコメントにTODOとして記載済み)
+- [X] ジェスチャトレイルクラス呼び出しをsuper_drag_handler.tsに実装(呼び出し元とする箇所はクラス上のコメントにTODOとして記載済み)
+- [ ] Pointクラスのゲッタ(getX()とgetY())を削除し、xとyを用いたビジネスロジック自体をメソッドとして実装するよう修正する。また、getX()とgetY()を呼び出している箇所はPointクラスに実装した処理を呼び出すよう修正する
+- [X] アクション通知UIクラス作成
+- [X] アクション通知UIクラス呼び出しをmouse_gesture_handler.tsに実装
+- [X] アクション通知UIクラス呼び出しをsuper_drag_handler.tsに実装
+
+# バックグラウンド
+- [X] コンテンツスクリプトからのメッセージを受信するリスナを追加
+- [X] DIコンテナのプロバイダを追加(「src\content\provider\content_container_provider.ts」と同じ作りとする)
+- [X] gesture_action/ ディレクトリをsrc/background/services/配下に新規作成
+- [X] gesture_action/gesture_action.ts（インターフェース）を作成
+- [X] gesture_action/gesture_action_type.ts（enum/型定義）を作成
+- [X] gesture_action/maximize_window_gesture_action.ts を作成
+- [X] gesture_action/minimize_window_gesture_action.ts を作成
+- [X] gesture_action/toggle_fullscreen_gesture_action.ts を作成
+- [X] gesture_action/new_window_gesture_action.ts を作成
+- [X] gesture_action/new_incognito_window_gesture_action.ts を作成
+- [X] gesture_action/close_window_gesture_action.ts を作成
+- [X] gesture_action/new_tab_gesture_action.ts を作成
+- [X] gesture_action/next_tab_gesture_action.ts を作成
+- [X] gesture_action/prev_tab_gesture_action.ts を作成
+- [X] gesture_action/pin_tab_gesture_action.ts を作成
+- [X] gesture_action/mute_tab_gesture_action.ts を作成
+- [X] gesture_action/close_tab_gesture_action.ts を作成
+- [X] gesture_action/close_tab_to_right_gesture_action.ts を作成
+- [X] gesture_action/close_tab_to_left_gesture_action.ts を作成
+- [X] gesture_action/duplicate_tab_gesture_action.ts を作成
+- [X] gesture_action/reopen_closed_tab_gesture_action.ts を作成
+- [X] gesture_action_handler.ts: アクション名ごとに処理を分岐し、タブ操作等を実装する
+- [X] gesture_action/gesture_action_factory.ts（ファクトリ）を作成
+- [X] drag_action_handler.ts: アクション名・typeごとに処理を分岐し、タブ操作等を実装する
+- [X] drag_action/open_in_background_tab_drag_action.ts: バックグラウンドタブでリンクを開くアクションを実装する
+- [X] drag_action/open_in_foreground_tab_drag_action.ts: フォアグラウンドタブでリンクを開くアクションを実装する
+- [X] drag_action/download_link_drag_action.ts: リンク先をダウンロードするアクションを実装する
+- [X] drag_action/copy_link_url_drag_action.ts: リンクURLをコピーするアクションを実装する
+- [X] drag_action/open_image_in_new_tab_drag_action.ts: 画像を新しいタブで開くアクションを実装する
+- [X] drag_action/download_image_drag_action.ts: 画像をダウンロードするアクションを実装する
+- [X] drag_action/search_image_google_drag_action.ts: 画像をGoogle画像検索するアクションを実装する
+- [X] drag_action/copy_image_url_drag_action.ts: 画像URLをコピーするアクションを実装する
+
+# 単体テストエラー
+- [X] test/background/services/drag_action/search_bing_drag_action.test.ts のテスト修正
+- [X] test/content/services/super_drag_action/link/copy_link_url_drag_action.test.ts のテスト修正
+- [X] test/background/services/drag_action/open_in_background_tab_drag_action.test.ts のテスト修正
+- [X] test/content/provider/content_container_provider.test.ts のテスト修正
+- [X] test/background/provider/background_container_provider.test.ts のテスト修正
+- [X] test/content/handlers/action_notification.test.ts のテスト修正
+- [X] test/content/handlers/super_drag_handler.test.ts のテスト修正
+- [X] gesture_action/chrome_window_operator.test.ts: ChromeWindowOperatorのテストコードを作成
