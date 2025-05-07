@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Container } from 'inversify';
-import { DragActionFactory } from '../../../../src/background/services/drag_action_factory';
+import { DragActionFactory } from '../../../../src/background/services/drag_action/drag_action_factory';
 import { DragActionType } from '../../../../src/background/services/drag_action/drag_action_type';
 import { SearchGoogleDragAction } from '../../../../src/background/services/drag_action/search_google_drag_action';
 import { SearchBingDragAction } from '../../../../src/background/services/drag_action/search_bing_drag_action';
