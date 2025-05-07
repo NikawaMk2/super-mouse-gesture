@@ -26,6 +26,15 @@ describe('DragActionFactory', () => {
         const tabOperatorMock: ITabOperator = {
             createTab: jest.fn(),
             updateCurrentTab: jest.fn(),
+            switchToNextTab: jest.fn(),
+            switchToPrevTab: jest.fn(),
+            togglePinActiveTab: jest.fn(),
+            toggleMuteActiveTab: jest.fn(),
+            closeActiveTab: jest.fn(),
+            closeTabsToRight: jest.fn(),
+            closeTabsToLeft: jest.fn(),
+            duplicateActiveTab: jest.fn(),
+            reopenClosedTab: jest.fn(),
         };
         const clipboardServiceMock: IClipboardService = {
             writeText: jest.fn(),
