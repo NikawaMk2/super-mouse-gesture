@@ -1,18 +1,18 @@
-import { DragAction } from './drag_action/drag_action';
-import { SearchGoogleDragAction } from './drag_action/search_google_drag_action';
-import { SearchBingDragAction } from './drag_action/search_bing_drag_action';
-import { OpenAsUrlDragAction } from './drag_action/open_as_url_drag_action';
-import { CopyTextDragAction } from './drag_action/copy_text_drag_action';
-import { OpenInBackgroundTabDragAction } from './drag_action/open_in_background_tab_drag_action';
-import { OpenInForegroundTabDragAction } from './drag_action/open_in_foreground_tab_drag_action';
-import { DownloadLinkDragAction } from './drag_action/download_link_drag_action';
-import { CopyLinkUrlDragAction } from './drag_action/copy_link_url_drag_action';
-import { OpenImageInNewTabDragAction } from './drag_action/open_image_in_new_tab_drag_action';
-import { DownloadImageDragAction } from './drag_action/download_image_drag_action';
-import { SearchImageGoogleDragAction } from './drag_action/search_image_google_drag_action';
-import { CopyImageUrlDragAction } from './drag_action/copy_image_url_drag_action';
+import { DragAction } from './drag_action';
+import { SearchGoogleDragAction } from './search_google_drag_action';
+import { SearchBingDragAction } from './search_bing_drag_action';
+import { OpenAsUrlDragAction } from './open_as_url_drag_action';
+import { CopyTextDragAction } from './copy_text_drag_action';
+import { OpenInBackgroundTabDragAction } from './open_in_background_tab_drag_action';
+import { OpenInForegroundTabDragAction } from './open_in_foreground_tab_drag_action';
+import { DownloadLinkDragAction } from './download_link_drag_action';
+import { CopyLinkUrlDragAction } from './copy_link_url_drag_action';
+import { OpenImageInNewTabDragAction } from './open_image_in_new_tab_drag_action';
+import { DownloadImageDragAction } from './download_image_drag_action';
+import { SearchImageGoogleDragAction } from './search_image_google_drag_action';
+import { CopyImageUrlDragAction } from './copy_image_url_drag_action';
 import { Container } from 'inversify';
-import { DragActionType } from './drag_action/drag_action_type';
+import { DragActionType } from './drag_action_type';
 
 export class DragActionFactory {
     static create(actionName: string, container: Container): DragAction {
