@@ -37,7 +37,7 @@ export class MouseGestureHandler {
         const lastPoint = this.gestureTrail[this.gestureTrail.length - 1];
         const currentPoint = new Point(e.clientX, e.clientY);
         const direction = lastPoint.getDirection(currentPoint);
-        if (direction && this.directionTrail[this.directionTrail.length - 1] !== direction) {
+        if (direction !== Direction.NONE && this.directionTrail[this.directionTrail.length - 1] !== direction) {
             this.directionTrail.push(direction);
         }
         this.gestureTrail.push(currentPoint);
