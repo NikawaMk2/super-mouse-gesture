@@ -1,21 +1,8 @@
+import 'reflect-metadata';
 import { BackgroundContainerProvider } from '../../../src/background/provider/background_container_provider';
 import { Container } from 'inversify';
 
-// Containerクラスのモック
-jest.mock('inversify', () => {
-  return {
-    Container: jest.fn().mockImplementation(() => {
-      return {
-        bind: jest.fn().mockReturnThis(),
-        to: jest.fn().mockReturnThis(),
-        toSelf: jest.fn().mockReturnThis(),
-        inSingletonScope: jest.fn().mockReturnThis(),
-        toDynamicValue: jest.fn().mockReturnThis(),
-        get: jest.fn()
-      };
-    })
-  };
-});
+// Containerクラスのモックは削除
 
 describe('BackgroundContainerProvider', () => {
     let provider: BackgroundContainerProvider;
