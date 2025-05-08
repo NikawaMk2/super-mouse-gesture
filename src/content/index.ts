@@ -2,6 +2,7 @@ import { ContentScriptMain } from './content_script_main';
 import Logger from '../common/logger/logger';
 
 let contentScriptMain: ContentScriptMain | null = new ContentScriptMain();
+let wasAnyTargetAppeared = false;
 
 // Backgroundからの有効/無効切り替えや設定更新メッセージを受信
 if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
@@ -75,13 +76,33 @@ const observeTargets = [
 ];
 
 const observer = new MutationObserver(() => {
-  // 主要要素が全て消えていたらdestroy
   const allGone = observeTargets.every(fn => !fn());
-  if (allGone && contentScriptMain) {
+  const anyAppeared = observeTargets.some(fn => !!fn());
+
+  if (anyAppeared) {
+    wasAnyTargetAppeared = true;
+    Logger.debug('MutationObserver: 主要要素が初めて出現');
+  }
+
+  if (wasAnyTargetAppeared && allGone && contentScriptMain) {
+    Logger.debug('MutationObserver: 主要要素が一度出現後に全て消失したためContentScriptMainを破棄');
     contentScriptMain.destroy();
     contentScriptMain = null;
-    Logger.debug('MutationObserver: ContentScriptMainを破棄');
     observer.disconnect();
   }
 });
-observer.observe(document.body, { childList: true, subtree: true });
+
+if (document.body) {
+  Logger.debug('MutationObserver: document.bodyが存在するため監視開始');
+  observer.observe(document.body, { childList: true, subtree: true });
+} else {
+  Logger.debug('MutationObserver: document.bodyが未定のためDOMContentLoaded待機');
+  window.addEventListener('DOMContentLoaded', () => {
+    if (document.body) {
+      Logger.debug('MutationObserver: DOMContentLoaded後に監視開始');
+      observer.observe(document.body, { childList: true, subtree: true });
+    } else {
+      Logger.error('MutationObserver: DOMContentLoaded後もdocument.bodyが存在しません');
+    }
+  });
+}
