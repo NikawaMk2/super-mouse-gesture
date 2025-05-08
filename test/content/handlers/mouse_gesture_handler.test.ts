@@ -152,4 +152,27 @@ describe('MouseGestureHandler', () => {
             expect(ActionNotification.hide).toHaveBeenCalled();
         });
     });
+
+    describe('onContextMenu', () => {
+        let handler: MouseGestureHandler;
+        let service: MouseGestureSettingsService;
+        beforeEach(() => {
+            service = createServiceMock({});
+            handler = new MouseGestureHandler(service);
+        });
+
+        it('パターン成立時（wasGestureRecognized=true）はpreventDefaultが呼ばれる', () => {
+            handler['wasGestureRecognized'] = true;
+            const preventDefault = jest.fn();
+            handler.onContextMenu({ preventDefault } as unknown as MouseEvent);
+            expect(preventDefault).toHaveBeenCalled();
+        });
+
+        it('パターン不成立時（wasGestureRecognized=false）はpreventDefaultが呼ばれない', () => {
+            handler['wasGestureRecognized'] = false;
+            const preventDefault = jest.fn();
+            handler.onContextMenu({ preventDefault } as unknown as MouseEvent);
+            expect(preventDefault).not.toHaveBeenCalled();
+        });
+    });
 }); 

@@ -10,6 +10,7 @@ import { ActionNotification } from './action_notification';
 
 export class MouseGestureHandler {
     private isGesture: boolean = false;
+    private wasGestureRecognized: boolean = false;
     private gestureTrail: Array<Point> = [];
     private directionTrail: Array<Direction> = [];
     private mouseGestureSettingsService: MouseGestureSettingsService;
@@ -26,6 +27,7 @@ export class MouseGestureHandler {
 
     public onMouseDown(e: MouseEvent) {
         this.isGesture = true;
+        this.wasGestureRecognized = false;
         this.gestureTrail = [new Point(e.clientX, e.clientY)];
         this.directionTrail = [];
         Logger.debug('マウスジェスチャ開始', { x: e.clientX, y: e.clientY });
@@ -59,6 +61,7 @@ export class MouseGestureHandler {
         this.gestureTrailRenderer.clearTrail();
         const pattern = await this.analyzeGesturePattern(this.directionTrail);
         if (pattern !== GestureActionType.NONE) {
+            this.wasGestureRecognized = true;
             Logger.debug('ジェスチャパターン認識', { pattern });
             try {
                 const action = GestureActionFactory.create(pattern, new (require('../provider/content_container_provider').ContentContainerProvider)().getContainer()) as { execute: () => void };
@@ -70,6 +73,7 @@ export class MouseGestureHandler {
                 ActionNotification.hide();
             }
         } else {
+            this.wasGestureRecognized = false;
             ActionNotification.hide();
         }
         this.gestureTrail = [];
@@ -77,9 +81,10 @@ export class MouseGestureHandler {
     }
 
     public onContextMenu(e: MouseEvent) {
-        if (!this.isGesture) return;
+        if (!this.wasGestureRecognized) {
+            return;
+        }
         e.preventDefault();
-        Logger.debug('右クリックメニュー抑制');
     }
 
     public isActive(): boolean {
