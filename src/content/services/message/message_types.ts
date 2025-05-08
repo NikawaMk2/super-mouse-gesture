@@ -26,6 +26,7 @@ export interface DragActionMessagePayload {
     direction: 'up' | 'right' | 'down' | 'left';
     actionName: string;
     params: Record<string, any>;
+    selectedValue: string;
     [key: string]: any;
 }
 
