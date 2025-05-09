@@ -3,11 +3,16 @@ import { ChromeTabOperator } from '../../../../src/common/provider/chrome_tab_op
 describe('ChromeTabOperator', () => {
     let operator: ChromeTabOperator;
     let chromeMock: any;
+    let originalTabs: any;
+    let originalRuntime: any;
 
     beforeEach(() => {
         operator = new ChromeTabOperator();
+        originalTabs = global.chrome?.tabs;
+        originalRuntime = global.chrome?.runtime;
         chromeMock = global.chrome = {
             tabs: {
+                create: jest.fn(),
                 query: jest.fn(),
                 update: jest.fn(),
                 remove: jest.fn(),
@@ -23,7 +28,71 @@ describe('ChromeTabOperator', () => {
     });
 
     afterEach(() => {
+        global.chrome.tabs = originalTabs;
+        global.chrome.runtime = originalRuntime;
         jest.resetAllMocks();
+    });
+
+    describe('createTab', () => {
+        it('正常にタブを作成できる', async () => {
+            chromeMock.tabs.create.mockImplementation((opts: any, cb: any) => {
+                cb({ id: 123 });
+            });
+            const result = await operator.createTab('https://example.com', true);
+            expect(result).toEqual({ id: 123 });
+            expect(chromeMock.tabs.create).toHaveBeenCalledWith({ url: 'https://example.com', active: true }, expect.any(Function));
+        });
+
+        it('chrome.runtime.lastErrorがある場合は例外', async () => {
+            chromeMock.tabs.create.mockImplementation((opts: any, cb: any) => {
+                chromeMock.runtime.lastError = { message: 'エラー発生' };
+                cb(undefined);
+            });
+            await expect(operator.createTab('https://example.com', true)).rejects.toThrow('エラー発生');
+            chromeMock.runtime.lastError = undefined;
+        });
+    });
+
+    describe('updateCurrentTab', () => {
+        it('正常にアクティブタブのURLを更新できる', async () => {
+            chromeMock.tabs.query.mockImplementation((opts: any, cb: any) => {
+                cb([{ id: 456 }]);
+            });
+            chromeMock.tabs.update.mockImplementation((tabId: any, opts: any, cb: any) => {
+                cb();
+            });
+            await expect(operator.updateCurrentTab('https://example.com')).resolves.toBeUndefined();
+            expect(chromeMock.tabs.query).toHaveBeenCalledWith({ active: true, currentWindow: true }, expect.any(Function));
+            expect(chromeMock.tabs.update).toHaveBeenCalledWith(456, { url: 'https://example.com' }, expect.any(Function));
+        });
+
+        it('chrome.runtime.lastErrorがqueryで発生した場合は例外', async () => {
+            chromeMock.tabs.query.mockImplementation((opts: any, cb: any) => {
+                chromeMock.runtime.lastError = { message: 'queryエラー' };
+                cb([]);
+            });
+            await expect(operator.updateCurrentTab('https://example.com')).rejects.toThrow('queryエラー');
+            chromeMock.runtime.lastError = undefined;
+        });
+
+        it('アクティブタブが見つからない場合は例外', async () => {
+            chromeMock.tabs.query.mockImplementation((opts: any, cb: any) => {
+                cb([]);
+            });
+            await expect(operator.updateCurrentTab('https://example.com')).rejects.toThrow('アクティブなタブが見つかりません');
+        });
+
+        it('chrome.runtime.lastErrorがupdateで発生した場合は例外', async () => {
+            chromeMock.tabs.query.mockImplementation((opts: any, cb: any) => {
+                cb([{ id: 789 }]);
+            });
+            chromeMock.tabs.update.mockImplementation((tabId: any, opts: any, cb: any) => {
+                chromeMock.runtime.lastError = { message: 'updateエラー' };
+                cb();
+            });
+            await expect(operator.updateCurrentTab('https://example.com')).rejects.toThrow('updateエラー');
+            chromeMock.runtime.lastError = undefined;
+        });
     });
 
     it('switchToPrevTab: 前のタブに切り替え', async () => {
@@ -44,11 +113,20 @@ describe('ChromeTabOperator', () => {
         expect(chromeMock.tabs.update).toHaveBeenCalledWith(1, { pinned: true }, expect.any(Function));
     });
 
-    it('toggleMuteActiveTab: ミュート切り替え', async () => {
-        chromeMock.tabs.query.mockImplementation((q: any, cb: any) => cb([{ id: 1, mutedInfo: { muted: false } }]));
-        chromeMock.tabs.update.mockImplementation((id: any, opts: any, cb: any) => cb && cb());
-        await expect(operator.toggleMuteActiveTab()).resolves.toBeUndefined();
-        expect(chromeMock.tabs.update).toHaveBeenCalledWith(1, { muted: true }, expect.any(Function));
+    describe('toggleMuteActiveTab', () => {
+        it('ミュートされていないタブをミュートする', async () => {
+            chromeMock.tabs.query.mockImplementation((q: any, cb: any) => cb([{ id: 1, mutedInfo: { muted: false } }]));
+            chromeMock.tabs.update.mockImplementation((id: any, opts: any, cb: any) => cb && cb());
+            await expect(operator.toggleMuteActiveTab()).resolves.toBeUndefined();
+            expect(chromeMock.tabs.update).toHaveBeenCalledWith(1, { muted: true }, expect.any(Function));
+        });
+
+        it('ミュートされているタブをミュート解除する', async () => {
+            chromeMock.tabs.query.mockImplementation((q: any, cb: any) => cb([{ id: 1, mutedInfo: { muted: true } }]));
+            chromeMock.tabs.update.mockImplementation((id: any, opts: any, cb: any) => cb && cb());
+            await expect(operator.toggleMuteActiveTab()).resolves.toBeUndefined();
+            expect(chromeMock.tabs.update).toHaveBeenCalledWith(1, { muted: false }, expect.any(Function));
+        });
     });
 
     it('closeActiveTab: アクティブタブを閉じる', async () => {
@@ -56,24 +134,6 @@ describe('ChromeTabOperator', () => {
         chromeMock.tabs.remove.mockImplementation((id: any, cb: any) => cb && cb());
         await expect(operator.closeActiveTab()).resolves.toBeUndefined();
         expect(chromeMock.tabs.remove).toHaveBeenCalledWith(1, expect.any(Function));
-    });
-
-    it('closeTabsToRight: 右側のタブを閉じる', async () => {
-        chromeMock.tabs.query
-            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }, { id: 2 }, { id: 3 }]))
-            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 2 }]));
-        chromeMock.tabs.remove.mockImplementation((ids: any, cb: any) => cb && cb());
-        await expect(operator.closeTabsToRight()).resolves.toBeUndefined();
-        expect(chromeMock.tabs.remove).toHaveBeenCalledWith([3], expect.any(Function));
-    });
-
-    it('closeTabsToLeft: 左側のタブを閉じる', async () => {
-        chromeMock.tabs.query
-            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }, { id: 2 }, { id: 3 }]))
-            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 2 }]));
-        chromeMock.tabs.remove.mockImplementation((ids: any, cb: any) => cb && cb());
-        await expect(operator.closeTabsToLeft()).resolves.toBeUndefined();
-        expect(chromeMock.tabs.remove).toHaveBeenCalledWith([1], expect.any(Function));
     });
 
     it('duplicateActiveTab: アクティブタブを複製', async () => {
@@ -99,5 +159,31 @@ describe('ChromeTabOperator', () => {
     it('chrome.sessions.restoreが未定義ならreject', async () => {
         chromeMock.sessions.restore = undefined;
         await expect(operator.reopenClosedTab()).rejects.toThrow('chrome.sessions APIが利用できません');
+    });
+
+    it('activateLeftAndCloseActiveTab: アクティブタブを閉じて左隣のタブをアクティブにする', async () => {
+        // タブ: [1, 2, 3]、アクティブ: 2
+        chromeMock.tabs.query
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }, { id: 2 }, { id: 3 }]))
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 2 }]));
+        chromeMock.tabs.remove.mockImplementation((id: any, cb: any) => cb && cb());
+        chromeMock.tabs.update.mockImplementation((id: any, opts: any, cb: any) => cb && cb());
+        await expect(operator.activateLeftAndCloseActiveTab()).resolves.toBeUndefined();
+        // 2を閉じて1をアクティブ化
+        expect(chromeMock.tabs.remove).toHaveBeenCalledWith(2, expect.any(Function));
+        expect(chromeMock.tabs.update).toHaveBeenCalledWith(1, { active: true }, expect.any(Function));
+    });
+
+    it('activateRightAndCloseActiveTab: アクティブタブを閉じて右隣のタブをアクティブにする', async () => {
+        // タブ: [1, 2, 3]、アクティブ: 2
+        chromeMock.tabs.query
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }, { id: 2 }, { id: 3 }]))
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 2 }]));
+        chromeMock.tabs.remove.mockImplementation((id: any, cb: any) => cb && cb());
+        chromeMock.tabs.update.mockImplementation((id: any, opts: any, cb: any) => cb && cb());
+        await expect(operator.activateRightAndCloseActiveTab()).resolves.toBeUndefined();
+        // 2を閉じて3をアクティブ化
+        expect(chromeMock.tabs.remove).toHaveBeenCalledWith(2, expect.any(Function));
+        expect(chromeMock.tabs.update).toHaveBeenCalledWith(3, { active: true }, expect.any(Function));
     });
 }); 
