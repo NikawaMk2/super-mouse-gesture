@@ -44,6 +44,8 @@ import { OpenAsUrlDragAction } from '../services/super_drag_action/text/open_as_
 import { SearchBingDragAction } from '../services/super_drag_action/text/search_bing_drag_action';
 import { IContainerProvider } from '../../common/provider/i_container_provider';
 import { NoneGestureAction } from '../services/gesture_action/none_gesture_action';
+import { ClipboardService } from '../services/clipboard/clipboard_service';
+import { IClipboardService } from '../services/clipboard/clipboard_service_interface';
 
 export class ContentContainerProvider implements IContainerProvider {
     private static container: Container | null = null;
@@ -102,6 +104,9 @@ export class ContentContainerProvider implements IContainerProvider {
             container.bind(CopyTextDragAction).toSelf().inSingletonScope();
             container.bind(OpenAsUrlDragAction).toSelf().inSingletonScope();
             container.bind(SearchBingDragAction).toSelf().inSingletonScope();
+
+            // --- ClipboardService ---
+            container.bind<IClipboardService>('IClipboardService').to(ClipboardService).inSingletonScope();
 
             return container;
         } catch (error) {
