@@ -30,10 +30,10 @@ describe('OpenInBackgroundTabDragAction', () => {
             type: 'link' as const,
             direction: 'up' as const,
             actionName: 'openInBackground',
-            params: { url },
+            params: {},
+            selectedValue: url,
         };
         await action.execute(options);
-        expect(ChromeMessageSender).toHaveBeenCalled();
         const sender = (ChromeMessageSender as jest.Mock).mock.results[0]?.value;
         expect(typeof sender.sendDragAction).toBe('function');
         expect(sender.sendDragAction).toHaveBeenCalledWith({ ...options, openType: 'background' });
@@ -47,6 +47,7 @@ describe('OpenInBackgroundTabDragAction', () => {
             direction: 'up' as const,
             actionName: 'openInBackground',
             params: {},
+            selectedValue: '',
         };
         await action.execute(options);
         expect(Logger.warn).toHaveBeenCalled();
