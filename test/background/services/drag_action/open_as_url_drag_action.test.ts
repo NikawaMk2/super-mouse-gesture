@@ -53,7 +53,7 @@ describe('OpenAsUrlDragAction', () => {
         expect(tabsUpdateMock).not.toHaveBeenCalled();
     });
 
-    it('http/httpsで始まる場合はそのまま新規タブで開く', async () => {
+    it('httpsで始まる場合はそのまま新規タブで開く', async () => {
         const action = new OpenAsUrlDragAction(tabOperatorMock);
         const payload: DragActionMessagePayload = {
             type: 'text',
@@ -64,6 +64,19 @@ describe('OpenAsUrlDragAction', () => {
         };
         await action.execute(payload);
         expect(tabsCreateMock).toHaveBeenCalledWith('https://example.com', true);
+    });
+
+    it('httpで始まる場合はそのまま新規タブで開く', async () => {
+        const action = new OpenAsUrlDragAction(tabOperatorMock);
+        const payload: DragActionMessagePayload = {
+            type: 'text',
+            direction: 'up',
+            actionName: 'openAsUrl',
+            params: { newTab: true },
+            selectedValue: 'http://example.com',
+        };
+        await action.execute(payload);
+        expect(tabsCreateMock).toHaveBeenCalledWith('http://example.com', true);
     });
 
     it('http/httpsで始まらない場合はhttp://を付与して新規タブで開く', async () => {
