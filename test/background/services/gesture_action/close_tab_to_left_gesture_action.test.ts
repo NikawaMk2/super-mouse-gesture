@@ -14,16 +14,16 @@ describe('CloseTabToLeftGestureAction', () => {
             togglePinActiveTab: jest.fn(),
             toggleMuteActiveTab: jest.fn(),
             closeActiveTab: jest.fn(),
-            closeTabsToRight: jest.fn(),
-            closeTabsToLeft: jest.fn().mockResolvedValue(undefined),
+            activateLeftAndCloseActiveTab: jest.fn().mockResolvedValue(undefined),
+            activateRightAndCloseActiveTab: jest.fn(),
             duplicateActiveTab: jest.fn(),
             reopenClosedTab: jest.fn(),
         };
         action = new CloseTabToLeftGestureAction(tabOperatorMock);
     });
 
-    it('tabOperator.closeTabsToLeftが呼ばれること', async () => {
+    it('tabOperator.activateLeftAndCloseActiveTabが呼ばれること', async () => {
         await action.execute();
-        expect(tabOperatorMock.closeTabsToLeft).toHaveBeenCalled();
+        expect(tabOperatorMock.activateLeftAndCloseActiveTab).toHaveBeenCalled();
     });
 }); 

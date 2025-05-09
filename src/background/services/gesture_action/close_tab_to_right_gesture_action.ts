@@ -8,6 +8,6 @@ export class CloseTabToRightGestureAction implements IGestureAction {
 
     async execute(): Promise<void> {
         Logger.debug('CloseTabToRightGestureAction: execute() が呼び出されました');
-        await this.tabOperator.closeTabsToRight();
+        await this.tabOperator.activateRightAndCloseActiveTab();
     }
 } 
