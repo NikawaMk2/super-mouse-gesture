@@ -58,7 +58,9 @@ export class SuperDragHandler {
         const currentPoint = new Point(e.clientX, e.clientY);
         const direction = this.dragStartPos.getDirection(currentPoint);
         if (direction && direction !== Direction.NONE) {
-            this.getSuperDragActionName(this.dragType, direction).then((actionName) => {
+            this.superDragSettingsService.getSettings().then((settings) => {
+                const actionConfig = settings?.[this.dragType]?.[direction] || { action: '', params: {} };
+                const actionName: string = actionConfig.action;
                 if (actionName) {
                     ActionNotification.show(actionName);
                 } else {
@@ -82,13 +84,27 @@ export class SuperDragHandler {
         }
 
         try {
-            const actionName = await this.getSuperDragActionName(this.dragType, direction);
+            // SuperDragSettingsからアクション名・paramsを取得
+            const settings = await this.superDragSettingsService.getSettings();
+            const actionConfig = settings?.[this.dragType]?.[direction] || { action: '', params: {} };
+            const actionName = actionConfig.action;
+            const params = actionConfig.params;
             const action = SuperDragActionFactory.create(actionName as SuperDragActionType, new (require('../provider/content_container_provider').ContentContainerProvider)().getContainer());
+            // selectedValueの取得
+            let selectedValue = '';
+            if (this.dragType === 'text') {
+                selectedValue = window.getSelection()?.toString() || '';
+            } else if (this.dragType === 'link') {
+                selectedValue = (e.target as HTMLAnchorElement).href || '';
+            } else if (this.dragType === 'image') {
+                selectedValue = (e.target as HTMLImageElement).src || '';
+            }
             action.execute({
                 type: this.dragType,
                 direction,
                 actionName,
-                params: {}
+                params,
+                selectedValue
             });
             // アクション通知UIを非表示
             ActionNotification.hide();
@@ -111,11 +127,5 @@ export class SuperDragHandler {
         this.gestureTrailRenderer.destroy();
         ActionNotification.destroy();
         Logger.debug('SuperDragHandler インスタンス破棄');
-    }
-
-    // 設定に応じてスーパードラッグアクション名を決定
-    private async getSuperDragActionName(type: DragType, direction: Direction): Promise<string> {
-        const settings = await this.superDragSettingsService.getSettings();
-        return settings?.[type]?.[direction] || 'searchGoogle';
     }
 } 

@@ -30,9 +30,9 @@ describe('SuperDragHandler', () => {
         jest.clearAllMocks();
         mockSettingsService = {
             getSettings: jest.fn().mockResolvedValue({
-                [DragType.TEXT]: { [Direction.RIGHT]: SuperDragActionType.SEARCH_GOOGLE },
-                [DragType.LINK]: { [Direction.RIGHT]: SuperDragActionType.OPEN_IN_FOREGROUND_TAB },
-                [DragType.IMAGE]: { [Direction.RIGHT]: SuperDragActionType.SEARCH_IMAGE_GOOGLE },
+                [DragType.TEXT]: { [Direction.RIGHT]: { action: SuperDragActionType.SEARCH_GOOGLE, params: { url: 'https://www.google.com/search?q=%s' } } },
+                [DragType.LINK]: { [Direction.RIGHT]: { action: SuperDragActionType.OPEN_IN_FOREGROUND_TAB, params: {} } },
+                [DragType.IMAGE]: { [Direction.RIGHT]: { action: SuperDragActionType.SEARCH_IMAGE_GOOGLE, params: { url: 'https://www.google.com/searchbyimage?image_url=%s' } } },
             })
         } as any;
         handler = new SuperDragHandler(mockSettingsService);
