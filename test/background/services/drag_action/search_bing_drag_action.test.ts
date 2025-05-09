@@ -28,6 +28,7 @@ describe('SearchBingDragAction', () => {
             direction: 'up' as const,
             actionName: 'searchBing' as const,
             params: { text: 'テスト' },
+            selectedValue: 'テスト',
         };
         await action.execute(payload);
         expect(createTabMock).toHaveBeenCalledWith({ url: 'https://www.bing.com/search?q=%E3%83%86%E3%82%B9%E3%83%88' });
@@ -41,6 +42,7 @@ describe('SearchBingDragAction', () => {
             direction: 'up' as const,
             actionName: 'searchBing' as const,
             params: {},
+            selectedValue: '',
         };
         await action.execute(payload);
         expect(createTabMock).not.toHaveBeenCalled();
@@ -54,6 +56,7 @@ describe('SearchBingDragAction', () => {
             direction: 'up' as const,
             actionName: 'searchBing' as const,
             params: { text: 'AI', url: 'https://example.com/search?q=%s' },
+            selectedValue: 'AI',
         };
         await action.execute(payload);
         expect(createTabMock).toHaveBeenCalledWith({ url: 'https://example.com/search?q=AI' });

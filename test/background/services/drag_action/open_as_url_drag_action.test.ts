@@ -45,6 +45,7 @@ describe('OpenAsUrlDragAction', () => {
             direction: 'up',
             actionName: 'openAsUrl',
             params: {},
+            selectedValue: '',
         };
         await action.execute(payload);
         expect(loggerWarnSpy).toHaveBeenCalledWith('URLとして開くテキストが指定されていません', { payload });
@@ -58,7 +59,8 @@ describe('OpenAsUrlDragAction', () => {
             type: 'text',
             direction: 'up',
             actionName: 'openAsUrl',
-            params: { text: 'https://example.com', newTab: true },
+            params: { newTab: true },
+            selectedValue: 'https://example.com',
         };
         await action.execute(payload);
         expect(tabsCreateMock).toHaveBeenCalledWith('https://example.com', true);
@@ -70,7 +72,8 @@ describe('OpenAsUrlDragAction', () => {
             type: 'text',
             direction: 'up',
             actionName: 'openAsUrl',
-            params: { text: 'example.com', newTab: true },
+            params: { newTab: true },
+            selectedValue: 'example.com',
         };
         await action.execute(payload);
         expect(tabsCreateMock).toHaveBeenCalledWith('http://example.com', true);
@@ -83,7 +86,8 @@ describe('OpenAsUrlDragAction', () => {
             type: 'text',
             direction: 'up',
             actionName: 'openAsUrl',
-            params: { text: 'example.com', newTab: false },
+            params: { newTab: false },
+            selectedValue: 'example.com',
         };
         await action.execute(payload);
         expect(tabsUpdateMock).toHaveBeenCalledWith('http://example.com');
@@ -95,7 +99,8 @@ describe('OpenAsUrlDragAction', () => {
             type: 'text',
             direction: 'up',
             actionName: 'openAsUrl',
-            params: { text: 'example.com' },
+            params: {},
+            selectedValue: 'example.com',
         };
         await action.execute(payload);
         expect(tabsCreateMock).toHaveBeenCalledWith('http://example.com', true);

@@ -7,5 +7,6 @@ export interface SuperDragAction {
         direction: Direction;
         actionName: string;
         params: Record<string, any>;
+        selectedValue: string;
     }): Promise<void>;
 } 

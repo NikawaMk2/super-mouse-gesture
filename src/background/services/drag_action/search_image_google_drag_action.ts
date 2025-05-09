@@ -11,12 +11,13 @@ export class SearchImageGoogleDragAction implements DragAction {
     }
     async execute(payload: DragActionMessagePayload): Promise<void> {
         Logger.debug('SearchImageGoogleDragAction: execute() が呼び出されました', { payload });
-        const url = payload.params.url;
-        if (!url) {
+        const urlTemplate = payload.params?.urlTemplate || 'https://www.google.com/searchbyimage?image_url=%s';
+        const imageUrl = payload.selectedValue;
+        if (!imageUrl) {
             Logger.warn('Google画像検索する画像URLが指定されていません', { payload });
             return;
         }
-        const searchUrl = 'https://www.google.com/searchbyimage?image_url=' + encodeURIComponent(url);
+        const searchUrl = urlTemplate.replace('%s', encodeURIComponent(imageUrl));
         try {
             await this.tabOperator.createTab(searchUrl, true);
             Logger.debug('Google画像検索タブを新規作成しました', { searchUrl });

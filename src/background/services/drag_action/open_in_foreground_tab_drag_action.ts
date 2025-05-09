@@ -12,7 +12,7 @@ export class OpenInForegroundTabDragAction implements DragAction {
             Logger.warn('リンクタイプ以外は未対応です', { payload });
             return;
         }
-        const url = payload.params.url;
+        const url = payload.params?.url;
         if (!url) {
             Logger.warn('開くリンクURLが指定されていません', { payload });
             return;

@@ -12,7 +12,7 @@ export class OpenAsUrlDragAction implements DragAction {
     }
     async execute(payload: DragActionMessagePayload): Promise<void> {
         Logger.debug('OpenAsUrlDragAction: execute() が呼び出されました', { payload });
-        const text = payload.params.text;
+        const text = payload.selectedValue;
         const newTab = payload.params.newTab ?? true;
         if (!text) {
             Logger.warn('URLとして開くテキストが指定されていません', { payload });

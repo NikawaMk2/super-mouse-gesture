@@ -21,13 +21,13 @@ describe('DownloadLinkDragAction', () => {
 
     it('正常にダウンロードが呼ばれる', async () => {
         const action = new DownloadLinkDragAction(mockDownloadService);
-        await action.execute({ type: 'link', direction: 'down', actionName: 'downloadLink', params: { url: 'https://example.com/file.txt' } });
+        await action.execute({ type: 'link', direction: 'down', actionName: 'downloadLink', params: { url: 'https://example.com/file.txt' }, selectedValue: 'https://example.com/file.txt' });
         expect(mockDownloadService.download).toHaveBeenCalledWith('https://example.com/file.txt');
     });
 
     it('url未指定時は警告ログ', async () => {
         const action = new DownloadLinkDragAction(mockDownloadService);
-        await action.execute({ type: 'link', direction: 'down', actionName: 'downloadLink', params: {} });
+        await action.execute({ type: 'link', direction: 'down', actionName: 'downloadLink', params: {}, selectedValue: '' });
         expect(loggerWarnSpy).toHaveBeenCalledWith('ダウンロードするリンクURLが指定されていません', expect.anything());
         expect(mockDownloadService.download).not.toHaveBeenCalled();
     });
@@ -35,7 +35,7 @@ describe('DownloadLinkDragAction', () => {
     it('downloadService.downloadで例外発生時はエラーログ', async () => {
         mockDownloadService.download = jest.fn().mockImplementation(() => { throw new Error('fail'); });
         const action = new DownloadLinkDragAction(mockDownloadService);
-        await expect(action.execute({ type: 'link', direction: 'down', actionName: 'downloadLink', params: { url: 'https://example.com/file.txt' } })).resolves.toBeUndefined();
+        await expect(action.execute({ type: 'link', direction: 'down', actionName: 'downloadLink', params: { url: 'https://example.com/file.txt' }, selectedValue: 'https://example.com/file.txt' })).resolves.toBeUndefined();
         // DownloadService側でエラーログが出る想定
     });
 }); 

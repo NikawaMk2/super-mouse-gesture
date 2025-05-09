@@ -45,7 +45,8 @@ describe('OpenInBackgroundTabDragAction', () => {
             type: 'link' as const,
             direction: 'up' as const,
             actionName: 'openInBackgroundTab' as const,
-            params: { url: 'https://example.com' },
+            params: {},
+            selectedValue: 'https://example.com',
         };
         await action.execute(payload);
         expect(createMock).toHaveBeenCalledWith('https://example.com', false);
@@ -58,7 +59,8 @@ describe('OpenInBackgroundTabDragAction', () => {
             type: 'text' as const,
             direction: 'up' as const,
             actionName: 'openInBackgroundTab' as const,
-            params: { url: 'https://example.com' },
+            params: {},
+            selectedValue: 'https://example.com',
         };
         await action.execute(payload);
         expect(Logger.warn).toHaveBeenCalledWith('リンクタイプ以外は未対応です', { payload });
@@ -72,6 +74,7 @@ describe('OpenInBackgroundTabDragAction', () => {
             direction: 'up' as const,
             actionName: 'openInBackgroundTab' as const,
             params: {},
+            selectedValue: '',
         };
         await action.execute(payload);
         expect(Logger.warn).toHaveBeenCalledWith('開くリンクURLが指定されていません', { payload });
@@ -85,7 +88,8 @@ describe('OpenInBackgroundTabDragAction', () => {
             type: 'link' as const,
             direction: 'up' as const,
             actionName: 'openInBackgroundTab' as const,
-            params: { url: 'https://example.com' },
+            params: {},
+            selectedValue: 'https://example.com',
         };
         await action.execute(payload);
         expect(Logger.error).toHaveBeenCalledWith('バックグラウンドタブでのリンクオープンに失敗', { error: 'error!', url: 'https://example.com' });

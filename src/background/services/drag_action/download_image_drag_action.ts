@@ -11,7 +11,7 @@ export class DownloadImageDragAction implements DragAction {
     }
     async execute(payload: DragActionMessagePayload): Promise<void> {
         Logger.debug('DownloadImageDragAction: execute() が呼び出されました', { payload });
-        const url = payload.params.url;
+        const url = payload.selectedValue;
         if (!url) {
             Logger.warn('ダウンロードする画像URLが指定されていません', { payload });
             return;

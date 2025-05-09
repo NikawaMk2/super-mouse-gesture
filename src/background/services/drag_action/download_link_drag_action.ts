@@ -11,7 +11,7 @@ export class DownloadLinkDragAction implements DragAction {
     }
     async execute(payload: DragActionMessagePayload): Promise<void> {
         Logger.debug('DownloadLinkDragAction: execute() が呼び出されました', { payload });
-        const url = payload.params.url;
+        const url = payload.selectedValue;
         if (!url) {
             Logger.warn('ダウンロードするリンクURLが指定されていません', { payload });
             return;

@@ -35,7 +35,8 @@ describe('SearchImageGoogleDragAction', () => {
             type: 'image' as const,
             direction: 'up' as const,
             actionName: 'searchImageGoogle' as const,
-            params: { url: 'https://example.com/image.png' },
+            params: {},
+            selectedValue: 'https://example.com/image.png',
         };
         await action.execute(payload);
         expect(tabOperatorMock.createTab).toHaveBeenCalledWith(
@@ -45,13 +46,14 @@ describe('SearchImageGoogleDragAction', () => {
         expect(loggerDebugSpy).toHaveBeenCalledWith('SearchImageGoogleDragAction: execute() が呼び出されました', { payload });
     });
 
-    it('url未指定時はタブ作成されず警告ログが出る', async () => {
+    it('selectedValue未指定時はタブ作成されず警告ログが出る', async () => {
         const action = new SearchImageGoogleDragAction(tabOperatorMock);
         const payload = {
             type: 'image' as const,
             direction: 'up' as const,
             actionName: 'searchImageGoogle' as const,
             params: {},
+            selectedValue: '',
         };
         await action.execute(payload);
         expect(tabOperatorMock.createTab).not.toHaveBeenCalled();
@@ -65,7 +67,8 @@ describe('SearchImageGoogleDragAction', () => {
             type: 'image' as const,
             direction: 'up' as const,
             actionName: 'searchImageGoogle' as const,
-            params: { url: 'https://example.com/image.png' },
+            params: {},
+            selectedValue: 'https://example.com/image.png',
         };
         await action.execute(payload);
         expect(loggerErrorSpy).toHaveBeenCalledWith('Google画像検索タブの作成に失敗しました', expect.objectContaining({ error: 'tab error' }));
