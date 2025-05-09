@@ -122,6 +122,9 @@ describe('content/index.ts', () => {
     notification.id = 'smg-action-notification';
     document.body.appendChild(notification);
 
+    // MutationObserverが"一度出現"を検知するのを待つ
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
     // 監視対象要素を全て削除
     canvas.remove();
     notification.remove();
@@ -130,6 +133,6 @@ describe('content/index.ts', () => {
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     expect(mockDestroy).toHaveBeenCalled();
-    expect(mockLogger.debug).toHaveBeenCalledWith('MutationObserver: ContentScriptMainを破棄');
+    expect(mockLogger.debug).toHaveBeenCalledWith('MutationObserver: 主要要素が一度出現後に全て消失したためContentScriptMainを破棄');
   });
 }); 
