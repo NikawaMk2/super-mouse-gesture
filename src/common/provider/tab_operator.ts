@@ -6,8 +6,8 @@ export interface ITabOperator {
     togglePinActiveTab(): Promise<void>;
     toggleMuteActiveTab(): Promise<void>;
     closeActiveTab(): Promise<void>;
-    closeTabsToRight(): Promise<void>;
-    closeTabsToLeft(): Promise<void>;
     duplicateActiveTab(): Promise<void>;
     reopenClosedTab(): Promise<void>;
+    activateLeftAndCloseActiveTab(): Promise<void>;
+    activateRightAndCloseActiveTab(): Promise<void>;
 } 
