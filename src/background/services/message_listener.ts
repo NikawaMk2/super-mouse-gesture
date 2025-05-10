@@ -5,6 +5,7 @@ import {
     DragActionMessagePayload
 } from '../../content/services/message/message_types';
 import { injectable, inject } from 'inversify';
+import { OpenImageInNewTabDragAction } from './drag_action/open_image_in_new_tab_drag_action';
 
 export interface IGestureActionHandler {
     handle(payload: GestureActionMessagePayload): Promise<void>;
@@ -21,7 +22,7 @@ export class MessageListener {
 
     constructor(
         @inject('IGestureActionHandler') gestureActionHandler: IGestureActionHandler,
-        @inject('IDragActionHandler') dragActionHandler: IDragActionHandler
+        @inject('IDragActionHandler') dragActionHandler: IDragActionHandler,
     ) {
         this.gestureActionHandler = gestureActionHandler;
         this.dragActionHandler = dragActionHandler;
