@@ -75,11 +75,14 @@ describe('ChromeTabOperator', () => {
             chromeMock.runtime.lastError = undefined;
         });
 
-        it('アクティブタブが見つからない場合は例外', async () => {
+        it('アクティブタブが見つからない場合はLogger出力のみ', async () => {
             chromeMock.tabs.query.mockImplementation((opts: any, cb: any) => {
                 cb([]);
             });
-            await expect(operator.updateCurrentTab('https://example.com')).rejects.toThrow('アクティブなタブが見つかりません');
+            const loggerSpy = jest.spyOn(require('../../../../src/common/logger/logger').default, 'debug');
+            await operator.updateCurrentTab('https://example.com');
+            expect(loggerSpy).toHaveBeenCalledWith('アクティブなタブが見つかりません');
+            loggerSpy.mockRestore();
         });
 
         it('chrome.runtime.lastErrorがupdateで発生した場合は例外', async () => {
@@ -91,6 +94,36 @@ describe('ChromeTabOperator', () => {
                 cb();
             });
             await expect(operator.updateCurrentTab('https://example.com')).rejects.toThrow('updateエラー');
+            chromeMock.runtime.lastError = undefined;
+        });
+    });
+
+    describe('switchToNextTab', () => {
+        it('正常に次のタブに切り替えられる', async () => {
+            // タブ: [1, 2, 3]、アクティブ: 2 → 3へ
+            chromeMock.tabs.query
+                .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }, { id: 2 }, { id: 3 }]))
+                .mockImplementationOnce((q: any, cb: any) => cb([{ id: 2 }]));
+            chromeMock.tabs.update.mockImplementation((id: any, opts: any, cb: any) => cb && cb());
+            await expect(operator.switchToNextTab()).resolves.toBeUndefined();
+            expect(chromeMock.tabs.update).toHaveBeenCalledWith(3, { active: true }, expect.any(Function));
+        });
+        it('アクティブタブが見つからない場合はLogger出力のみ', async () => {
+            chromeMock.tabs.query
+                .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }, { id: 2 }]))
+                .mockImplementationOnce((q: any, cb: any) => cb([]));
+            // Logger.debugが呼ばれることを確認
+            const loggerSpy = jest.spyOn(require('../../../../src/common/logger/logger').default, 'debug');
+            await operator.switchToNextTab();
+            expect(loggerSpy).toHaveBeenCalledWith('アクティブなタブが見つかりません');
+            loggerSpy.mockRestore();
+        });
+        it('chrome.runtime.lastErrorが発生した場合はreject', async () => {
+            chromeMock.tabs.query.mockImplementationOnce((q: any, cb: any) => {
+                chromeMock.runtime.lastError = { message: 'queryエラー' };
+                cb([]);
+            });
+            await expect(operator.switchToNextTab()).rejects.toThrow('queryエラー');
             chromeMock.runtime.lastError = undefined;
         });
     });

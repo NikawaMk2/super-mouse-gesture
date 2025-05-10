@@ -1,3 +1,4 @@
+import Logger from '../logger/logger';
 import { ITabOperator } from './tab_operator';
 
 export class ChromeTabOperator implements ITabOperator {
@@ -29,7 +30,8 @@ export class ChromeTabOperator implements ITabOperator {
                         }
                     });
                 } else {
-                    reject(new Error('アクティブなタブが見つかりません'));
+                    Logger.debug('アクティブなタブが見つかりません');
+                    resolve();
                 }
             });
         });
@@ -49,7 +51,8 @@ export class ChromeTabOperator implements ITabOperator {
                     }
                     const activeTab = activeTabs[0];
                     if (!activeTab) {
-                        reject(new Error('アクティブなタブが見つかりません'));
+                        Logger.debug('アクティブなタブが見つかりません');
+                        resolve();
                         return;
                     }
                     const currentIndex = tabs.findIndex(tab => tab.id === activeTab.id);
@@ -64,7 +67,9 @@ export class ChromeTabOperator implements ITabOperator {
                             }
                         });
                     } else {
-                        reject(new Error('次のタブが見つかりません'));
+                        Logger.debug('次のタブが見つかりません');
+                        resolve();
+                        return;
                     }
                 });
             });
@@ -85,7 +90,8 @@ export class ChromeTabOperator implements ITabOperator {
                     }
                     const activeTab = activeTabs[0];
                     if (!activeTab) {
-                        reject(new Error('アクティブなタブが見つかりません'));
+                        Logger.debug('アクティブなタブが見つかりません');
+                        resolve();
                         return;
                     }
                     const currentIndex = tabs.findIndex(tab => tab.id === activeTab.id);
@@ -100,7 +106,8 @@ export class ChromeTabOperator implements ITabOperator {
                             }
                         });
                     } else {
-                        reject(new Error('前のタブが見つかりません'));
+                        Logger.debug('前のタブが見つかりません');
+                        resolve();
                     }
                 });
             });
@@ -116,7 +123,8 @@ export class ChromeTabOperator implements ITabOperator {
                 }
                 const tab = tabs[0];
                 if (!tab?.id) {
-                    reject(new Error('アクティブなタブが見つかりません'));
+                    Logger.debug('アクティブなタブが見つかりません');
+                    resolve();
                     return;
                 }
                 chrome.tabs.update(tab.id, { pinned: !tab.pinned }, () => {
@@ -139,7 +147,8 @@ export class ChromeTabOperator implements ITabOperator {
                 }
                 const tab = tabs[0];
                 if (!tab?.id) {
-                    reject(new Error('アクティブなタブが見つかりません'));
+                    Logger.debug('アクティブなタブが見つかりません');
+                    resolve();
                     return;
                 }
                 chrome.tabs.update(tab.id, { muted: !tab.mutedInfo?.muted }, () => {
@@ -162,7 +171,8 @@ export class ChromeTabOperator implements ITabOperator {
                 }
                 const tab = tabs[0];
                 if (!tab?.id) {
-                    reject(new Error('アクティブなタブが見つかりません'));
+                    Logger.debug('アクティブなタブが見つかりません');
+                    resolve();
                     return;
                 }
                 chrome.tabs.remove(tab.id, () => {
@@ -185,7 +195,8 @@ export class ChromeTabOperator implements ITabOperator {
                 }
                 const tab = tabs[0];
                 if (!tab?.id) {
-                    reject(new Error('アクティブなタブが見つかりません'));
+                    Logger.debug('アクティブなタブが見つかりません');
+                    resolve();
                     return;
                 }
                 chrome.tabs.duplicate(tab.id, (newTab) => {
@@ -232,12 +243,13 @@ export class ChromeTabOperator implements ITabOperator {
                     }
                     const activeTab = activeTabs[0];
                     if (!activeTab) {
-                        reject(new Error('アクティブなタブが見つかりません'));
+                        Logger.debug('アクティブなタブが見つかりません');
+                        resolve();
                         return;
                     }
                     const currentIndex = tabs.findIndex(tab => tab.id === activeTab.id);
                     if (currentIndex === -1) {
-                        reject(new Error('アクティブなタブがウィンドウ内で見つかりません'));
+                        Logger.debug('アクティブなタブがウィンドウ内で見つかりません');
                         return;
                     }
                     // 左隣のタブを取得
@@ -282,12 +294,13 @@ export class ChromeTabOperator implements ITabOperator {
                     }
                     const activeTab = activeTabs[0];
                     if (!activeTab) {
-                        reject(new Error('アクティブなタブが見つかりません'));
+                        Logger.debug('アクティブなタブが見つかりません');
+                        resolve();
                         return;
                     }
                     const currentIndex = tabs.findIndex(tab => tab.id === activeTab.id);
                     if (currentIndex === -1) {
-                        reject(new Error('アクティブなタブがウィンドウ内で見つかりません'));
+                        Logger.debug('アクティブなタブがウィンドウ内で見つかりません');
                         return;
                     }
                     // 右隣のタブを取得
