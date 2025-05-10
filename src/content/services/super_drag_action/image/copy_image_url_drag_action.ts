@@ -20,7 +20,7 @@ export class CopyImageUrlDragAction implements SuperDragAction {
         selectedValue: string;
     }): Promise<void> {
         Logger.debug('CopyImageUrlDragAction: execute() called', { options });
-        const url = options.params.url ?? options.selectedValue;
+        const url = options.selectedValue;
         if (!url) {
             Logger.warn('コピーする画像URLが指定されていません', { options });
             return;

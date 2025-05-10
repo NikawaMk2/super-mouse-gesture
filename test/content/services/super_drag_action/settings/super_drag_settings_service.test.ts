@@ -17,10 +17,34 @@ describe('SuperDragSettingsService', () => {
 
     it('設定値が保存されていればそれを返す', async () => {
         const customSettings: SuperDragSettings = {
-            text: { right: 'searchGoogle', left: 'searchBing', up: 'copyText', down: 'openAsUrl', none: '' },
-            link: { right: 'openInBackgroundTab', left: 'openInForegroundTab', up: 'copyLinkUrl', down: 'downloadLink', none: '' },
-            image: { right: 'openImageInNewTab', left: 'searchImageGoogle', up: 'copyImageUrl', down: 'downloadImage', none: '' },
-            none: { right: '', left: '', up: '', down: '', none: '' },
+            text: {
+                right: { action: 'searchGoogle', params: {} },
+                left: { action: 'searchBing', params: {} },
+                up: { action: 'copyText', params: {} },
+                down: { action: 'openAsUrl', params: {} },
+                none: { action: '', params: {} },
+            },
+            link: {
+                right: { action: 'openInBackgroundTab', params: {} },
+                left: { action: 'openInForegroundTab', params: {} },
+                up: { action: 'copyLinkUrl', params: {} },
+                down: { action: 'downloadLink', params: {} },
+                none: { action: '', params: {} },
+            },
+            image: {
+                right: { action: 'openImageInNewTab', params: {} },
+                left: { action: 'searchImageGoogle', params: {} },
+                up: { action: 'copyImageUrl', params: {} },
+                down: { action: 'downloadImage', params: {} },
+                none: { action: '', params: {} },
+            },
+            none: {
+                right: { action: '', params: {} },
+                left: { action: '', params: {} },
+                up: { action: '', params: {} },
+                down: { action: '', params: {} },
+                none: { action: '', params: {} },
+            },
         };
         repositoryMock.get.mockResolvedValue(customSettings);
         const result = await service.getSettings();

@@ -12,10 +12,10 @@ describe('OpenInForegroundTabDragAction', () => {
         togglePinActiveTab: jest.fn(),
         toggleMuteActiveTab: jest.fn(),
         closeActiveTab: jest.fn(),
-        closeTabsToRight: jest.fn(),
-        closeTabsToLeft: jest.fn(),
         duplicateActiveTab: jest.fn(),
         reopenClosedTab: jest.fn(),
+        activateLeftAndCloseActiveTab: jest.fn(),
+        activateRightAndCloseActiveTab: jest.fn(),
     };
     beforeEach(() => {
         jest.clearAllMocks();
@@ -33,6 +33,7 @@ describe('OpenInForegroundTabDragAction', () => {
             direction: 'right' as const,
             actionName: 'openInForegroundTab' as const,
             params: { url: 'https://example.com' },
+            selectedValue: 'https://example.com',
         };
         await action.execute(payload);
         expect(createMock).toHaveBeenCalledWith('https://example.com', true);
@@ -46,6 +47,7 @@ describe('OpenInForegroundTabDragAction', () => {
             direction: 'right' as const,
             actionName: 'openInForegroundTab' as const,
             params: { url: 'https://example.com' },
+            selectedValue: 'https://example.com',
         };
         await action.execute(payload);
         expect(Logger.warn).toHaveBeenCalledWith('リンクタイプ以外は未対応です', { payload });
@@ -59,6 +61,7 @@ describe('OpenInForegroundTabDragAction', () => {
             direction: 'right' as const,
             actionName: 'openInForegroundTab' as const,
             params: {},
+            selectedValue: '',
         };
         await action.execute(payload);
         expect(Logger.warn).toHaveBeenCalledWith('開くリンクURLが指定されていません', { payload });
@@ -73,6 +76,7 @@ describe('OpenInForegroundTabDragAction', () => {
             direction: 'right' as const,
             actionName: 'openInForegroundTab' as const,
             params: { url: 'https://example.com' },
+            selectedValue: 'https://example.com',
         };
         await action.execute(payload);
         expect(Logger.error).toHaveBeenCalledWith('フォアグラウンドタブでのリンクオープンに失敗', { error: 'error!', url: 'https://example.com' });

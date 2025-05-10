@@ -14,10 +14,10 @@ describe('PinTabGestureAction', () => {
             togglePinActiveTab: jest.fn().mockResolvedValue(undefined),
             toggleMuteActiveTab: jest.fn(),
             closeActiveTab: jest.fn(),
-            closeTabsToRight: jest.fn(),
-            closeTabsToLeft: jest.fn(),
             duplicateActiveTab: jest.fn(),
             reopenClosedTab: jest.fn(),
+            activateLeftAndCloseActiveTab: jest.fn(),
+            activateRightAndCloseActiveTab: jest.fn(),
         };
         action = new PinTabGestureAction(tabOperatorMock);
     });

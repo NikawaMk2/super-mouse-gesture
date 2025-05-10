@@ -34,7 +34,8 @@ describe('CopyImageUrlDragAction', () => {
             type: 'image',
             direction: 'left',
             actionName: 'copyImageUrl',
-            params: { url: 'https://example.com/image.png' },
+            params: {},
+            selectedValue: 'https://example.com/image.png',
         });
         expect(writeTextMock).toHaveBeenCalledWith('https://example.com/image.png');
         expect(loggerDebugMock).toHaveBeenCalled();
@@ -47,6 +48,7 @@ describe('CopyImageUrlDragAction', () => {
             direction: 'left',
             actionName: 'copyImageUrl',
             params: {},
+            selectedValue: '',
         });
         expect(writeTextMock).not.toHaveBeenCalled();
         expect(loggerWarnMock).toHaveBeenCalled();
@@ -59,7 +61,8 @@ describe('CopyImageUrlDragAction', () => {
             type: 'image',
             direction: 'left',
             actionName: 'copyImageUrl',
-            params: { url: 'https://example.com/image.png' },
+            params: {},
+            selectedValue: 'https://example.com/image.png',
         });
         expect(loggerErrorMock).toHaveBeenCalled();
     });

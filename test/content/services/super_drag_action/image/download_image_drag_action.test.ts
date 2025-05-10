@@ -30,7 +30,8 @@ describe('DownloadImageDragAction', () => {
             type: 'image',
             direction: 'down',
             actionName: 'downloadImage',
-            params: { url: 'https://example.com/image.png' },
+            params: {},
+            selectedValue: 'https://example.com/image.png',
         });
         expect(sendDragActionMock).toHaveBeenCalledWith(expect.objectContaining({ openType: 'downloadImage' }));
         expect(loggerDebugMock).toHaveBeenCalled();
@@ -43,6 +44,7 @@ describe('DownloadImageDragAction', () => {
             direction: 'down',
             actionName: 'downloadImage',
             params: {},
+            selectedValue: '',
         });
         expect(sendDragActionMock).not.toHaveBeenCalled();
         expect(loggerWarnMock).toHaveBeenCalled();

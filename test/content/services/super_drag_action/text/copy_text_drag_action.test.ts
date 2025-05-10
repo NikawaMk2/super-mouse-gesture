@@ -34,7 +34,8 @@ describe('CopyTextDragAction', () => {
             type: 'text',
             direction: 'left',
             actionName: 'copyText',
-            params: { text: 'コピー内容' },
+            params: {},
+            selectedValue: 'コピー内容',
         });
         expect(writeTextMock).toHaveBeenCalledWith('コピー内容');
         expect(loggerDebugMock).toHaveBeenCalled();
@@ -47,6 +48,7 @@ describe('CopyTextDragAction', () => {
             direction: 'left',
             actionName: 'copyText',
             params: {},
+            selectedValue: '',
         });
         expect(writeTextMock).not.toHaveBeenCalled();
         expect(loggerWarnMock).toHaveBeenCalled();

@@ -20,7 +20,7 @@ export class CopyLinkUrlDragAction implements SuperDragAction {
         selectedValue: string;
     }): Promise<void> {
         Logger.debug('CopyLinkUrlDragAction: execute() called', { options });
-        const url = options.params.url ?? options.selectedValue;
+        const url = options.selectedValue;
         if (!url) {
             Logger.warn('コピーするリンクURLが指定されていません', { options });
             return;

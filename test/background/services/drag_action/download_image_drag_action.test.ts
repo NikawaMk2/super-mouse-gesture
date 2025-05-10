@@ -18,7 +18,8 @@ describe('DownloadImageDragAction', () => {
             type: 'image',
             direction: 'down',
             actionName: 'downloadImage',
-            params: { url: 'https://example.com/image.png' },
+            params: {},
+            selectedValue: 'https://example.com/image.png',
         };
         await action.execute(payload);
         expect(mockDownloadService.download).toHaveBeenCalledWith('https://example.com/image.png');
@@ -30,6 +31,7 @@ describe('DownloadImageDragAction', () => {
             direction: 'down',
             actionName: 'downloadImage',
             params: {},
+            selectedValue: '',
         };
         await action.execute(payload);
         expect(mockDownloadService.download).not.toHaveBeenCalled();
@@ -41,7 +43,8 @@ describe('DownloadImageDragAction', () => {
             type: 'image',
             direction: 'down',
             actionName: 'downloadImage',
-            params: { url: 'https://example.com/image.png' },
+            params: {},
+            selectedValue: 'https://example.com/image.png',
         };
         await expect(action.execute(payload)).resolves.not.toThrow();
     });

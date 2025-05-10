@@ -13,18 +13,16 @@ export class OpenInBackgroundTabDragAction implements SuperDragAction {
         selectedValue: string;
     }): Promise<void> {
         Logger.debug('OpenInBackgroundTabDragAction: execute() called', { options });
-        const url = options.params.url;
+        const url = options.selectedValue;
         if (!url) {
             Logger.warn('開くリンクURLが指定されていません', { options });
             return;
         }
         const sender = new ChromeMessageSender();
-        const type = options.type !== DragType.NONE ? options.type : DragType.TEXT;
-        const direction = options.direction !== Direction.NONE ? options.direction : Direction.UP;
         await sender.sendDragAction({
             ...options,
-            type,
-            direction,
+            type: options.type,
+            direction: options.direction,
             openType: 'background'
         });
     }

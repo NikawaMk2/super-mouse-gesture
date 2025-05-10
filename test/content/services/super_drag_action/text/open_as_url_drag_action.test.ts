@@ -2,69 +2,90 @@
  * @jest-environment jsdom
  */
 import { OpenAsUrlDragAction } from '../../../../../src/content/services/super_drag_action/text/open_as_url_drag_action';
+import { IDragActionMessageSender } from '../../../../../src/content/services/message/message_sender';
 
-const openMock = jest.fn();
-const locationAssignMock = jest.fn();
+const messageSenderMock: jest.Mocked<IDragActionMessageSender> = {
+    sendDragAction: jest.fn()
+};
 const loggerDebugMock = jest.fn();
 const loggerWarnMock = jest.fn();
+const loggerErrorMock = jest.fn();
+const loggerInfoMock = jest.fn();
 jest.mock('../../../../../src/common/logger/logger', () => ({
     __esModule: true,
     default: {
         debug: (...args: any[]) => loggerDebugMock(...args),
         warn: (...args: any[]) => loggerWarnMock(...args),
+        error: (...args: any[]) => loggerErrorMock(...args),
+        info: (...args: any[]) => loggerInfoMock(...args),
     },
 }));
 
 describe('OpenAsUrlDragAction', () => {
-    beforeAll(() => {
-        // @ts-ignore
-        global.window.open = openMock;
-        // @ts-ignore
-        delete global.window.location;
-        // @ts-ignore
-        global.window.location = { href: '', assign: locationAssignMock };
-    });
     beforeEach(() => {
-        openMock.mockClear();
-        locationAssignMock.mockClear();
+        messageSenderMock.sendDragAction.mockClear();
         loggerDebugMock.mockClear();
         loggerWarnMock.mockClear();
-        // @ts-ignore
-        global.window.location.href = '';
+        loggerErrorMock.mockClear();
+        loggerInfoMock.mockClear();
     });
 
-    it('newTab=trueでwindow.openが呼ばれること', async () => {
-        const action = new OpenAsUrlDragAction();
+    it('text指定時はmessageSender.sendDragActionが呼ばれること（newTab=true）', async () => {
+        const action = new OpenAsUrlDragAction(messageSenderMock);
         await action.execute({
             type: 'text',
             direction: 'down',
             actionName: 'openAsUrl',
-            params: { text: 'example.com', newTab: true },
+            params: { newTab: true },
+            selectedValue: 'example.com',
         });
-        expect(openMock).toHaveBeenCalledWith('http://example.com', '_blank');
+        expect(messageSenderMock.sendDragAction).toHaveBeenCalledWith(expect.objectContaining({
+            type: 'text',
+            direction: 'down',
+            actionName: 'openAsUrl',
+            selectedValue: 'example.com',
+            params: expect.objectContaining({
+                newTab: true,
+                url: 'http://example.com'
+            })
+        }));
+        expect(loggerDebugMock).toHaveBeenCalled();
+        expect(loggerInfoMock).toHaveBeenCalled();
     });
 
-    it('newTab=falseでwindow.location.hrefが書き換えられること', async () => {
-        const action = new OpenAsUrlDragAction();
+    it('text指定時はmessageSender.sendDragActionが呼ばれること（newTab=false）', async () => {
+        const action = new OpenAsUrlDragAction(messageSenderMock);
         await action.execute({
             type: 'text',
             direction: 'down',
             actionName: 'openAsUrl',
-            params: { text: 'example.com', newTab: false },
+            params: { newTab: false },
+            selectedValue: 'example.com',
         });
-        expect(global.window.location.href).toBe('http://example.com');
+        expect(messageSenderMock.sendDragAction).toHaveBeenCalledWith(expect.objectContaining({
+            type: 'text',
+            direction: 'down',
+            actionName: 'openAsUrl',
+            selectedValue: 'example.com',
+            params: expect.objectContaining({
+                newTab: false,
+                url: 'http://example.com'
+            })
+        }));
+        expect(loggerDebugMock).toHaveBeenCalled();
+        expect(loggerInfoMock).toHaveBeenCalled();
     });
 
-    it('text未指定時はwindow.open/location.hrefされず警告ログが出ること', async () => {
-        const action = new OpenAsUrlDragAction();
+    it('text未指定時はmessageSender.sendDragActionされず警告ログが出ること', async () => {
+        const action = new OpenAsUrlDragAction(messageSenderMock);
         await action.execute({
             type: 'text',
             direction: 'down',
             actionName: 'openAsUrl',
             params: {},
+            selectedValue: '',
         });
-        expect(openMock).not.toHaveBeenCalled();
-        expect(global.window.location.href).not.toBe('http://example.com');
+        expect(messageSenderMock.sendDragAction).not.toHaveBeenCalled();
         expect(loggerWarnMock).toHaveBeenCalled();
     });
 }); 

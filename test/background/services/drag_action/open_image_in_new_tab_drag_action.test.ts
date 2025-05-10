@@ -15,10 +15,10 @@ describe('OpenImageInNewTabDragAction', () => {
             togglePinActiveTab: jest.fn(),
             toggleMuteActiveTab: jest.fn(),
             closeActiveTab: jest.fn(),
-            closeTabsToRight: jest.fn(),
-            closeTabsToLeft: jest.fn(),
             duplicateActiveTab: jest.fn(),
             reopenClosedTab: jest.fn(),
+            activateLeftAndCloseActiveTab: jest.fn(),
+            activateRightAndCloseActiveTab: jest.fn(),
         };
         action = new OpenImageInNewTabDragAction(mockTabOperator);
     });
@@ -29,6 +29,7 @@ describe('OpenImageInNewTabDragAction', () => {
             direction: 'up',
             actionName: 'openImageInNewTab',
             params: { url: 'https://example.com/image.png' },
+            selectedValue: 'https://example.com/image.png',
         };
         await action.execute(payload);
         expect(mockTabOperator.createTab).toHaveBeenCalledWith('https://example.com/image.png', true);
@@ -40,6 +41,7 @@ describe('OpenImageInNewTabDragAction', () => {
             direction: 'up',
             actionName: 'openImageInNewTab',
             params: {},
+            selectedValue: '',
         };
         await action.execute(payload);
         expect(mockTabOperator.createTab).not.toHaveBeenCalled();
@@ -52,6 +54,7 @@ describe('OpenImageInNewTabDragAction', () => {
             direction: 'up',
             actionName: 'openImageInNewTab',
             params: { url: 'https://example.com/image.png' },
+            selectedValue: 'https://example.com/image.png',
         };
         await expect(action.execute(payload)).resolves.not.toThrow();
     });

@@ -2,63 +2,64 @@
  * @jest-environment jsdom
  */
 import { SearchImageGoogleDragAction } from '../../../../../src/content/services/super_drag_action/image/search_image_google_drag_action';
-import { ChromeMessageSender } from '../../../../../src/content/services/message/message_sender';
+import { IDragActionMessageSender } from '../../../../../src/content/services/message/message_sender';
 
+const messageSenderMock: jest.Mocked<IDragActionMessageSender> = {
+    sendDragAction: jest.fn()
+};
 const loggerDebugMock = jest.fn();
 const loggerWarnMock = jest.fn();
+const loggerErrorMock = jest.fn();
+const loggerInfoMock = jest.fn();
 jest.mock('../../../../../src/common/logger/logger', () => ({
     __esModule: true,
     default: {
         debug: (...args: any[]) => loggerDebugMock(...args),
         warn: (...args: any[]) => loggerWarnMock(...args),
+        error: (...args: any[]) => loggerErrorMock(...args),
+        info: (...args: any[]) => loggerInfoMock(...args),
     },
 }));
 
-jest.mock('../../../../../src/content/services/message/message_sender');
-const sendDragActionMock = jest.fn();
-(ChromeMessageSender as jest.Mock).mockImplementation(() => ({
-    sendDragAction: sendDragActionMock,
-}));
-
 describe('SearchImageGoogleDragAction', () => {
-    let windowOpenSpy: jest.SpyInstance;
-    beforeAll(() => {
-        windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn());
-    });
-    afterAll(() => {
-        windowOpenSpy.mockRestore();
-    });
     beforeEach(() => {
-        sendDragActionMock.mockClear();
+        messageSenderMock.sendDragAction.mockClear();
         loggerDebugMock.mockClear();
         loggerWarnMock.mockClear();
-        windowOpenSpy.mockClear();
+        loggerErrorMock.mockClear();
+        loggerInfoMock.mockClear();
     });
 
-    it('executeでwindow.openが呼ばれること', async () => {
-        const action = new SearchImageGoogleDragAction();
-        await action.execute({
-            type: 'image',
-            direction: 'right',
-            actionName: 'searchImageGoogle',
-            params: { imageUrl: 'https://example.com/image.png' },
-        });
-        expect(windowOpenSpy).toHaveBeenCalledWith(
-            'https://www.google.com/searchbyimage?image_url=' + encodeURIComponent('https://example.com/image.png'),
-            '_blank'
-        );
-        expect(loggerDebugMock).toHaveBeenCalled();
-    });
-
-    it('imageUrl未指定時はsendDragActionされず警告ログが出ること', async () => {
-        const action = new SearchImageGoogleDragAction();
+    it('imageUrl指定時はmessageSender.sendDragActionが呼ばれること', async () => {
+        const action = new SearchImageGoogleDragAction(messageSenderMock);
         await action.execute({
             type: 'image',
             direction: 'right',
             actionName: 'searchImageGoogle',
             params: {},
+            selectedValue: 'https://example.com/image.png',
         });
-        expect(sendDragActionMock).not.toHaveBeenCalled();
+        expect(messageSenderMock.sendDragAction).toHaveBeenCalledWith(expect.objectContaining({
+            type: 'image',
+            direction: 'right',
+            actionName: 'searchImageGoogle',
+            selectedValue: 'https://example.com/image.png',
+            params: expect.objectContaining({ searchUrl: expect.stringContaining('https://www.google.com/searchbyimage?image_url=') })
+        }));
+        expect(loggerDebugMock).toHaveBeenCalled();
+        expect(loggerInfoMock).toHaveBeenCalled();
+    });
+
+    it('imageUrl未指定時はmessageSender.sendDragActionされず警告ログが出ること', async () => {
+        const action = new SearchImageGoogleDragAction(messageSenderMock);
+        await action.execute({
+            type: 'image',
+            direction: 'right',
+            actionName: 'searchImageGoogle',
+            params: {},
+            selectedValue: '',
+        });
+        expect(messageSenderMock.sendDragAction).not.toHaveBeenCalled();
         expect(loggerWarnMock).toHaveBeenCalled();
     });
 }); 
