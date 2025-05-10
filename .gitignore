@@ -26,3 +26,5 @@ venv/
 # Other
 manifest.json.lock
 document/
+.temprules/
+.trae/
