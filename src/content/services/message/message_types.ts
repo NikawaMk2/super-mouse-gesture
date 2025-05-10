@@ -1,3 +1,6 @@
+import { Direction } from "../../models/direction";
+import { DragType } from "../../models/drag_type";
+
 // Content Script → Background Script メッセージ
 export type ContentToBackgroundMessage =
   | { action: 'getSettings' }
@@ -22,8 +25,8 @@ export interface GestureActionMessagePayload {
 
 // Content Script(スーパードラッグアクション) → Background Script メッセージペイロード
 export interface DragActionMessagePayload {
-    type: 'text' | 'link' | 'image';
-    direction: 'up' | 'right' | 'down' | 'left';
+    type: DragType;
+    direction: Direction;
     actionName: string;
     params: Record<string, any>;
     selectedValue: string;
