@@ -7,6 +7,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:debuglog": "cross-env DEBUG_LOG=true jest",
     "build": "webpack --config webpack.config.js --mode=production",
     "dev": "webpack --config webpack.config.js --mode=development"
   },
@@ -41,6 +42,7 @@
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "babel": "^5.8.38",
+    "cross-env": "^7.0.3",
     "inversify": "^7.5.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
