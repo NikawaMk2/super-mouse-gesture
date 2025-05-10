@@ -3,31 +3,45 @@ import Environment from '../../../src/common/utils/environment';
 
 // Environmentモジュールのモック
 jest.mock('../../../src/common/utils/environment', () => ({
-  isDevelopment: jest.fn<boolean, []>()
+  isProduction: jest.fn<boolean, []>(),
+  isTestWithDebugLog: jest.fn<boolean, []>()
 }));
 
 describe('Logger', () => {
   const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
   const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
+  const originalEnv = process.env;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    process.env = { ...originalEnv };
   });
 
   afterAll(() => {
     mockConsoleLog.mockRestore();
     mockConsoleError.mockRestore();
+    process.env = originalEnv;
   });
 
   describe('DEBUGログ', () => {
-    it('開発環境ではDEBUGログが出力されること', () => {
-      (Environment.isDevelopment as jest.Mock).mockReturnValue(true);
+    it('本番環境ではDEBUGログが出力されないこと', () => {
+      (Environment.isProduction as jest.Mock).mockReturnValue(true);
+      (Environment.isTestWithDebugLog as jest.Mock).mockReturnValue(true);
+      Logger.debug('デバッグメッセージ', { key: 'value' });
+      expect(mockConsoleLog).not.toHaveBeenCalled();
+    });
+
+    it('テスト環境でDEBUG_LOG=trueならDEBUGログが出力されること', () => {
+      (Environment.isProduction as jest.Mock).mockReturnValue(false);
+      (Environment.isTestWithDebugLog as jest.Mock).mockReturnValue(true);
       Logger.debug('デバッグメッセージ', { key: 'value' });
       expect(mockConsoleLog).toHaveBeenCalled();
     });
 
-    it('本番環境ではDEBUGログが出力されないこと', () => {
-      (Environment.isDevelopment as jest.Mock).mockReturnValue(false);
+    it('テスト環境でDEBUG_LOGが未設定またはfalseならDEBUGログが出力されないこと', () => {
+      (Environment.isProduction as jest.Mock).mockReturnValue(false);
+      (Environment.isTestWithDebugLog as jest.Mock).mockReturnValue(false);
       Logger.debug('デバッグメッセージ', { key: 'value' });
       expect(mockConsoleLog).not.toHaveBeenCalled();
     });

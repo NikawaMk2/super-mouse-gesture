@@ -10,7 +10,7 @@ export interface LogDetails {
 
 export default class Logger {
     static debug(message: string, details?: LogDetails) {
-        if(!Environment.isDevelopment()) {
+        if(Environment.isProduction() || !Environment.isTestWithDebugLog()) {
             return;
         }
         this.outputLog('DEBUG', message, details);
