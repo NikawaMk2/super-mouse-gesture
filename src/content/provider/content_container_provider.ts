@@ -46,6 +46,7 @@ import { IContainerProvider } from '../../common/provider/i_container_provider';
 import { NoneGestureAction } from '../services/gesture_action/none_gesture_action';
 import { ClipboardService } from '../services/clipboard/clipboard_service';
 import { IClipboardService } from '../services/clipboard/clipboard_service_interface';
+import { ChromeMessageSender } from '../services/message/message_sender';
 
 export class ContentContainerProvider implements IContainerProvider {
     private static container: Container | null = null;
@@ -91,8 +92,14 @@ export class ContentContainerProvider implements IContainerProvider {
 
             // --- SuperDragAction（画像） ---
             container.bind(DownloadImageDragAction).toSelf().inSingletonScope();
-            container.bind(OpenImageInNewTabDragAction).toSelf().inSingletonScope();
-            container.bind(SearchImageGoogleDragAction).toSelf().inSingletonScope();
+            container.bind(OpenImageInNewTabDragAction).toDynamicValue(ctx => {
+                const sender = ctx.get<ChromeMessageSender>('ChromeMessageSender');
+                return new OpenImageInNewTabDragAction(sender);
+            }).inSingletonScope();
+            container.bind(SearchImageGoogleDragAction).toDynamicValue(ctx => {
+                const sender = ctx.get<ChromeMessageSender>('ChromeMessageSender');
+                return new SearchImageGoogleDragAction(sender);
+            }).inSingletonScope();
             container.bind(CopyImageUrlDragAction).toSelf().inSingletonScope();
             // --- SuperDragAction（リンク） ---
             container.bind(OpenInBackgroundTabDragAction).toSelf().inSingletonScope();
@@ -100,13 +107,25 @@ export class ContentContainerProvider implements IContainerProvider {
             container.bind(CopyLinkUrlDragAction).toSelf().inSingletonScope();
             container.bind(DownloadLinkDragAction).toSelf().inSingletonScope();
             // --- SuperDragAction（テキスト） ---
-            container.bind(SearchGoogleDragAction).toSelf().inSingletonScope();
+            container.bind(SearchGoogleDragAction).toDynamicValue(ctx => {
+                const sender = ctx.get<ChromeMessageSender>('ChromeMessageSender');
+                return new SearchGoogleDragAction(sender);
+            }).inSingletonScope();
             container.bind(CopyTextDragAction).toSelf().inSingletonScope();
-            container.bind(OpenAsUrlDragAction).toSelf().inSingletonScope();
-            container.bind(SearchBingDragAction).toSelf().inSingletonScope();
+            container.bind(OpenAsUrlDragAction).toDynamicValue(ctx => {
+                const sender = ctx.get<ChromeMessageSender>('ChromeMessageSender');
+                return new OpenAsUrlDragAction(sender);
+            }).inSingletonScope();
+            container.bind(SearchBingDragAction).toDynamicValue(ctx => {
+                const sender = ctx.get<ChromeMessageSender>('ChromeMessageSender');
+                return new SearchBingDragAction(sender);
+            }).inSingletonScope();
 
             // --- ClipboardService ---
             container.bind<IClipboardService>('IClipboardService').to(ClipboardService).inSingletonScope();
+
+            // --- MessageSender ---
+            container.bind<ChromeMessageSender>('ChromeMessageSender').to(ChromeMessageSender).inSingletonScope();
 
             return container;
         } catch (error) {

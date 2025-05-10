@@ -19,7 +19,8 @@ jest.mock('inversify', () => {
         bind: jest.fn().mockReturnThis(),
         to: jest.fn().mockReturnThis(),
         toSelf: jest.fn().mockReturnThis(),
-        inSingletonScope: jest.fn().mockReturnThis()
+        inSingletonScope: jest.fn().mockReturnThis(),
+        toDynamicValue: jest.fn().mockReturnThis()
       };
     })
   };
