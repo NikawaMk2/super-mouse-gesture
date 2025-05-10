@@ -2,8 +2,6 @@ import { ChromeMessageSender } from '../../../src/content/services/message/messa
 import { MessageListener } from '../../../src/background/services/message_listener';
 import { GestureActionHandler } from '../../../src/background/services/gesture_action_handler';
 import { DragActionHandler } from '../../../src/background/services/drag_action_handler';
-import { BackgroundContainerProvider } from '../../../src/background/provider/background_container_provider';
-import { Container } from 'inversify';
 import { DuplicateTabGestureAction } from '../../../src/content/services/gesture_action/duplicate_tab_gesture_action';
 
 describe('DuplicateTabGestureAction Integration', () => {
@@ -11,14 +9,11 @@ describe('DuplicateTabGestureAction Integration', () => {
     let messageListener: MessageListener;
     let gestureActionHandler: GestureActionHandler;
     let dragActionHandler: DragActionHandler;
-    let container: Container;
     let duplicateTabGestureAction: DuplicateTabGestureAction;
 
     beforeEach(() => {
         // console.errorのモック化
         jest.spyOn(console, 'error').mockImplementation(() => {});
-        // コンテナの初期化
-        container = new BackgroundContainerProvider().getContainer();
         
         // ハンドラーの初期化
         gestureActionHandler = new GestureActionHandler();
