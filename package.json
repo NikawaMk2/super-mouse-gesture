@@ -8,7 +8,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "build": "webpack --config webpack.config.js --mode=production",
-    "dev": "webpack --config webpack.config.js --mode=development --watch"
+    "dev": "webpack --config webpack.config.js --mode=development"
   },
   "repository": {
     "type": "git",
