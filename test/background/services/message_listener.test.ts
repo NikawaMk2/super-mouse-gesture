@@ -22,7 +22,7 @@ describe('MessageListener', () => {
     });
 
     it('should call dragActionHandler.handle when action is executeDragAction', async () => {
-        const payload: DragActionMessagePayload = { type: 'text', direction: 'up', actionName: 'test', params: {} };
+        const payload: DragActionMessagePayload = { type: 'text', direction: 'up', actionName: 'test', params: {}, selectedValue: 'test' };
         const message = { action: 'executeDragAction', payload };
         const sendResponse = jest.fn();
         // @ts-ignore
