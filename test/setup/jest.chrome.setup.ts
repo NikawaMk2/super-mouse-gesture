@@ -15,5 +15,7 @@
     create: jest.fn(),
     query: jest.fn(),
     update: jest.fn(),
+    duplicate: jest.fn(),
+    remove: jest.fn(),
   },
 }; 
