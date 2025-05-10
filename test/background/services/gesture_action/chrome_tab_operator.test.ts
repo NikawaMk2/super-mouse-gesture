@@ -219,4 +219,78 @@ describe('ChromeTabOperator', () => {
         expect(chromeMock.tabs.remove).toHaveBeenCalledWith(2, expect.any(Function));
         expect(chromeMock.tabs.update).toHaveBeenCalledWith(3, { active: true }, expect.any(Function));
     });
+
+    it('activateLeftAndCloseActiveTab: アクティブタブがウィンドウ内で見つからない場合はLogger出力のみ', async () => {
+        chromeMock.tabs.query
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }, { id: 2 }, { id: 3 }]))
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 999 }])); // 存在しないID
+        const loggerSpy = jest.spyOn(require('../../../../src/common/logger/logger').default, 'debug');
+        await operator.activateLeftAndCloseActiveTab();
+        expect(loggerSpy).toHaveBeenCalledWith('アクティブなタブがウィンドウ内で見つかりません');
+        loggerSpy.mockRestore();
+    });
+
+    it('activateLeftAndCloseActiveTab: 左端タブを閉じた場合はupdateが呼ばれない', async () => {
+        chromeMock.tabs.query
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }, { id: 2 }, { id: 3 }]))
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }])); // アクティブ: 左端
+        chromeMock.tabs.remove.mockImplementation((id: any, cb: any) => cb && cb());
+        chromeMock.tabs.update.mockImplementation((id: any, opts: any, cb: any) => cb && cb());
+        await expect(operator.activateLeftAndCloseActiveTab()).resolves.toBeUndefined();
+        expect(chromeMock.tabs.remove).toHaveBeenCalledWith(1, expect.any(Function));
+        expect(chromeMock.tabs.update).not.toHaveBeenCalled();
+    });
+
+    it('activateRightAndCloseActiveTab: アクティブタブがウィンドウ内で見つからない場合はLogger出力のみ', async () => {
+        chromeMock.tabs.query
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }, { id: 2 }, { id: 3 }]))
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 999 }])); // 存在しないID
+        const loggerSpy = jest.spyOn(require('../../../../src/common/logger/logger').default, 'debug');
+        await operator.activateRightAndCloseActiveTab();
+        expect(loggerSpy).toHaveBeenCalledWith('アクティブなタブがウィンドウ内で見つかりません');
+        loggerSpy.mockRestore();
+    });
+
+    it('activateRightAndCloseActiveTab: 右端タブを閉じた場合はupdateが呼ばれない', async () => {
+        chromeMock.tabs.query
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }, { id: 2 }, { id: 3 }]))
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 3 }])); // アクティブ: 右端
+        chromeMock.tabs.remove.mockImplementation((id: any, cb: any) => cb && cb());
+        chromeMock.tabs.update.mockImplementation((id: any, opts: any, cb: any) => cb && cb());
+        await expect(operator.activateRightAndCloseActiveTab()).resolves.toBeUndefined();
+        expect(chromeMock.tabs.remove).toHaveBeenCalledWith(3, expect.any(Function));
+        expect(chromeMock.tabs.update).not.toHaveBeenCalled();
+    });
+
+    it('switchToNextTab: タブが1つしかない場合はLogger出力のみ', async () => {
+        chromeMock.tabs.query
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }]))
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }]));
+        const loggerSpy = jest.spyOn(require('../../../../src/common/logger/logger').default, 'debug');
+        await operator.switchToNextTab();
+        expect(loggerSpy).toHaveBeenCalledWith('タブが1つしかありません');
+        loggerSpy.mockRestore();
+    });
+
+    it('switchToNextTab: 次のタブが見つからない場合はLogger出力のみ', async () => {
+        // タブ: [1, 2]、アクティブ: 2、nextIndex=0、tabs[0]={}（idなし）
+        chromeMock.tabs.query
+            .mockImplementationOnce((q: any, cb: any) => cb([{}, { id: 2 }]))
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 2 }]));
+        const loggerSpy = jest.spyOn(require('../../../../src/common/logger/logger').default, 'debug');
+        await operator.switchToNextTab();
+        expect(loggerSpy).toHaveBeenCalledWith('次のタブが見つかりません');
+        loggerSpy.mockRestore();
+    });
+
+    it('switchToPrevTab: 前のタブが見つからない場合はLogger出力のみ', async () => {
+        // タブ: [1, {}]、アクティブ: 1、prevIndex=1、tabs[1]={}（idなし）
+        chromeMock.tabs.query
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }, {}]))
+            .mockImplementationOnce((q: any, cb: any) => cb([{ id: 1 }]));
+        const loggerSpy = jest.spyOn(require('../../../../src/common/logger/logger').default, 'debug');
+        await operator.switchToPrevTab();
+        expect(loggerSpy).toHaveBeenCalledWith('前のタブが見つかりません');
+        loggerSpy.mockRestore();
+    });
 }); 

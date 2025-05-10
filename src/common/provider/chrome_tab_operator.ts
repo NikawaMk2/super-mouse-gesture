@@ -55,7 +55,14 @@ export class ChromeTabOperator implements ITabOperator {
                         resolve();
                         return;
                     }
+                    if (tabs.length === 1) {
+                        Logger.debug('タブが1つしかありません');
+                        resolve();
+                        return;
+                    }
+                    
                     const currentIndex = tabs.findIndex(tab => tab.id === activeTab.id);
+                    // 次のタブが無い場合、最初のタブを次のタブとする
                     const nextIndex = (currentIndex + 1) % tabs.length;
                     const nextTab = tabs[nextIndex];
                     if (nextTab?.id) {
@@ -250,6 +257,7 @@ export class ChromeTabOperator implements ITabOperator {
                     const currentIndex = tabs.findIndex(tab => tab.id === activeTab.id);
                     if (currentIndex === -1) {
                         Logger.debug('アクティブなタブがウィンドウ内で見つかりません');
+                        resolve();
                         return;
                     }
                     // 左隣のタブを取得
@@ -301,6 +309,7 @@ export class ChromeTabOperator implements ITabOperator {
                     const currentIndex = tabs.findIndex(tab => tab.id === activeTab.id);
                     if (currentIndex === -1) {
                         Logger.debug('アクティブなタブがウィンドウ内で見つかりません');
+                        resolve();
                         return;
                     }
                     // 右隣のタブを取得
