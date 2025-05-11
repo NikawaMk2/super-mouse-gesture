@@ -1,4 +1,4 @@
-import { ChromeTabOperator } from '../../../../src/common/provider/chrome_tab_operator';
+import { ChromeTabOperator } from '../../../src/common/provider/chrome_tab_operator';
 
 describe('ChromeTabOperator', () => {
     let operator: ChromeTabOperator;
