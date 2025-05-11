@@ -34,4 +34,7 @@ let onMessageHandler: ((message: any, sender: any, sendResponse: (response: any)
     update: jest.fn(),
     remove: jest.fn(),
   },
+  sessions: {
+    restore: jest.fn(),
+  },
 }; 
