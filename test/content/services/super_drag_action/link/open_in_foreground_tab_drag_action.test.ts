@@ -6,17 +6,7 @@ jest.mock('../../../../../src/common/logger/logger', () => ({
         warn: jest.fn(),
     },
 }));
-jest.mock('../../../../../src/content/services/message/message_sender', () => {
-    return {
-        ChromeMessageSender: jest.fn().mockImplementation(() => {
-            return {
-                sendDragAction: jest.fn().mockResolvedValue({ result: 'ok' })
-            };
-        }),
-    };
-});
 import Logger from '../../../../../src/common/logger/logger';
-import { ChromeMessageSender } from '../../../../../src/content/services/message/message_sender';
 
 describe('OpenInForegroundTabDragAction', () => {
     beforeEach(() => {
@@ -24,7 +14,8 @@ describe('OpenInForegroundTabDragAction', () => {
     });
 
     it('url指定時はsendDragActionが呼ばれる', async () => {
-        const action = new OpenInForegroundTabDragAction();
+        const sender = { sendDragAction: jest.fn().mockResolvedValue({ result: 'ok' }) };
+        const action = new OpenInForegroundTabDragAction(sender as any);
         const url = 'https://example.com';
         const options = {
             type: 'link' as const,
@@ -34,14 +25,14 @@ describe('OpenInForegroundTabDragAction', () => {
             selectedValue: url,
         };
         await action.execute(options);
-        const sender = (ChromeMessageSender as jest.Mock).mock.results[0]?.value;
         expect(typeof sender.sendDragAction).toBe('function');
         expect(sender.sendDragAction).toHaveBeenCalledWith({ ...options, openType: 'foreground' });
         expect(Logger.debug).toHaveBeenCalled();
     });
 
     it('url未指定時はwarnログが出てsendDragActionされない', async () => {
-        const action = new OpenInForegroundTabDragAction();
+        const sender = { sendDragAction: jest.fn() };
+        const action = new OpenInForegroundTabDragAction(sender as any);
         const options = {
             type: 'link' as const,
             direction: 'right' as const,
@@ -51,6 +42,6 @@ describe('OpenInForegroundTabDragAction', () => {
         };
         await action.execute(options);
         expect(Logger.warn).toHaveBeenCalled();
-        expect(ChromeMessageSender).not.toHaveBeenCalled();
+        expect(sender.sendDragAction).not.toHaveBeenCalled();
     });
 });
