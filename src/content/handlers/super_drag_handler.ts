@@ -13,15 +13,9 @@ export class SuperDragHandler {
     private dragStartPos: Point = Point.NONE;
     private dragType: DragType = DragType.NONE;
     private superDragSettingsService: SuperDragSettingsService;
-    private gestureTrailRenderer: GestureTrail;
 
     constructor(superDragSettingsService: SuperDragSettingsService) {
         this.superDragSettingsService = superDragSettingsService;
-        this.gestureTrailRenderer = new GestureTrail({
-            color: 'rgba(0, 0, 255, 0.5)',
-            width: 3,
-            zIndex: 999999
-        });
     }
 
     public onMouseDown(e: MouseEvent) {
@@ -42,7 +36,6 @@ export class SuperDragHandler {
         this.isDrag = true;
         this.dragStartPos = new Point(e.clientX, e.clientY);
         Logger.debug('スーパードラッグ開始', { type: this.dragType, x: e.clientX, y: e.clientY });
-        this.gestureTrailRenderer.startDrawing(this.dragStartPos);
     }
 
     public onDragStart(e: DragEvent) {
@@ -52,7 +45,6 @@ export class SuperDragHandler {
 
     public onDrag(e: DragEvent) {
         if (!this.isDrag || this.dragType === 'none' || this.dragStartPos.isNone()) return;
-        this.gestureTrailRenderer.updateTrail(new Point(e.clientX, e.clientY));
 
         // アクション名をリアルタイム表示
         const currentPoint = new Point(e.clientX, e.clientY);
@@ -116,7 +108,6 @@ export class SuperDragHandler {
         this.isDrag = false;
         this.dragType = DragType.NONE;
         this.dragStartPos = Point.NONE;
-        this.gestureTrailRenderer.clearTrail();
     }
 
     public isActive(): boolean {
@@ -124,7 +115,6 @@ export class SuperDragHandler {
     }
 
     public destroy(): void {
-        this.gestureTrailRenderer.destroy();
         ActionNotification.destroy();
         Logger.debug('SuperDragHandler インスタンス破棄');
     }
