@@ -5,16 +5,12 @@ import { SuperDragHandler } from '../../../src/content/handlers/super_drag_handl
 import { DragType } from '../../../src/content/models/drag_type';
 import { Direction } from '../../../src/content/models/direction';
 import { Point } from '../../../src/content/models/point';
-import Logger from '../../../src/common/logger/logger';
 import { SuperDragSettingsService } from '../../../src/content/services/super_drag_action/settings/super_drag_settings_service';
 import { SuperDragActionFactory } from '../../../src/content/services/super_drag_action/super_drag_action_factory';
 import { SuperDragActionType } from '../../../src/content/services/super_drag_action/super_drag_action_type';
-import { GestureTrail } from '../../../src/content/handlers/gesture_trail';
-import { ActionNotification } from '../../../src/content/handlers/action_notification';
 
-// Logger, GestureTrail, ActionNotification, SuperDragActionFactoryのモック
+// Logger, ActionNotification, SuperDragActionFactoryのモック
 jest.mock('../../../src/common/logger/logger');
-jest.mock('../../../src/content/handlers/gesture_trail');
 jest.mock('../../../src/content/handlers/action_notification');
 jest.mock('../../../src/content/services/super_drag_action/super_drag_action_factory');
 
