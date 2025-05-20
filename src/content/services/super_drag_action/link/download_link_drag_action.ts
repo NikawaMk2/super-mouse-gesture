@@ -1,10 +1,14 @@
 import { SuperDragAction } from '../super_drag_action';
 import Logger from '../../../../common/logger/logger';
-import { ChromeMessageSender } from '../../message/message_sender';
+import { ChromeMessageSender, IDragActionMessageSender } from '../../message/message_sender';
 import { DragType } from '../../../models/drag_type';
 import { Direction } from '../../../models/direction';
 
 export class DownloadLinkDragAction implements SuperDragAction {
+    private sender: IDragActionMessageSender;
+    constructor(sender: IDragActionMessageSender = new ChromeMessageSender()) {
+        this.sender = sender;
+    }
     async execute(options: {
         type: DragType;
         direction: Direction;
@@ -18,8 +22,7 @@ export class DownloadLinkDragAction implements SuperDragAction {
             Logger.warn('ダウンロードするリンクURLが指定されていません', { options });
             return;
         }
-        const sender = new ChromeMessageSender();
-        await sender.sendDragAction({
+        await this.sender.sendDragAction({
             ...options,
             type: options.type,
             direction: options.direction,
