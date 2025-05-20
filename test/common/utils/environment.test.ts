@@ -2,23 +2,45 @@ import Environment from '../../../src/common/utils/environment';
 
 describe('Environment', () => {
     const originalEnv = process.env.NODE_ENV;
-
+    const originalDebugLog = process.env.DEBUG_LOG;
+    
     afterEach(() => {
         process.env.NODE_ENV = originalEnv;
+        process.env.DEBUG_LOG = originalDebugLog;
     });
 
-    describe('isDevelopment', () => {
-        it('NODE_ENVがdevelopmentの場合、trueを返す', () => {
-            process.env.NODE_ENV = 'development';
-            expect(Environment.isDevelopment()).toBe(true);
-        });
-
-        it('NODE_ENVがdevelopmentでない場合、falseを返す', () => {
+    describe('isProduction', () => {
+        it('NODE_ENVがproductionの場合、trueを返す', () => {
             process.env.NODE_ENV = 'production';
-            expect(Environment.isDevelopment()).toBe(false);
-
+            expect(Environment.isProduction()).toBe(true);
+        });
+        it('NODE_ENVがproduction以外の場合、falseを返す', () => {
+            process.env.NODE_ENV = 'development';
+            expect(Environment.isProduction()).toBe(false);
             process.env.NODE_ENV = 'test';
-            expect(Environment.isDevelopment()).toBe(false);
+            expect(Environment.isProduction()).toBe(false);
+        });
+    });
+
+    describe('isTestWithDebugLog', () => {
+        it('NODE_ENVがtestかつDEBUG_LOGが"true"の場合、trueを返す', () => {
+            process.env.NODE_ENV = 'test';
+            process.env.DEBUG_LOG = 'true';
+            expect(Environment.isTestWithDebugLog()).toBe(true);
+        });
+        it('NODE_ENVがtestでもDEBUG_LOGが"true"でない場合、falseを返す', () => {
+            process.env.NODE_ENV = 'test';
+            process.env.DEBUG_LOG = 'false';
+            expect(Environment.isTestWithDebugLog()).toBe(false);
+            process.env.DEBUG_LOG = undefined;
+            expect(Environment.isTestWithDebugLog()).toBe(false);
+        });
+        it('NODE_ENVがtest以外の場合、DEBUG_LOGが"true"でもfalseを返す', () => {
+            process.env.NODE_ENV = 'production';
+            process.env.DEBUG_LOG = 'true';
+            expect(Environment.isTestWithDebugLog()).toBe(false);
+            process.env.NODE_ENV = 'development';
+            expect(Environment.isTestWithDebugLog()).toBe(false);
         });
     });
 }); 
