@@ -47,11 +47,13 @@ export class MouseGestureHandler {
 
         // アクション名をリアルタイム表示
         this.analyzeGesturePattern(this.directionTrail).then((pattern) => {
-            if (pattern) {
-                ActionNotification.show(pattern);
-            } else {
+            if (!pattern) {
                 ActionNotification.hide();
+                return;
             }
+
+            this.wasGestureRecognized = pattern !== GestureActionType.NONE;
+            ActionNotification.show(pattern);
         });
     }
 
@@ -61,7 +63,6 @@ export class MouseGestureHandler {
         this.gestureTrailRenderer.clearTrail();
         const pattern = await this.analyzeGesturePattern(this.directionTrail);
         if (pattern !== GestureActionType.NONE) {
-            this.wasGestureRecognized = true;
             Logger.debug('ジェスチャパターン認識', { pattern });
             try {
                 const action = GestureActionFactory.create(pattern, new (require('../provider/content_container_provider').ContentContainerProvider)().getContainer()) as { execute: () => void };
@@ -73,7 +74,6 @@ export class MouseGestureHandler {
                 ActionNotification.hide();
             }
         } else {
-            this.wasGestureRecognized = false;
             ActionNotification.hide();
         }
         this.gestureTrail = [];
