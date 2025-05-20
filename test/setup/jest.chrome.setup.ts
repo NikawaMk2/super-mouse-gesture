@@ -37,4 +37,7 @@ let onMessageHandler: ((message: any, sender: any, sendResponse: (response: any)
   sessions: {
     restore: jest.fn(),
   },
+  downloads: {
+    download: jest.fn(),
+  },
 }; 
