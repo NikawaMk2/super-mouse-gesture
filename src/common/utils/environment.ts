@@ -4,6 +4,6 @@ export default class Environment {
     }
 
     static isTestWithDebugLog(): boolean {
-        return process.env.NODE_ENV === 'test' && process.env.DEBUG_LOG === 'true';
+        return process.env.NODE_ENV === 'test' || process.env.DEBUG_LOG === 'true';
     }
 }

@@ -28,18 +28,24 @@ describe('Environment', () => {
             process.env.DEBUG_LOG = 'true';
             expect(Environment.isTestWithDebugLog()).toBe(true);
         });
-        it('NODE_ENVがtestでもDEBUG_LOGが"true"でない場合、falseを返す', () => {
+        it('NODE_ENVがtestかつDEBUG_LOGが"true"でない場合、trueを返す', () => {
             process.env.NODE_ENV = 'test';
             process.env.DEBUG_LOG = 'false';
-            expect(Environment.isTestWithDebugLog()).toBe(false);
+            expect(Environment.isTestWithDebugLog()).toBe(true);
             process.env.DEBUG_LOG = undefined;
-            expect(Environment.isTestWithDebugLog()).toBe(false);
+            expect(Environment.isTestWithDebugLog()).toBe(true);
         });
-        it('NODE_ENVがtest以外の場合、DEBUG_LOGが"true"でもfalseを返す', () => {
+        it('NODE_ENVがtest以外かつDEBUG_LOGが"true"の場合、trueを返す', () => {
             process.env.NODE_ENV = 'production';
             process.env.DEBUG_LOG = 'true';
-            expect(Environment.isTestWithDebugLog()).toBe(false);
+            expect(Environment.isTestWithDebugLog()).toBe(true);
             process.env.NODE_ENV = 'development';
+            expect(Environment.isTestWithDebugLog()).toBe(true);
+        });
+
+        it('NODE_ENVがtest以外かつDEBUG_LOGが"true"でない場合、falseを返す', () => {
+            process.env.NODE_ENV = 'production';
+            process.env.DEBUG_LOG = 'false';
             expect(Environment.isTestWithDebugLog()).toBe(false);
         });
     });
