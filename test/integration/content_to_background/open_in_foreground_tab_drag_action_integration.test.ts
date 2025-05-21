@@ -3,13 +3,35 @@ import { DragType } from '../../../src/content/models/drag_type';
 import { Direction } from '../../../src/content/models/direction';
 import Logger from '../../../src/common/logger/logger';
 import { ChromeMessageSender } from '../../../src/content/services/message/message_sender';
+import { MessageListener } from '../../../src/background/services/message_listener';
+import { DragActionHandler } from '../../../src/background/services/drag_action_handler';
+import { GestureActionHandler } from '../../../src/background/services/gesture_action_handler';
 
 describe('OpenInForegroundTabDragAction Integration', () => {
     let action: OpenInForegroundTabDragAction;
     let senderMock: jest.Mocked<ChromeMessageSender>;
+    let messageSender: ChromeMessageSender;
+    let messageListener: MessageListener;
+    let dragActionHandler: DragActionHandler;
+    let gestureActionHandler: GestureActionHandler;
 
     beforeEach(() => {
+        (chrome.tabs.create as jest.Mock) = jest.fn((createProperties, callback) => {
+            if (callback) callback({ id: 123 });
+        });
         jest.clearAllMocks();
+
+        // ハンドラーの初期化
+        gestureActionHandler = new GestureActionHandler();
+        dragActionHandler = new DragActionHandler();
+
+        // メッセージリスナーの初期化
+        messageListener = new MessageListener(gestureActionHandler, dragActionHandler);
+        messageListener.listen();
+
+        // メッセージ送信者の初期化
+        messageSender = new ChromeMessageSender();
+
         senderMock = { sendDragAction: jest.fn() } as any;
         action = new OpenInForegroundTabDragAction(senderMock);
     });
@@ -54,5 +76,16 @@ describe('OpenInForegroundTabDragAction Integration', () => {
         // Logger.errorはOpenInForegroundTabDragActionではcatchしていないため、ここでは呼ばれない
         // もしLogger.errorを追加する場合はOpenInForegroundTabDragActionのcatchで呼ぶ必要あり
         errorSpy.mockRestore();
+    });
+
+    it('content→background経由でOpenInForegroundTabDragActionが呼ばれ、最終的にchrome.tabs.createが実行されること', async () => {
+        await messageSender.sendDragAction({
+            type: DragType.LINK,
+            direction: Direction.UP,
+            actionName: 'openInForegroundTab',
+            params: {},
+            selectedValue: 'https://example.com/',
+        });
+        expect(chrome.tabs.create).toHaveBeenCalledWith({ url: 'https://example.com/', active: true }, expect.any(Function));
     });
 }); 
