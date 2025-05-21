@@ -100,6 +100,7 @@ function createwebPackConfigForDevelopment(mode) {
     webpackConfigForDevelopment.plugins.push(
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(mode),
+            'process.env.DEBUG_LOG': JSON.stringify('true')
         })
     );
 
@@ -115,6 +116,7 @@ function createwebPackConfigForProduction(mode) {
     webpackConfigForProduction.plugins.push(
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(mode),
+            'process.env.DEBUG_LOG': JSON.stringify('false')
         })
     );
 
