@@ -95,10 +95,12 @@ function createwebPackConfigForDevelopment(mode) {
     const webpackConfigForDevelopment = {
         ...baseWebpackConfig,
         mode: mode,
+        target: 'webworker',
     };
     webpackConfigForDevelopment.plugins.push(
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(mode),
+            'process.env.DEBUG_LOG': JSON.stringify('true')
         })
     );
 
@@ -109,10 +111,12 @@ function createwebPackConfigForProduction(mode) {
     const webpackConfigForProduction = {
         ...baseWebpackConfig,
         mode: mode,
+        target: 'webworker',
     };
     webpackConfigForProduction.plugins.push(
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(mode),
+            'process.env.DEBUG_LOG': JSON.stringify('false')
         })
     );
 
@@ -122,7 +126,7 @@ function createwebPackConfigForProduction(mode) {
             extractComments: false,
             terserOptions: {
                 compress: {
-                    drop_console: true,
+                    drop_console: false,
                 },
             },
         })

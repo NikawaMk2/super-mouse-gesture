@@ -4,5 +4,51 @@ globs:
 alwaysApply: true
 ---
 - 実施したことを実施した理由含めて./.learned/cursor/.learned_yyyyMMdd.mdに追記すること。※yyyyMMdd(日付)は今日の日付とする。
-- ソースコードを修正する場合、修正後にそのソースに関連するテストコードを実行し、エラーが出ないことを確認すること。
-- 今日の日付を使用する必要がある場合、コマンド(date +"%Y%m%d")の実行結果によって取得した日付を今日の日付とすること。
+- 新規にクラスを追加する場合、追加後に以下を行うこと。
+ * 追加したクラスをテストするテストコードを作成する。
+ * 作成したテストコードを実行し、エラーが出ないことを確認する。
+- 既存クラスのソースコードを修正する場合、修正後に以下を行うこと。
+ * 修正したクラスをテストするテストコードを参照し、テストケースの追加や既存のテストケースのテスト内容を修正する必要があるか確認する。修正する必要がある場合はテストコードの修正を行う
+ * そのソースに関連するテストコードを実行し、エラーが出ないことを確認する。
+- 今日の日付を使用する必要がある場合、コマンド(例: date +"%Y%m%d")の実行結果によって取得した日付を今日の日付とすること。
+
+# 共通設計ルール
+- 依存オブジェクト（例: メッセージ送信クラス、ストレージリポジトリ等）は直接newせず、コンストラクタでインターフェース経由で受け取ること。
+- DIコンテナ（ContainerProvider等）でシングルトン登録し、必要な箇所でインスタンスを取得すること。
+- 複数の責務を持つクラスは、単一責任の原則に従い、ハンドラー等に分割すること。
+- 設定値が未保存の場合もデフォルト値で動作するように実装すること。
+- DragType/Direction等はnone対応を考慮し、型安全性・エラー防止を担保すること。
+
+## chrome API利用に関する設計指針
+- chrome.downloadsやchrome.tabs等、chrome拡張機能のAPIを利用する場合は、直接呼び出さず、必ず専用のクラスおよびインターフェースを実装し、そのクラス経由で呼び出すこと。
+- 例：DownloadService（IDownloadService）でchrome.downloadsをラップし、アプリケーション本体はDownloadService経由でダウンロード処理を行う。
+- 目的：テスト容易性・責務分離・拡張性・保守性の向上。
+
+### コード例
+```typescript
+// インターフェース定義
+export interface IDownloadService {
+    download(url: string): Promise<void>;
+}
+
+// 実装クラス
+export class DownloadService implements IDownloadService {
+    async download(url: string): Promise<void> {
+        if (!url) return;
+        if (chrome.downloads) {
+            chrome.downloads.download({ url });
+        }
+    }
+}
+
+// DIコンテナ登録例（inversify等）
+container.bind<IDownloadService>('IDownloadService').to(DownloadService).inSingletonScope();
+
+// 利用側（依存注入）
+class SomeAction {
+    constructor(private downloadService: IDownloadService) {}
+    async doDownload(url: string) {
+        await this.downloadService.download(url);
+    }
+}
+```
