@@ -34,8 +34,4 @@ chrome.runtime.onInstalled.addListener(() => {
 // Service Workerがアクティブになったときのイベント
 self.addEventListener('activate', (event) => {
     Logger.info('Service Workerがアクティブになりました');
-    initialize();
 });
-
-// 初期化処理を実行
-initialize();
