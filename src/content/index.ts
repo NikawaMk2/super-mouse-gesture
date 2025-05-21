@@ -81,7 +81,6 @@ const observer = new MutationObserver(() => {
 
   if (anyAppeared) {
     wasAnyTargetAppeared = true;
-    Logger.debug('MutationObserver: 主要要素が初めて出現');
   }
 
   if (wasAnyTargetAppeared && allGone && contentScriptMain) {
