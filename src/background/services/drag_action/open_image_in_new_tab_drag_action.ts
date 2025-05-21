@@ -11,7 +11,7 @@ export class OpenImageInNewTabDragAction implements DragAction {
     }
     async execute(payload: DragActionMessagePayload): Promise<void> {
         Logger.debug('OpenImageInNewTabDragAction: execute() が呼び出されました', { payload });
-        const url = payload.params.url;
+        const url = payload.selectedValue;
         if (!url) {
             Logger.warn('新しいタブで開く画像URLが指定されていません', { payload });
             return;
