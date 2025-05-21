@@ -12,24 +12,24 @@ export type SuperDragSettings = {
 
 export const DEFAULT_SUPER_DRAG_SETTINGS: SuperDragSettings = {
   text: {
-    right: { action: 'searchGoogle', params: { url: 'https://www.google.com/search?q=%s' } },
-    left: { action: 'searchBing', params: { url: 'https://www.bing.com/search?q=%s' } },
-    up: { action: 'copyText', params: {} },
-    down: { action: 'openAsUrl', params: { newTab: false } },
+    right: { action: 'copyText', params: {} },
+    left: { action: 'openAsUrl', params: { newTab: false } },
+    up: { action: 'searchGoogle', params: { url: 'https://www.google.com/search?q=%s' } },
+    down: { action: 'searchBing', params: { url: 'https://www.bing.com/search?q=%s' } },
     none: { action: '', params: {} },
   },
   link: {
-    right: { action: 'openInBackgroundTab', params: {} },
-    left: { action: 'openInForegroundTab', params: {} },
-    up: { action: 'copyLinkUrl', params: {} },
-    down: { action: 'downloadLink', params: {} },
+    right: { action: 'copyLinkUrl', params: {} },
+    left: { action: 'downloadLink', params: {} },
+    up: { action: 'openInForegroundTab', params: {} },
+    down: { action: 'openInBackgroundTab', params: {} },
     none: { action: '', params: {} },
   },
   image: {
-    right: { action: 'openImageInNewTab', params: {} },
-    left: { action: 'searchImageGoogle', params: { url: 'https://www.google.com/searchbyimage?image_url=%s' } },
-    up: { action: 'copyImageUrl', params: {} },
-    down: { action: 'downloadImage', params: {} },
+    right: { action: 'copyImageUrl', params: {} },
+    left: { action: 'downloadImage', params: {} },
+    up: { action: 'openImageInNewTab', params: {} },
+    down: { action: 'searchImageGoogle', params: { url: 'https://www.google.com/searchbyimage?image_url=%s' } },
     none: { action: '', params: {} },
   },
   none: {
