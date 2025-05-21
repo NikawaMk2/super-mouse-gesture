@@ -8,6 +8,8 @@
 - [X] アクション通知UIクラス作成
 - [X] アクション通知UIクラス呼び出しをmouse_gesture_handler.tsに実装
 - [X] アクション通知UIクラス呼び出しをsuper_drag_handler.tsに実装
+- [ ] `src/content/handlers/mouse_gesture_handler.ts` の `directionTrail: Array<Direction>` を、配列をプロパティとして持つ専用クラス（例: `DirectionTrail`）に置き換える設計改善を検討すること。
+  - **理由**: 責務分離・型安全性向上・今後の拡張性（例: trailの操作メソッド追加や履歴管理等）を考慮した設計とするため。
 
 # バックグラウンド
 - [X] コンテンツスクリプトからのメッセージを受信するリスナを追加
@@ -42,13 +44,9 @@
 - [X] drag_action/download_image_drag_action.ts: 画像をダウンロードするアクションを実装する
 - [X] drag_action/search_image_google_drag_action.ts: 画像をGoogle画像検索するアクションを実装する
 - [X] drag_action/copy_image_url_drag_action.ts: 画像URLをコピーするアクションを実装する
+- [ ] super_drag_handler.ts内でdragTypeによるif分岐が複数箇所に存在するため、共通化・リファクタリングを検討する（例：選択値取得や判定処理の関数化など）
 
-# 単体テストエラー
-- [X] test/background/services/drag_action/search_bing_drag_action.test.ts のテスト修正
-- [X] test/content/services/super_drag_action/link/copy_link_url_drag_action.test.ts のテスト修正
-- [X] test/background/services/drag_action/open_in_background_tab_drag_action.test.ts のテスト修正
-- [X] test/content/provider/content_container_provider.test.ts のテスト修正
-- [X] test/background/provider/background_container_provider.test.ts のテスト修正
-- [X] test/content/handlers/action_notification.test.ts のテスト修正
-- [X] test/content/handlers/super_drag_handler.test.ts のテスト修正
-- [X] gesture_action/chrome_window_operator.test.ts: ChromeWindowOperatorのテストコードを作成
+# その他
+- [ ] src\content\handlers\action_notification.tsで表示するアクション名を画面表示用の名称にする
+- [ ] 設定画面の実装
+- [ ] ポップアップの実装
