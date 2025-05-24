@@ -7,6 +7,7 @@ import { DragType } from '../models/drag_type';
 import { SuperDragSettingsService } from '../services/super_drag_action/settings/super_drag_settings_service';
 import { GestureTrail } from './gesture_trail';
 import { ActionNotification } from './action_notification';
+import { ContentContainerProvider } from '../provider/content_container_provider';
 
 export class SuperDragHandler {
     private TAGNAME_A = 'A';
@@ -15,6 +16,7 @@ export class SuperDragHandler {
     private isDrag: boolean = false;
     private dragStartPos: Point = Point.NONE;
     private dragType: DragType = DragType.NONE;
+    private draggedElement: HTMLElement | null = null;
     private superDragSettingsService: SuperDragSettingsService;
 
     constructor(superDragSettingsService: SuperDragSettingsService) {
@@ -30,6 +32,7 @@ export class SuperDragHandler {
 
         this.isDrag = true;
         this.dragStartPos = new Point(e.clientX, e.clientY);
+        this.draggedElement = e.target as HTMLElement; // ドラッグされた要素を保存
         Logger.debug('スーパードラッグ開始', { type: this.dragType, x: e.clientX, y: e.clientY });
     }
 
@@ -80,15 +83,15 @@ export class SuperDragHandler {
             const actionConfig = settings?.[this.dragType]?.[direction] || { action: '', params: {} };
             const actionName = actionConfig.action;
             const params = actionConfig.params;
-            const action = SuperDragActionFactory.create(actionName as SuperDragActionType, new (require('../provider/content_container_provider').ContentContainerProvider)().getContainer());
+            const action = SuperDragActionFactory.create(actionName as SuperDragActionType, new ContentContainerProvider().getContainer());
             // selectedValueの取得
             let selectedValue = '';
             if (this.dragType === DragType.TEXT) {
                 selectedValue = window.getSelection()?.toString() || '';
-            } else if (this.dragType === DragType.LINK) {
-                selectedValue = (e.target as HTMLAnchorElement).href || '';
-            } else if (this.dragType === DragType.IMAGE) {
-                selectedValue = (e.target as HTMLImageElement).src || '';
+            } else if (this.dragType === DragType.LINK && this.draggedElement) {
+                selectedValue = (this.draggedElement as HTMLAnchorElement).href || '';
+            } else if (this.dragType === DragType.IMAGE && this.draggedElement) {
+                selectedValue = (this.draggedElement as HTMLImageElement).src || '';
             }
             action.execute({
                 type: this.dragType,
@@ -104,6 +107,8 @@ export class SuperDragHandler {
             this.isDrag = false;
             this.dragType = DragType.NONE;
             this.dragStartPos = Point.NONE;
+            // メモリリーク防止のため保存した要素をクリア
+            this.draggedElement = null;
         }
     }
 
