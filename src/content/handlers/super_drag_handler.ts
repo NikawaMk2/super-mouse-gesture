@@ -84,15 +84,8 @@ export class SuperDragHandler {
             const actionName = actionConfig.action;
             const params = actionConfig.params;
             const action = SuperDragActionFactory.create(actionName as SuperDragActionType, new ContentContainerProvider().getContainer());
-            // selectedValueの取得
-            let selectedValue = '';
-            if (this.dragType === DragType.TEXT) {
-                selectedValue = window.getSelection()?.toString() || '';
-            } else if (this.dragType === DragType.LINK && this.draggedElement) {
-                selectedValue = (this.draggedElement as HTMLAnchorElement).href || '';
-            } else if (this.dragType === DragType.IMAGE && this.draggedElement) {
-                selectedValue = (this.draggedElement as HTMLImageElement).src || '';
-            }
+
+            const selectedValue = this.getSelectedValue();
             action.execute({
                 type: this.dragType,
                 direction,
@@ -132,5 +125,17 @@ export class SuperDragHandler {
         } else {
             return DragType.NONE;
         }
+    }
+
+    private getSelectedValue(): string {
+        if (this.dragType === DragType.TEXT) {
+            return window.getSelection()?.toString() || '';
+        } else if (this.dragType === DragType.LINK && this.draggedElement) {
+            return (this.draggedElement as HTMLAnchorElement).href || '';
+        } else if (this.dragType === DragType.IMAGE && this.draggedElement) {
+            return (this.draggedElement as HTMLImageElement).src || '';
+        }
+
+        return '';
     }
 } 
