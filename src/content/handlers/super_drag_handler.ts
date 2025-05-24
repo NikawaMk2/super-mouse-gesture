@@ -32,12 +32,12 @@ export class SuperDragHandler {
     }
 
     public onDragStart(e: DragEvent) {
-        if (!this.isDrag || this.dragContext.dragType === DragType.NONE || this.dragStartPos.isNone()) return;
+        if (this.isNotDrag()) return;
         Logger.debug('ドラッグ開始', { context: this.dragContext, x: e.clientX, y: e.clientY });
     }
 
     public onDrag(e: DragEvent) {
-        if (!this.isDrag || this.dragContext.dragType === DragType.NONE || this.dragStartPos.isNone()) return;
+        if (this.isNotDrag()) return;
 
         // アクション名をリアルタイム表示
         const currentPoint = new Point(e.clientX, e.clientY);
@@ -62,7 +62,7 @@ export class SuperDragHandler {
     }
 
     public async onDragEnd(e: DragEvent) {
-        if (!this.isDrag || this.dragContext.dragType === DragType.NONE || this.dragStartPos.isNone()) return;
+        if (this.isNotDrag()) return;
         const currentPoint = new Point(e.clientX, e.clientY);
         const direction = this.dragStartPos.getDirection(currentPoint);
         Logger.debug('ドラッグ終了', { context: this.dragContext, direction });
@@ -105,5 +105,9 @@ export class SuperDragHandler {
     public destroy(): void {
         ActionNotification.destroy();
         Logger.debug('SuperDragHandler インスタンス破棄');
+    }
+
+    private isNotDrag(): boolean {
+        return !this.isDrag || this.dragContext.dragType === DragType.NONE || this.dragStartPos.isNone();
     }
 } 
