@@ -20,19 +20,11 @@ export class SuperDragHandler {
 
     public onMouseDown(e: MouseEvent) {
         // スーパードラッグ用の要素選択判定
-        const selection = window.getSelection();
-        if (selection && selection.toString()) {
-            this.dragType = DragType.TEXT;
-        } else if ((e.target as HTMLElement).tagName === 'A') {
-            this.dragType = DragType.LINK;
-        } else if ((e.target as HTMLElement).tagName === 'IMG') {
-            this.dragType = DragType.IMAGE;
-        } else {
-            this.dragType = DragType.NONE;
-        }
-        if (!this.dragType) {
+        this.dragType = this.getDragType(e);
+        if (this.dragType === DragType.NONE) {
             return;
         }
+        
         this.isDrag = true;
         this.dragStartPos = new Point(e.clientX, e.clientY);
         Logger.debug('スーパードラッグ開始', { type: this.dragType, x: e.clientX, y: e.clientY });
@@ -119,5 +111,18 @@ export class SuperDragHandler {
     public destroy(): void {
         ActionNotification.destroy();
         Logger.debug('SuperDragHandler インスタンス破棄');
+    }
+
+    private getDragType(e: MouseEvent): DragType {
+        const selection = window.getSelection();
+        if (selection && selection.toString()) {
+            return DragType.TEXT;
+        } else if ((e.target as HTMLElement).tagName === 'A') {
+            return DragType.LINK;
+        } else if ((e.target as HTMLElement).tagName === 'IMG') {
+            return DragType.IMAGE;
+        } else {
+            return DragType.NONE;
+        }
     }
 } 
