@@ -130,10 +130,16 @@ export class SuperDragHandler {
     private getSelectedValue(): string {
         if (this.dragType === DragType.TEXT) {
             return window.getSelection()?.toString() || '';
-        } else if (this.dragType === DragType.LINK && this.draggedElement) {
-            return (this.draggedElement as HTMLAnchorElement).href || '';
-        } else if (this.dragType === DragType.IMAGE && this.draggedElement) {
-            return (this.draggedElement as HTMLImageElement).src || '';
+        }
+
+        if (!this.draggedElement) {
+            return '';
+        }
+
+        if (this.dragType === DragType.LINK) {
+            return (this.draggedElement as HTMLAnchorElement).href;
+        } else if (this.dragType === DragType.IMAGE) {
+            return (this.draggedElement as HTMLImageElement).src;
         }
 
         return '';
