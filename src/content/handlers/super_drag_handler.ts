@@ -22,11 +22,11 @@ export class SuperDragHandler {
         // スーパードラッグ用の要素選択判定
         const selection = window.getSelection();
         if (selection && selection.toString()) {
-            this.dragType = 'text';
+            this.dragType = DragType.TEXT;
         } else if ((e.target as HTMLElement).tagName === 'A') {
-            this.dragType = 'link';
+            this.dragType = DragType.LINK;
         } else if ((e.target as HTMLElement).tagName === 'IMG') {
-            this.dragType = 'image';
+            this.dragType = DragType.IMAGE;
         } else {
             this.dragType = DragType.NONE;
         }
@@ -39,12 +39,12 @@ export class SuperDragHandler {
     }
 
     public onDragStart(e: DragEvent) {
-        if (!this.isDrag || this.dragType === 'none' || this.dragStartPos.isNone()) return;
+        if (!this.isDrag || this.dragType === DragType.NONE || this.dragStartPos.isNone()) return;
         Logger.debug('ドラッグ開始', { type: this.dragType, x: e.clientX, y: e.clientY });
     }
 
     public onDrag(e: DragEvent) {
-        if (!this.isDrag || this.dragType === 'none' || this.dragStartPos.isNone()) return;
+        if (!this.isDrag || this.dragType === DragType.NONE || this.dragStartPos.isNone()) return;
 
         // アクション名をリアルタイム表示
         const currentPoint = new Point(e.clientX, e.clientY);
@@ -69,7 +69,7 @@ export class SuperDragHandler {
     }
 
     public async onDragEnd(e: DragEvent) {
-        if (!this.isDrag || this.dragType === 'none' || this.dragStartPos.isNone()) return;
+        if (!this.isDrag || this.dragType === DragType.NONE || this.dragStartPos.isNone()) return;
         const currentPoint = new Point(e.clientX, e.clientY);
         const direction = this.dragStartPos.getDirection(currentPoint);
         Logger.debug('ドラッグ終了', { type: this.dragType, direction });
@@ -88,11 +88,11 @@ export class SuperDragHandler {
             const action = SuperDragActionFactory.create(actionName as SuperDragActionType, new (require('../provider/content_container_provider').ContentContainerProvider)().getContainer());
             // selectedValueの取得
             let selectedValue = '';
-            if (this.dragType === 'text') {
+            if (this.dragType === DragType.TEXT) {
                 selectedValue = window.getSelection()?.toString() || '';
-            } else if (this.dragType === 'link') {
+            } else if (this.dragType === DragType.LINK) {
                 selectedValue = (e.target as HTMLAnchorElement).href || '';
-            } else if (this.dragType === 'image') {
+            } else if (this.dragType === DragType.IMAGE) {
                 selectedValue = (e.target as HTMLImageElement).src || '';
             }
             action.execute({
