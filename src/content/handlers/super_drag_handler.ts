@@ -49,19 +49,23 @@ export class SuperDragHandler {
         // アクション名をリアルタイム表示
         const currentPoint = new Point(e.clientX, e.clientY);
         const direction = this.dragStartPos.getDirection(currentPoint);
-        if (direction && direction !== Direction.NONE) {
-            this.superDragSettingsService.getSettings().then((settings) => {
-                const actionConfig = settings?.[this.dragType]?.[direction] || { action: '', params: {} };
-                const actionName: string = actionConfig.action;
-                if (actionName) {
-                    ActionNotification.show(actionName);
-                } else {
-                    ActionNotification.hide();
-                }
-            });
-        } else {
+        
+        if (!direction || direction === Direction.NONE) {
             ActionNotification.hide();
+            return;
         }
+
+        this.superDragSettingsService.getSettings().then((settings) => {
+            const actionConfig = settings?.[this.dragType]?.[direction] || { action: '', params: {} };
+            const actionName: string = actionConfig.action;
+            
+            if (!actionName) {
+                ActionNotification.hide();
+                return;
+            }
+            
+            ActionNotification.show(actionName);
+        });
     }
 
     public async onDragEnd(e: DragEvent) {
@@ -70,12 +74,12 @@ export class SuperDragHandler {
         const direction = this.dragStartPos.getDirection(currentPoint);
         Logger.debug('ドラッグ終了', { type: this.dragType, direction });
 
-        if (direction === Direction.NONE) {
-            ActionNotification.hide();
-            return;
-        }
-
         try {
+
+            if (direction === Direction.NONE) {
+                return;
+            }
+
             // SuperDragSettingsからアクション名・paramsを取得
             const settings = await this.superDragSettingsService.getSettings();
             const actionConfig = settings?.[this.dragType]?.[direction] || { action: '', params: {} };
@@ -98,16 +102,14 @@ export class SuperDragHandler {
                 params,
                 selectedValue
             });
-            // アクション通知UIを非表示
-            ActionNotification.hide();
         } catch (err) {
             Logger.warn('未対応のスーパードラッグアクション', { type: this.dragType, direction });
+        } finally {
             ActionNotification.hide();
+            this.isDrag = false;
+            this.dragType = DragType.NONE;
+            this.dragStartPos = Point.NONE;
         }
-
-        this.isDrag = false;
-        this.dragType = DragType.NONE;
-        this.dragStartPos = Point.NONE;
     }
 
     public isActive(): boolean {
