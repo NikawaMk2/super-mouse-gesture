@@ -5,18 +5,14 @@ import { Point } from '../models/point';
 import { Direction } from '../models/direction';
 import { DragType } from '../models/drag_type';
 import { SuperDragSettingsService } from '../services/super_drag_action/settings/super_drag_settings_service';
-import { GestureTrail } from './gesture_trail';
 import { ActionNotification } from './action_notification';
 import { ContentContainerProvider } from '../provider/content_container_provider';
+import { DragContext } from './drag_context';
 
 export class SuperDragHandler {
-    private TAGNAME_A = 'A';
-    private TAGNAME_IMG = 'IMG';
-
     private isDrag: boolean = false;
     private dragStartPos: Point = Point.NONE;
-    private dragType: DragType = DragType.NONE;
-    private draggedElement: HTMLElement | null = null;
+    private dragContext: DragContext = DragContext.default();
     private superDragSettingsService: SuperDragSettingsService;
 
     constructor(superDragSettingsService: SuperDragSettingsService) {
@@ -25,24 +21,23 @@ export class SuperDragHandler {
 
     public onMouseDown(e: MouseEvent) {
         // スーパードラッグ用の要素選択判定
-        this.dragType = this.getDragType(e);
-        if (this.dragType === DragType.NONE) {
+        this.dragContext = DragContext.create(e);
+        if (this.dragContext.dragType === DragType.NONE) {
             return;
         }
 
         this.isDrag = true;
         this.dragStartPos = new Point(e.clientX, e.clientY);
-        this.draggedElement = e.target as HTMLElement; // ドラッグされた要素を保存
-        Logger.debug('スーパードラッグ開始', { type: this.dragType, x: e.clientX, y: e.clientY });
+        Logger.debug('スーパードラッグ開始', { type: this.dragContext.dragType, x: e.clientX, y: e.clientY });
     }
 
     public onDragStart(e: DragEvent) {
-        if (!this.isDrag || this.dragType === DragType.NONE || this.dragStartPos.isNone()) return;
-        Logger.debug('ドラッグ開始', { type: this.dragType, x: e.clientX, y: e.clientY });
+        if (!this.isDrag || this.dragContext.dragType === DragType.NONE || this.dragStartPos.isNone()) return;
+        Logger.debug('ドラッグ開始', { type: this.dragContext.dragType, x: e.clientX, y: e.clientY });
     }
 
     public onDrag(e: DragEvent) {
-        if (!this.isDrag || this.dragType === DragType.NONE || this.dragStartPos.isNone()) return;
+        if (!this.isDrag || this.dragContext.dragType === DragType.NONE || this.dragStartPos.isNone()) return;
 
         // アクション名をリアルタイム表示
         const currentPoint = new Point(e.clientX, e.clientY);
@@ -54,7 +49,7 @@ export class SuperDragHandler {
         }
 
         this.superDragSettingsService.getSettings().then((settings) => {
-            const actionConfig = settings?.[this.dragType]?.[direction] || { action: '', params: {} };
+            const actionConfig = settings?.[this.dragContext.dragType]?.[direction] || { action: '', params: {} };
             const actionName: string = actionConfig.action;
             
             if (!actionName) {
@@ -67,10 +62,10 @@ export class SuperDragHandler {
     }
 
     public async onDragEnd(e: DragEvent) {
-        if (!this.isDrag || this.dragType === DragType.NONE || this.dragStartPos.isNone()) return;
+        if (!this.isDrag || this.dragContext.dragType === DragType.NONE || this.dragStartPos.isNone()) return;
         const currentPoint = new Point(e.clientX, e.clientY);
         const direction = this.dragStartPos.getDirection(currentPoint);
-        Logger.debug('ドラッグ終了', { type: this.dragType, direction });
+        Logger.debug('ドラッグ終了', { type: this.dragContext.dragType, direction });
 
         try {
 
@@ -80,28 +75,26 @@ export class SuperDragHandler {
 
             // SuperDragSettingsからアクション名・paramsを取得
             const settings = await this.superDragSettingsService.getSettings();
-            const actionConfig = settings?.[this.dragType]?.[direction] || { action: '', params: {} };
+            const actionConfig = settings?.[this.dragContext.dragType]?.[direction] || { action: '', params: {} };
             const actionName = actionConfig.action;
             const params = actionConfig.params;
             const action = SuperDragActionFactory.create(actionName as SuperDragActionType, new ContentContainerProvider().getContainer());
 
-            const selectedValue = this.getSelectedValue();
+            const selectedValue = this.dragContext.selectedValue;
             action.execute({
-                type: this.dragType,
+                type: this.dragContext.dragType,
                 direction,
                 actionName,
                 params,
                 selectedValue
             });
         } catch (err) {
-            Logger.warn('未対応のスーパードラッグアクション', { type: this.dragType, direction });
+            Logger.warn('未対応のスーパードラッグアクション', { type: this.dragContext.dragType, direction });
         } finally {
             ActionNotification.hide();
             this.isDrag = false;
-            this.dragType = DragType.NONE;
+            this.dragContext = DragContext.default();
             this.dragStartPos = Point.NONE;
-            // メモリリーク防止のため保存した要素をクリア
-            this.draggedElement = null;
         }
     }
 
@@ -112,36 +105,5 @@ export class SuperDragHandler {
     public destroy(): void {
         ActionNotification.destroy();
         Logger.debug('SuperDragHandler インスタンス破棄');
-    }
-
-    private getDragType(e: MouseEvent): DragType {
-        const selection = window.getSelection();
-        if (selection && selection.toString()) {
-            return DragType.TEXT;
-        } else if ((e.target as HTMLElement).tagName === this.TAGNAME_A) {
-            return DragType.LINK;
-        } else if ((e.target as HTMLElement).tagName === this.TAGNAME_IMG) {
-            return DragType.IMAGE;
-        } else {
-            return DragType.NONE;
-        }
-    }
-
-    private getSelectedValue(): string {
-        if (this.dragType === DragType.TEXT) {
-            return window.getSelection()?.toString() || '';
-        }
-
-        if (!this.draggedElement) {
-            return '';
-        }
-
-        if (this.dragType === DragType.LINK) {
-            return (this.draggedElement as HTMLAnchorElement).href;
-        } else if (this.dragType === DragType.IMAGE) {
-            return (this.draggedElement as HTMLImageElement).src;
-        }
-
-        return '';
     }
 } 
