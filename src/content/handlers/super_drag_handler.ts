@@ -9,6 +9,9 @@ import { GestureTrail } from './gesture_trail';
 import { ActionNotification } from './action_notification';
 
 export class SuperDragHandler {
+    private TAGNAME_A = 'A';
+    private TAGNAME_IMG = 'IMG';
+
     private isDrag: boolean = false;
     private dragStartPos: Point = Point.NONE;
     private dragType: DragType = DragType.NONE;
@@ -24,7 +27,7 @@ export class SuperDragHandler {
         if (this.dragType === DragType.NONE) {
             return;
         }
-        
+
         this.isDrag = true;
         this.dragStartPos = new Point(e.clientX, e.clientY);
         Logger.debug('スーパードラッグ開始', { type: this.dragType, x: e.clientX, y: e.clientY });
@@ -117,9 +120,9 @@ export class SuperDragHandler {
         const selection = window.getSelection();
         if (selection && selection.toString()) {
             return DragType.TEXT;
-        } else if ((e.target as HTMLElement).tagName === 'A') {
+        } else if ((e.target as HTMLElement).tagName === this.TAGNAME_A) {
             return DragType.LINK;
-        } else if ((e.target as HTMLElement).tagName === 'IMG') {
+        } else if ((e.target as HTMLElement).tagName === this.TAGNAME_IMG) {
             return DragType.IMAGE;
         } else {
             return DragType.NONE;
