@@ -2,6 +2,7 @@ import { MouseGestureHandler } from '../../../src/content/handlers/mouse_gesture
 import { MouseGestureSettingsService } from '../../../src/content/services/gesture_action/settings/mouse_gesture_settings_service';
 import { GestureActionType } from '../../../src/content/services/gesture_action/gesture_action_type';
 import { Direction } from '../../../src/content/models/direction';
+import { DirectionTrail } from '../../../src/content/models/direction_trail';
 import { DEFAULT_MOUSE_GESTURE_SETTINGS } from '../../../src/common/constants/mouse_gesture_settings';
 
 // LoggerとActionNotificationをモック
@@ -33,7 +34,10 @@ describe('MouseGestureHandler', () => {
         const settings = { 'right,down': 'closeTab' };
         const service = createServiceMock(settings);
         const handler = new MouseGestureHandler(service);
-        const result = await handler.analyzeGesturePattern(['right', 'down'] as Direction[]);
+        const directionTrail = new DirectionTrail();
+        directionTrail.add(Direction.RIGHT);
+        directionTrail.add(Direction.DOWN);
+        const result = await handler.analyzeGesturePattern(directionTrail);
         expect(result).toBe('closeTab');
     });
 
@@ -41,7 +45,10 @@ describe('MouseGestureHandler', () => {
         const settings = { 'right,down': 'closeTab' };
         const service = createServiceMock(settings);
         const handler = new MouseGestureHandler(service);
-        const result = await handler.analyzeGesturePattern(['left', 'up'] as Direction[]);
+        const directionTrail = new DirectionTrail();
+        directionTrail.add(Direction.LEFT);
+        directionTrail.add(Direction.UP);
+        const result = await handler.analyzeGesturePattern(directionTrail);
         expect(result).toBe(GestureActionType.NONE);
     });
 
@@ -49,7 +56,10 @@ describe('MouseGestureHandler', () => {
         const settings = { 'right,down': 'notExistAction' };
         const service = createServiceMock(settings);
         const handler = new MouseGestureHandler(service);
-        const result = await handler.analyzeGesturePattern(['right', 'down'] as Direction[]);
+        const directionTrail = new DirectionTrail();
+        directionTrail.add(Direction.RIGHT);
+        directionTrail.add(Direction.DOWN);
+        const result = await handler.analyzeGesturePattern(directionTrail);
         expect(result).toBe(GestureActionType.NONE);
     });
 
@@ -58,7 +68,9 @@ describe('MouseGestureHandler', () => {
         const handler = new MouseGestureHandler(service);
         for (const [pattern, action] of Object.entries(DEFAULT_MOUSE_GESTURE_SETTINGS)) {
             const directions = pattern.split(',') as Direction[];
-            const result = await handler.analyzeGesturePattern(directions);
+            const directionTrail = new DirectionTrail();
+            directions.forEach(direction => directionTrail.add(direction));
+            const result = await handler.analyzeGesturePattern(directionTrail);
             expect(result).toBe(action);
         }
     });
@@ -73,7 +85,8 @@ describe('MouseGestureHandler', () => {
         handler.onMouseMove({ clientX: 50, clientY: 0 } as MouseEvent); // right
         handler.onMouseMove({ clientX: 100, clientY: 0 } as MouseEvent); // right
         handler.onMouseMove({ clientX: 150, clientY: 0 } as MouseEvent); // right
-        expect(handler['directionTrail']).toEqual([Direction.RIGHT]);
+        const directionTrail = handler['directionTrail'] as DirectionTrail;
+        expect(directionTrail.toArray()).toEqual([Direction.RIGHT]);
     });
 
     it('NONEが含まれる場合、directionTrailには追加されない', () => {
@@ -84,7 +97,8 @@ describe('MouseGestureHandler', () => {
         // ほぼ動かさない（NONE）
         handler.onMouseMove({ clientX: 0, clientY: 0 } as MouseEvent); // NONE
         handler.onMouseMove({ clientX: 1, clientY: 1 } as MouseEvent); // NONE（閾値未満）
-        expect(handler['directionTrail']).toEqual([]);
+        const directionTrail = handler['directionTrail'] as DirectionTrail;
+        expect(directionTrail.toArray()).toEqual([]);
     });
 
     it('異なる方向が続いた場合、すべてdirectionTrailに追加される', () => {
@@ -96,7 +110,8 @@ describe('MouseGestureHandler', () => {
         handler.onMouseMove({ clientX: 50, clientY: 50 } as MouseEvent); // down
         handler.onMouseMove({ clientX: 0, clientY: 50 } as MouseEvent); // left
         handler.onMouseMove({ clientX: 0, clientY: 0 } as MouseEvent); // up
-        expect(handler['directionTrail']).toEqual([
+        const directionTrail = handler['directionTrail'] as DirectionTrail;
+        expect(directionTrail.toArray()).toEqual([
             Direction.RIGHT,
             Direction.DOWN,
             Direction.LEFT,
@@ -121,7 +136,9 @@ describe('MouseGestureHandler', () => {
             const { GestureActionFactory } = require('../../../src/content/services/gesture_action/gesture_action_factory');
             gestureActionFactoryCreateSpy = jest.spyOn(GestureActionFactory, 'create').mockReturnValue({ execute: gestureActionExecuteMock });
             // directionTrailを直接セット
-            (handler as any).directionTrail = [Direction.RIGHT];
+            const directionTrail = new DirectionTrail();
+            directionTrail.add(Direction.RIGHT);
+            (handler as any).directionTrail = directionTrail;
             (handler as any).isGesture = true;
         });
 
@@ -147,7 +164,7 @@ describe('MouseGestureHandler', () => {
         });
 
         it('NONEパターンの場合、ActionNotification.hideのみ呼ばれる', async () => {
-            (handler as any).directionTrail = [];
+            (handler as any).directionTrail = new DirectionTrail();
             await handler.onMouseUp({} as MouseEvent);
             expect(ActionNotification.hide).toHaveBeenCalled();
         });

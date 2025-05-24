@@ -3,6 +3,7 @@ import { Point } from '../models/point';
 import { GestureActionFactory } from '../services/gesture_action/gesture_action_factory';
 import { GestureActionType } from '../services/gesture_action/gesture_action_type';
 import { Direction } from '../models/direction';
+import { DirectionTrail } from '../models/direction_trail';
 import { MouseGestureSettingsService } from '../services/gesture_action/settings/mouse_gesture_settings_service';
 import { DEFAULT_MOUSE_GESTURE_SETTINGS } from '../../common/constants/mouse_gesture_settings';
 import { GestureTrail } from './gesture_trail';
@@ -12,7 +13,7 @@ export class MouseGestureHandler {
     private isGesture: boolean = false;
     private wasGestureRecognized: boolean = false;
     private gestureTrail: Array<Point> = [];
-    private directionTrail: Array<Direction> = [];
+    private directionTrail: DirectionTrail = new DirectionTrail();
     private mouseGestureSettingsService: MouseGestureSettingsService;
     private gestureTrailRenderer: GestureTrail;
 
@@ -29,7 +30,7 @@ export class MouseGestureHandler {
         this.isGesture = true;
         this.wasGestureRecognized = false;
         this.gestureTrail = [new Point(e.clientX, e.clientY)];
-        this.directionTrail = [];
+        this.directionTrail.reset();
         Logger.debug('マウスジェスチャ開始', { x: e.clientX, y: e.clientY });
         this.gestureTrailRenderer.startDrawing(new Point(e.clientX, e.clientY));
     }
@@ -39,9 +40,7 @@ export class MouseGestureHandler {
         const lastPoint = this.gestureTrail[this.gestureTrail.length - 1];
         const currentPoint = new Point(e.clientX, e.clientY);
         const direction = lastPoint.getDirection(currentPoint);
-        if (direction !== Direction.NONE && this.directionTrail[this.directionTrail.length - 1] !== direction) {
-            this.directionTrail.push(direction);
-        }
+        this.directionTrail.add(direction);
         this.gestureTrail.push(currentPoint);
         this.gestureTrailRenderer.updateTrail(currentPoint);
 
@@ -77,7 +76,7 @@ export class MouseGestureHandler {
             ActionNotification.hide();
         }
         this.gestureTrail = [];
-        this.directionTrail = [];
+        this.directionTrail.reset();
     }
 
     public onContextMenu(e: MouseEvent) {
@@ -98,12 +97,12 @@ export class MouseGestureHandler {
     }
 
     // パターン解析: 方向列を文字列化し、設定値からアクション名を返す
-    public async analyzeGesturePattern(directionTrail: Array<Direction>): Promise<GestureActionType> {
-        if (directionTrail.length === 0) {
+    public async analyzeGesturePattern(directionTrail: DirectionTrail): Promise<GestureActionType> {
+        if (directionTrail.isEmpty()) {
             return GestureActionType.NONE;
         }
 
-        const pattern = directionTrail.join(',');
+        const pattern = directionTrail.toPattern();
         let settings = await this.mouseGestureSettingsService.getSettings();
         if (!settings) {
             Logger.warn('設定値が取得できませんでした。デフォルト設定を使用します。', { pattern });
