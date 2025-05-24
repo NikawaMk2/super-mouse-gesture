@@ -62,7 +62,7 @@ describe('SuperDragHandler', () => {
         const e = createMouseEvent('mousedown', 'DIV');
         handler.onMouseDown(e);
         expect((handler as any).dragContext.dragType).toBe(DragType.TEXT);
-        expect((handler as any).isDrag).toBe(true);
+        expect((handler as any).dragContext.dragType).not.toBe(DragType.NONE);
     });
 
     test('onMouseDown: aタグはdragTypeがlinkになる', () => {
@@ -70,7 +70,7 @@ describe('SuperDragHandler', () => {
         const e = createMouseEvent('mousedown', 'A');
         handler.onMouseDown(e);
         expect((handler as any).dragContext.dragType).toBe(DragType.LINK);
-        expect((handler as any).isDrag).toBe(true);
+        expect((handler as any).dragContext.dragType).not.toBe(DragType.NONE);
     });
 
     test('onMouseDown: imgタグはdragTypeがimageになる', () => {
@@ -78,7 +78,7 @@ describe('SuperDragHandler', () => {
         const e = createMouseEvent('mousedown', 'IMG');
         handler.onMouseDown(e);
         expect((handler as any).dragContext.dragType).toBe(DragType.IMAGE);
-        expect((handler as any).isDrag).toBe(true);
+        expect((handler as any).dragContext.dragType).not.toBe(DragType.NONE);
     });
 
     test('onMouseDown: 対象外要素はdragTypeがnoneになる', () => {
@@ -86,7 +86,6 @@ describe('SuperDragHandler', () => {
         const e = createMouseEvent('mousedown', 'DIV');
         handler.onMouseDown(e);
         expect((handler as any).dragContext.dragType).toBe(DragType.NONE);
-        expect((handler as any).isDrag).toBe(false);
     });
 
     test('onDragStart: isDrag=false時は例外が発生しない', () => {
@@ -128,15 +127,6 @@ describe('SuperDragHandler', () => {
         mockFactoryCreate.mockImplementationOnce(() => { throw new Error('fail'); });
         const dragE = createDragEvent('dragend', 'DIV', 50, 10);
         await expect(handler.onDragEnd(dragE as any)).resolves.toBeUndefined();
-    });
-
-    test('isActive: ドラッグ中はtrue、終了後はfalseを返す', () => {
-        jest.spyOn(window, 'getSelection').mockReturnValue({ toString: () => 'abc' } as any);
-        const e = createMouseEvent('mousedown', 'DIV');
-        handler.onMouseDown(e);
-        expect(handler.isActive()).toBe(true);
-        (handler as any).isDrag = false;
-        expect(handler.isActive()).toBe(false);
     });
 
     test('destroy: 例外が発生せず正常に破棄できる', () => {

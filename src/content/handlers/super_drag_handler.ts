@@ -10,7 +10,6 @@ import { ContentContainerProvider } from '../provider/content_container_provider
 import { DragContext } from './drag_context';
 
 export class SuperDragHandler {
-    private isDrag: boolean = false;
     private dragStartPos: Point = Point.NONE;
     private dragContext: DragContext = DragContext.default();
     private superDragSettingsService: SuperDragSettingsService;
@@ -26,7 +25,6 @@ export class SuperDragHandler {
             return;
         }
 
-        this.isDrag = true;
         this.dragStartPos = new Point(e.clientX, e.clientY);
         Logger.debug('スーパードラッグの要素を選択', { context: this.dragContext, x: e.clientX, y: e.clientY });
     }
@@ -92,14 +90,9 @@ export class SuperDragHandler {
             Logger.warn('未対応のスーパードラッグアクション', { context: this.dragContext, direction });
         } finally {
             ActionNotification.hide();
-            this.isDrag = false;
             this.dragContext = DragContext.default();
             this.dragStartPos = Point.NONE;
         }
-    }
-
-    public isActive(): boolean {
-        return this.isDrag;
     }
 
     public destroy(): void {
@@ -108,6 +101,6 @@ export class SuperDragHandler {
     }
 
     private isNotDrag(): boolean {
-        return !this.isDrag || this.dragContext.dragType === DragType.NONE || this.dragStartPos.isNone();
+        return this.dragContext.dragType === DragType.NONE;
     }
 } 
