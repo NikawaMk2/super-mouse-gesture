@@ -61,7 +61,7 @@ describe('SuperDragHandler', () => {
         jest.spyOn(window, 'getSelection').mockReturnValue(sel as any);
         const e = createMouseEvent('mousedown', 'DIV');
         handler.onMouseDown(e);
-        expect((handler as any).dragType).toBe('text');
+        expect((handler as any).dragType).toBe(DragType.TEXT);
         expect((handler as any).isDrag).toBe(true);
     });
 
@@ -69,7 +69,7 @@ describe('SuperDragHandler', () => {
         jest.spyOn(window, 'getSelection').mockReturnValue({ toString: () => '' } as any);
         const e = createMouseEvent('mousedown', 'A');
         handler.onMouseDown(e);
-        expect((handler as any).dragType).toBe('link');
+        expect((handler as any).dragType).toBe(DragType.LINK);
         expect((handler as any).isDrag).toBe(true);
     });
 
@@ -77,7 +77,7 @@ describe('SuperDragHandler', () => {
         jest.spyOn(window, 'getSelection').mockReturnValue({ toString: () => '' } as any);
         const e = createMouseEvent('mousedown', 'IMG');
         handler.onMouseDown(e);
-        expect((handler as any).dragType).toBe('image');
+        expect((handler as any).dragType).toBe(DragType.IMAGE);
         expect((handler as any).isDrag).toBe(true);
     });
 
@@ -85,8 +85,8 @@ describe('SuperDragHandler', () => {
         jest.spyOn(window, 'getSelection').mockReturnValue({ toString: () => '' } as any);
         const e = createMouseEvent('mousedown', 'DIV');
         handler.onMouseDown(e);
-        expect((handler as any).dragType).toBe('none');
-        expect((handler as any).isDrag).toBe(true);
+        expect((handler as any).dragType).toBe(DragType.NONE);
+        expect((handler as any).isDrag).toBe(false);
     });
 
     test('onDragStart: isDrag=false時は例外が発生しない', () => {
