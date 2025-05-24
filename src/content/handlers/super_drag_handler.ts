@@ -28,12 +28,12 @@ export class SuperDragHandler {
 
         this.isDrag = true;
         this.dragStartPos = new Point(e.clientX, e.clientY);
-        Logger.debug('スーパードラッグ開始', { type: this.dragContext.dragType, x: e.clientX, y: e.clientY });
+        Logger.debug('スーパードラッグの要素を選択', { context: this.dragContext, x: e.clientX, y: e.clientY });
     }
 
     public onDragStart(e: DragEvent) {
         if (!this.isDrag || this.dragContext.dragType === DragType.NONE || this.dragStartPos.isNone()) return;
-        Logger.debug('ドラッグ開始', { type: this.dragContext.dragType, x: e.clientX, y: e.clientY });
+        Logger.debug('ドラッグ開始', { context: this.dragContext, x: e.clientX, y: e.clientY });
     }
 
     public onDrag(e: DragEvent) {
@@ -65,7 +65,7 @@ export class SuperDragHandler {
         if (!this.isDrag || this.dragContext.dragType === DragType.NONE || this.dragStartPos.isNone()) return;
         const currentPoint = new Point(e.clientX, e.clientY);
         const direction = this.dragStartPos.getDirection(currentPoint);
-        Logger.debug('ドラッグ終了', { type: this.dragContext.dragType, direction });
+        Logger.debug('ドラッグ終了', { context: this.dragContext, direction });
 
         try {
 
@@ -89,7 +89,7 @@ export class SuperDragHandler {
                 selectedValue
             });
         } catch (err) {
-            Logger.warn('未対応のスーパードラッグアクション', { type: this.dragContext.dragType, direction });
+            Logger.warn('未対応のスーパードラッグアクション', { context: this.dragContext, direction });
         } finally {
             ActionNotification.hide();
             this.isDrag = false;

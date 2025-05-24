@@ -1,3 +1,4 @@
+import Logger from "../../common/logger/logger";
 import { DragType } from "../models/drag_type";
 
 export class DragContext {
@@ -18,6 +19,7 @@ export class DragContext {
         }
 
         const target = e.target as HTMLElement;
+        Logger.debug('HTML属性を選択: ', { target: target.outerHTML });
         if (target.tagName === DragContext.TAGNAME_A) {
             return new DragContext(DragType.LINK, (target as HTMLAnchorElement).href);
         } else if (target.tagName === DragContext.TAGNAME_IMG) {
