@@ -84,10 +84,10 @@ describe('GestureActionNameMap - 契約による設計テスト', () => {
                 { type: GestureActionType.SHOW_FIND_BAR, expectedName: '検索バー表示' },
                 { type: GestureActionType.NEW_TAB, expectedName: '新しいタブ' },
                 { type: GestureActionType.CLOSE_TAB, expectedName: 'タブを閉じる' },
-                { type: GestureActionType.CLOSE_TAB_TO_LEFT, expectedName: '左のタブを閉じる' },
-                { type: GestureActionType.CLOSE_TAB_TO_RIGHT, expectedName: '右のタブを閉じる' },
-                { type: GestureActionType.NEXT_TAB, expectedName: '次のタブ' },
-                { type: GestureActionType.PREV_TAB, expectedName: '前のタブ' },
+                { type: GestureActionType.CLOSE_TAB_TO_LEFT, expectedName: 'このタブを閉じて左のタブに移動' },
+                { type: GestureActionType.CLOSE_TAB_TO_RIGHT, expectedName: 'このタブを閉じて右のタブに移動' },
+                { type: GestureActionType.NEXT_TAB, expectedName: '右のタブに移動' },
+                { type: GestureActionType.PREV_TAB, expectedName: '左のタブに移動' },
                 { type: GestureActionType.NONE, expectedName: 'なし' },
             ];
 

@@ -88,7 +88,6 @@ describe('DownloadLinkDragAction Integration', () => {
         });
         expect(chrome.downloads.download).toHaveBeenCalledWith(
             expect.objectContaining({ url: 'https://example.com/file.zip' }),
-            expect.any(Function)
         );
     });
 }); 

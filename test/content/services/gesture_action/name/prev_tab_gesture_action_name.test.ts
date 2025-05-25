@@ -7,8 +7,8 @@ describe('PrevTabGestureActionName', () => {
         prevTabGestureActionName = new PrevTabGestureActionName();
     });
 
-    test('getJapaneseName()は"前のタブ"を返す', () => {
+    test('getJapaneseName()は"左のタブに移動"を返す', () => {
         const result = prevTabGestureActionName.getJapaneseName();
-        expect(result).toBe('前のタブ');
+        expect(result).toBe('左のタブに移動');
     });
 }); 

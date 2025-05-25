@@ -7,8 +7,8 @@ describe('NextTabGestureActionName', () => {
         nextTabGestureActionName = new NextTabGestureActionName();
     });
 
-    test('getJapaneseName()は"次のタブ"を返す', () => {
+    test('getJapaneseName()は"右のタブに移動"を返す', () => {
         const result = nextTabGestureActionName.getJapaneseName();
-        expect(result).toBe('次のタブ');
+        expect(result).toBe('右のタブに移動');
     });
 }); 
