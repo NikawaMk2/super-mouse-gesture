@@ -52,7 +52,7 @@ export class MouseGestureHandler {
             }
 
             this.wasGestureRecognized = pattern !== GestureActionType.NONE;
-            ActionNotification.show(pattern);
+            ActionNotification.showMouseGestureHandler(pattern);
         });
     }
 

@@ -55,7 +55,7 @@ export class SuperDragHandler {
                 return;
             }
             
-            ActionNotification.show(actionName);
+            ActionNotification.showSuperDragActionHandler(actionName as SuperDragActionType);
         });
     }
 

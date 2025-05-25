@@ -1,15 +1,29 @@
 import Logger from '../../common/logger/logger';
+import { GestureActionType } from '../services/gesture_action/gesture_action_type';
+import { GestureActionNameMap } from '../services/gesture_action/name/gesture_acrion_name_map';
+import { SuperDragActionNameMap } from '../services/super_drag_action/name/super_drag_acrion_name_map';
+import { SuperDragActionType } from '../services/super_drag_action/super_drag_action_type';
 
 export class ActionNotification {
     private static notificationId = 'smg-action-notification';
     private static notificationElem: HTMLDivElement | null = null;
     private static lastActionName: string | null = null;
 
+    public static showMouseGestureHandler(actionType: GestureActionType): void {
+        const actionName = GestureActionNameMap.get(actionType);
+        this.show(actionName);
+    }
+    
+    public static showSuperDragActionHandler(actionType: SuperDragActionType): void {
+        const actionName = SuperDragActionNameMap.get(actionType);
+        this.show(actionName);
+    }
+
     /**
      * アクション名を中央に表示する
      * @param actionName 表示するアクション名
      */
-    public static show(actionName: string): void {
+    private static show(actionName: string): void {
         try {
             if (this.notificationElem) {
                 this.notificationElem.textContent = actionName;
