@@ -28,10 +28,11 @@ async function initialize() {
 // Service Workerのライフサイクルイベントをリッスン
 chrome.runtime.onInstalled.addListener(() => {
     Logger.info('拡張機能がインストール/アップデートされました');
-    initialize();
 });
 
 // Service Workerがアクティブになったときのイベント
 self.addEventListener('activate', (event) => {
     Logger.info('Service Workerがアクティブになりました');
 });
+
+initialize();
