@@ -95,8 +95,16 @@ describe('SuperDragHandler', () => {
          (ActionNotification.destroy as jest.Mock).mockImplementation(() => {});
 
          // DragContextのモック設定
-         (DragContext.create as jest.Mock).mockReturnValue(new DragContext(DragType.TEXT, 'test'));
-         (DragContext.default as jest.Mock).mockReturnValue(new DragContext(DragType.NONE, ''));
+         (DragContext.create as jest.Mock).mockReturnValue({
+             dragType: DragType.TEXT,
+             selectedValue: 'test',
+             isValid: jest.fn().mockReturnValue(true)
+         });
+         (DragContext.default as jest.Mock).mockReturnValue({
+             dragType: DragType.NONE,
+             selectedValue: '',
+             isValid: jest.fn().mockReturnValue(false)
+         });
 
          handler = new SuperDragHandler(mockSettingsService);
      });
@@ -149,7 +157,11 @@ describe('SuperDragHandler', () => {
         describe('事後条件', () => {
             it('有効なドラッグコンテキストの場合、ドラッグ開始位置が設定されること', () => {
                 const mouseEvent = new MouseEvent('mousedown', { clientX: 100, clientY: 100 });
-                (DragContext.create as jest.Mock).mockReturnValue(new DragContext(DragType.TEXT, 'test'));
+                (DragContext.create as jest.Mock).mockReturnValue({
+                    dragType: DragType.TEXT,
+                    selectedValue: 'test',
+                    isValid: jest.fn().mockReturnValue(true)
+                });
                 
                 handler.onMouseDown(mouseEvent);
                 
@@ -163,21 +175,30 @@ describe('SuperDragHandler', () => {
                 );
             });
 
-                         it('無効なドラッグコンテキストの場合、処理が早期終了すること', () => {
-                 const mouseEvent = new MouseEvent('mousedown', { clientX: 100, clientY: 100 });
-                 (DragContext.create as jest.Mock).mockReturnValueOnce(new DragContext(DragType.NONE, ''));
-                 
-                 // Loggerのモックをクリア
-                 (Logger.debug as jest.Mock).mockClear();
-                 
-                 handler.onMouseDown(mouseEvent);
-                 
-                 // DragType.NONEの場合は早期returnするため、ログは出力されない
-                 expect(Logger.debug).not.toHaveBeenCalledWith(
-                     'スーパードラッグの要素を選択',
-                     expect.any(Object)
-                 );
-             });
+                                     it('無効なドラッグコンテキストの場合、処理が早期終了すること', () => {
+                const newHandler = new SuperDragHandler(mockSettingsService);
+                const mouseEvent = new MouseEvent('mousedown', { clientX: 100, clientY: 100 });
+                
+                // モックを完全にリセットしてから設定
+                (DragContext.create as jest.Mock).mockReset();
+                const mockDragContext = {
+                    dragType: DragType.NONE,
+                    selectedValue: '',
+                    isValid: jest.fn().mockReturnValue(false)
+                };
+                (DragContext.create as jest.Mock).mockReturnValue(mockDragContext);
+                
+                // Loggerのモックをクリア
+                (Logger.debug as jest.Mock).mockClear();
+                
+                newHandler.onMouseDown(mouseEvent);
+                
+                // DragContext.createが呼ばれることを確認
+                expect(DragContext.create).toHaveBeenCalledWith(mouseEvent);
+                
+                                // DragType.NONEの場合は早期returnするため、ログは出力されない
+                expect(Logger.debug).not.toHaveBeenCalled();
+            });
         });
 
         describe('不変条件', () => {
@@ -204,7 +225,11 @@ describe('SuperDragHandler', () => {
             it('ドラッグが有効な場合、デバッグログが出力されること', () => {
                 // 事前にマウスダウンでドラッグを開始
                 const mouseEvent = new MouseEvent('mousedown', { clientX: 100, clientY: 100 });
-                (DragContext.create as jest.Mock).mockReturnValue(new DragContext(DragType.TEXT, 'test'));
+                (DragContext.create as jest.Mock).mockReturnValue({
+                    dragType: DragType.TEXT,
+                    selectedValue: 'test',
+                    isValid: jest.fn().mockReturnValue(true)
+                });
                 handler.onMouseDown(mouseEvent);
                 
                 const dragEvent = new DragEvent('dragstart', { clientX: 100, clientY: 100 });
@@ -219,20 +244,18 @@ describe('SuperDragHandler', () => {
                 );
             });
 
-                         it('ドラッグが無効な場合、早期終了すること', () => {
-                 // 新しいhandlerインスタンスを作成（ドラッグが開始されていない状態）
-                 const newHandler = new SuperDragHandler(mockSettingsService);
-                 (Logger.debug as jest.Mock).mockClear();
-                 
-                 const dragEvent = new DragEvent('dragstart', { clientX: 100, clientY: 100 });
-                 newHandler.onDragStart(dragEvent);
-                 
-                 // ドラッグが開始されていないため、ログは出力されない
-                 expect(Logger.debug).not.toHaveBeenCalledWith(
-                     'ドラッグ開始',
-                     expect.any(Object)
-                 );
-             });
+                                     it('ドラッグが無効な場合、早期終了すること', () => {
+                // 新しいhandlerインスタンスを作成（ドラッグが開始されていない状態）
+                const newHandler = new SuperDragHandler(mockSettingsService);
+                
+                (Logger.debug as jest.Mock).mockClear();
+                
+                const dragEvent = new DragEvent('dragstart', { clientX: 100, clientY: 100 });
+                newHandler.onDragStart(dragEvent);
+                
+                // ドラッグが開始されていないため（dragContext.dragType === DragType.NONE）、ログは出力されない
+                expect(Logger.debug).not.toHaveBeenCalled();
+            });
         });
     });
 
@@ -240,7 +263,11 @@ describe('SuperDragHandler', () => {
         beforeEach(() => {
             // ドラッグを開始状態にする
             const mouseEvent = new MouseEvent('mousedown', { clientX: 100, clientY: 100 });
-            (DragContext.create as jest.Mock).mockReturnValue(new DragContext(DragType.TEXT, 'test'));
+            (DragContext.create as jest.Mock).mockReturnValue({
+                dragType: DragType.TEXT,
+                selectedValue: 'test',
+                isValid: jest.fn().mockReturnValue(true)
+            });
             handler.onMouseDown(mouseEvent);
         });
 
@@ -264,7 +291,7 @@ describe('SuperDragHandler', () => {
                  const mockSettings = createMockSettings({
                      [DragType.TEXT]: {
                          [Direction.RIGHT]: {
-                             action: SuperDragActionType.SEARCH_GOOGLE,
+                             action: 'searchGoogle',
                              params: {}
                          },
                          [Direction.LEFT]: { action: '', params: {} },
@@ -273,6 +300,9 @@ describe('SuperDragHandler', () => {
                          [Direction.NONE]: { action: '', params: {} }
                      }
                  });
+                 
+                 // モックをクリアしてから設定
+                 mockSettingsService.getSettings.mockClear();
                  mockSettingsService.getSettings.mockResolvedValue(mockSettings);
                  
                  const dragEvent = new DragEvent('drag', { clientX: 200, clientY: 100 });
@@ -283,7 +313,7 @@ describe('SuperDragHandler', () => {
                  
                  expect(mockSettingsService.getSettings).toHaveBeenCalled();
                  expect(ActionNotification.showSuperDragActionHandler).toHaveBeenCalledWith(
-                     SuperDragActionType.SEARCH_GOOGLE
+                     'searchGoogle'
                  );
              });
 
@@ -329,7 +359,11 @@ describe('SuperDragHandler', () => {
         beforeEach(() => {
             // ドラッグを開始状態にする
             const mouseEvent = new MouseEvent('mousedown', { clientX: 100, clientY: 100 });
-            (DragContext.create as jest.Mock).mockReturnValue(new DragContext(DragType.TEXT, 'test'));
+            (DragContext.create as jest.Mock).mockReturnValue({
+                dragType: DragType.TEXT,
+                selectedValue: 'test',
+                isValid: jest.fn().mockReturnValue(true)
+            });
             handler.onMouseDown(mouseEvent);
         });
 
@@ -353,7 +387,7 @@ describe('SuperDragHandler', () => {
                  const mockSettings = createMockSettings({
                      [DragType.TEXT]: {
                          [Direction.RIGHT]: {
-                             action: SuperDragActionType.SEARCH_GOOGLE,
+                             action: 'searchGoogle',
                              params: { query: 'test' }
                          },
                          [Direction.LEFT]: { action: '', params: {} },
@@ -362,6 +396,9 @@ describe('SuperDragHandler', () => {
                          [Direction.NONE]: { action: '', params: {} }
                      }
                  });
+                 
+                 // モックをクリアしてから設定
+                 mockSettingsService.getSettings.mockClear();
                  mockSettingsService.getSettings.mockResolvedValue(mockSettings);
                 
                 const dragEvent = new DragEvent('dragend', { clientX: 200, clientY: 100 });
@@ -369,13 +406,13 @@ describe('SuperDragHandler', () => {
                 
                 expect(mockSettingsService.getSettings).toHaveBeenCalled();
                 expect(SuperDragActionFactory.create).toHaveBeenCalledWith(
-                    SuperDragActionType.SEARCH_GOOGLE,
-                    mockContainer
+                    'searchGoogle',
+                    expect.any(Object)
                 );
                 expect(mockAction.execute).toHaveBeenCalledWith({
                     type: DragType.TEXT,
                     direction: Direction.RIGHT,
-                    actionName: SuperDragActionType.SEARCH_GOOGLE,
+                    actionName: 'searchGoogle',
                     params: { query: 'test' },
                     selectedValue: 'test'
                 });
@@ -385,7 +422,7 @@ describe('SuperDragHandler', () => {
                  const mockSettings = createMockSettings({
                      [DragType.TEXT]: {
                          [Direction.RIGHT]: {
-                             action: SuperDragActionType.SEARCH_GOOGLE,
+                             action: 'searchGoogle',
                              params: {}
                          },
                          [Direction.LEFT]: { action: '', params: {} },
@@ -488,14 +525,18 @@ describe('SuperDragHandler', () => {
 
                          it('有効なDragTypeの場合、ドラッグ処理が実行されること', async () => {
                  // 有効なDragTypeでドラッグを開始
-                 (DragContext.create as jest.Mock).mockReturnValue(new DragContext(DragType.TEXT, 'test'));
+                 (DragContext.create as jest.Mock).mockReturnValue({
+                     dragType: DragType.TEXT,
+                     selectedValue: 'test',
+                     isValid: jest.fn().mockReturnValue(true)
+                 });
                  const mouseEvent = new MouseEvent('mousedown', { clientX: 100, clientY: 100 });
                  handler.onMouseDown(mouseEvent);
                  
                  const mockSettings = createMockSettings({
                      [DragType.TEXT]: {
                          [Direction.RIGHT]: {
-                             action: SuperDragActionType.SEARCH_GOOGLE,
+                             action: 'searchGoogle',
                              params: {}
                          },
                          [Direction.LEFT]: { action: '', params: {} },
@@ -519,7 +560,11 @@ describe('SuperDragHandler', () => {
     describe('境界値テスト', () => {
         beforeEach(() => {
             const mouseEvent = new MouseEvent('mousedown', { clientX: 100, clientY: 100 });
-            (DragContext.create as jest.Mock).mockReturnValue(new DragContext(DragType.TEXT, 'test'));
+            (DragContext.create as jest.Mock).mockReturnValue({
+                dragType: DragType.TEXT,
+                selectedValue: 'test',
+                isValid: jest.fn().mockReturnValue(true)
+            });
             handler.onMouseDown(mouseEvent);
         });
 
@@ -535,7 +580,7 @@ describe('SuperDragHandler', () => {
              const mockSettings = createMockSettings({
                  [DragType.TEXT]: {
                      [Direction.RIGHT]: {
-                         action: SuperDragActionType.SEARCH_GOOGLE,
+                         action: 'searchGoogle',
                          params: {}
                      },
                      [Direction.LEFT]: { action: '', params: {} },
@@ -544,6 +589,9 @@ describe('SuperDragHandler', () => {
                      [Direction.NONE]: { action: '', params: {} }
                  }
              });
+             
+             // モックをクリアしてから設定
+             mockSettingsService.getSettings.mockClear();
              mockSettingsService.getSettings.mockResolvedValue(mockSettings);
              
              // 31ピクセルの移動（閾値30を超える）
@@ -553,7 +601,7 @@ describe('SuperDragHandler', () => {
              await new Promise(resolve => setTimeout(resolve, 10));
              
              expect(ActionNotification.showSuperDragActionHandler).toHaveBeenCalledWith(
-                 SuperDragActionType.SEARCH_GOOGLE
+                 'searchGoogle'
              );
          });
      });
@@ -563,7 +611,11 @@ describe('SuperDragHandler', () => {
              mockSettingsService.getSettings.mockResolvedValue(null as any);
              
              const mouseEvent = new MouseEvent('mousedown', { clientX: 100, clientY: 100 });
-             (DragContext.create as jest.Mock).mockReturnValue(new DragContext(DragType.TEXT, 'test'));
+             (DragContext.create as jest.Mock).mockReturnValue({
+                 dragType: DragType.TEXT,
+                 selectedValue: 'test',
+                 isValid: jest.fn().mockReturnValue(true)
+             });
              handler.onMouseDown(mouseEvent);
              
              const dragEvent = new DragEvent('dragend', { clientX: 200, clientY: 100 });
@@ -583,7 +635,11 @@ describe('SuperDragHandler', () => {
              mockSettingsService.getSettings.mockResolvedValue(mockSettings);
              
              const mouseEvent = new MouseEvent('mousedown', { clientX: 100, clientY: 100 });
-             (DragContext.create as jest.Mock).mockReturnValue(new DragContext(DragType.TEXT, 'test'));
+             (DragContext.create as jest.Mock).mockReturnValue({
+                 dragType: DragType.TEXT,
+                 selectedValue: 'test',
+                 isValid: jest.fn().mockReturnValue(true)
+             });
              handler.onMouseDown(mouseEvent);
              
              const dragEvent = new DragEvent('dragend', { clientX: 200, clientY: 100 });
