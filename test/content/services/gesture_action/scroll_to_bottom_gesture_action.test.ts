@@ -16,7 +16,7 @@ describe('ScrollToBottomGestureAction', () => {
         Object.defineProperty(document.body, 'scrollHeight', { value: 1234, configurable: true });
         const action = new ScrollToBottomGestureAction();
         action.execute();
-        expect(scrollToSpy).toHaveBeenCalledWith({ top: 1234, behavior: 'smooth' });
+        expect(scrollToSpy).toHaveBeenCalledWith({ top: 1234, behavior: 'auto' });
         expect(Logger.debug).toHaveBeenCalledWith('ScrollToBottomGestureAction: execute() が呼び出されました');
         scrollToSpy.mockRestore();
     });

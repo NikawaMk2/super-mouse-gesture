@@ -8,13 +8,35 @@ import Logger from '../../../src/common/logger/logger';
 // Logger のモック
 jest.mock('../../../src/common/logger/logger');
 
-// Point のモック (必要に応じてメソッドを実装)
+// Point のモック (新しいメソッドに対応)
 jest.mock('../../../src/content/models/point', () => {
+    class MockPoint {
+        public x: number;
+        public y: number;
+
+        constructor(x: number, y: number) {
+            this.x = x;
+            this.y = y;
+        }
+
+        canvasMoveTo(context: CanvasRenderingContext2D): void {
+            context.moveTo(this.x, this.y);
+        }
+
+        canvasLineTo(context: CanvasRenderingContext2D): void {
+            context.lineTo(this.x, this.y);
+        }
+
+        calculateDistance(to: MockPoint): number {
+            return Math.sqrt(
+                Math.pow(to.x - this.x, 2) + 
+                Math.pow(to.y - this.y, 2)
+            );
+        }
+    }
+
     return {
-        Point: jest.fn().mockImplementation((x, y) => ({
-            getX: jest.fn().mockReturnValue(x),
-            getY: jest.fn().mockReturnValue(y),
-        })),
+        Point: MockPoint,
     };
 });
 

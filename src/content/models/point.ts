@@ -14,14 +14,6 @@ export class Point {
         this.y = y;
     }
 
-    public getX(): number {
-        return this.x;
-    }
-
-    public getY(): number {
-        return this.y;
-    }
-
     public getDirection(to: Point): Direction {
         if (this.isNone()) {
             Logger.warn('Point.NONEに対してgetDirectionが呼び出されました');
@@ -32,8 +24,8 @@ export class Point {
             return Direction.NONE;
         }
 
-        const dx = to.getX() - this.getX();
-        const dy = to.getY() - this.getY();
+        const dx = to.x - this.x;
+        const dy = to.y - this.y;
 
         if (Math.abs(dx) >= Math.abs(dy)) {
             if (dx > this.THRESHOLD) return Direction.RIGHT;
@@ -47,5 +39,20 @@ export class Point {
 
     public isNone(): boolean {
         return isNaN(this.x) || isNaN(this.y);
+    }
+
+    public canvasMoveTo(context: CanvasRenderingContext2D): void {
+        context.moveTo(this.x, this.y);
+    }
+
+    public canvasLineTo(context: CanvasRenderingContext2D): void {
+        context.lineTo(this.x, this.y);
+    }
+
+    public calculateDistance(to: Point): number {
+        return Math.sqrt(
+            Math.pow(to.x - this.x, 2) + 
+            Math.pow(to.y - this.y, 2)
+        );
     }
 }

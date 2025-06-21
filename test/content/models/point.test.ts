@@ -49,4 +49,52 @@ describe('Point', () => {
             expect(p1.getDirection(p2)).toBe(Direction.RIGHT);
         });
     });
+
+    describe('canvasMoveTo', () => {
+        it('canvasコンテキストのmoveToメソッドを座標で呼び出す', () => {
+            const mockContext = {
+                moveTo: jest.fn()
+            } as unknown as CanvasRenderingContext2D;
+            
+            const point = new Point(10, 20);
+            point.canvasMoveTo(mockContext);
+            
+            expect(mockContext.moveTo).toHaveBeenCalledWith(10, 20);
+        });
+    });
+
+    describe('canvasLineTo', () => {
+        it('canvasコンテキストのlineToメソッドを座標で呼び出す', () => {
+            const mockContext = {
+                lineTo: jest.fn()
+            } as unknown as CanvasRenderingContext2D;
+            
+            const point = new Point(30, 40);
+            point.canvasLineTo(mockContext);
+            
+            expect(mockContext.lineTo).toHaveBeenCalledWith(30, 40);
+        });
+    });
+
+    describe('calculateDistance', () => {
+        it('2点間の距離を正しく計算する', () => {
+            const p1 = new Point(0, 0);
+            const p2 = new Point(3, 4); // 3-4-5の直角三角形
+            
+            expect(p1.calculateDistance(p2)).toBe(5);
+        });
+
+        it('同じ点の場合は距離0を返す', () => {
+            const p1 = new Point(10, 20);
+            const p2 = new Point(10, 20);
+            
+            expect(p1.calculateDistance(p2)).toBe(0);
+        });
+
+        it('NONEポイントとの距離計算でNaNを返す', () => {
+            const p1 = new Point(10, 20);
+            
+            expect(p1.calculateDistance(Point.NONE)).toBeNaN();
+        });
+    });
 }); 

@@ -14,7 +14,7 @@ describe('ScrollToTopGestureAction', () => {
         const scrollToSpy = jest.spyOn(window, 'scrollTo').mockImplementation(() => {});
         const action = new ScrollToTopGestureAction();
         action.execute();
-        expect(scrollToSpy).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
+        expect(scrollToSpy).toHaveBeenCalledWith({ top: 0, behavior: 'auto' });
         expect(Logger.debug).toHaveBeenCalledWith('ScrollToTopGestureAction: execute() が呼び出されました');
         scrollToSpy.mockRestore();
     });

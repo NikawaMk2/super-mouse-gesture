@@ -4,11 +4,11 @@
 - [X] ジェスチャトレイルクラス作成
 - [X] ジェスチャトレイルクラス呼び出しをmouse_gesture_handler.tsに実装(呼び出し元とする箇所はクラス上のコメントにTODOとして記載済み)
 - [X] ジェスチャトレイルクラス呼び出しをsuper_drag_handler.tsに実装(呼び出し元とする箇所はクラス上のコメントにTODOとして記載済み)
-- [ ] Pointクラスのゲッタ(getX()とgetY())を削除し、xとyを用いたビジネスロジック自体をメソッドとして実装するよう修正する。また、getX()とgetY()を呼び出している箇所はPointクラスに実装した処理を呼び出すよう修正する
+- [X] `src\content\models\point.ts`のPointクラスのゲッタ(getX()とgetY())を削除し、xとyを用いたビジネスロジック自体をメソッドとして実装するよう修正する。また、getX()とgetY()を呼び出している箇所はPointクラスに実装した処理を呼び出すよう修正する
 - [X] アクション通知UIクラス作成
 - [X] アクション通知UIクラス呼び出しをmouse_gesture_handler.tsに実装
 - [X] アクション通知UIクラス呼び出しをsuper_drag_handler.tsに実装
-- [ ] `src/content/handlers/mouse_gesture_handler.ts` の `directionTrail: Array<Direction>` を、配列をプロパティとして持つ専用クラス（例: `DirectionTrail`）に置き換える設計改善を検討すること。
+- [X] `src/content/handlers/mouse_gesture_handler.ts` の `directionTrail: Array<Direction>` を、配列をプロパティとして持つ専用クラス（例: `DirectionTrail`）に置き換える設計改善を検討すること。
   - **理由**: 責務分離・型安全性向上・今後の拡張性（例: trailの操作メソッド追加や履歴管理等）を考慮した設計とするため。
 
 # バックグラウンド
@@ -44,9 +44,9 @@
 - [X] drag_action/download_image_drag_action.ts: 画像をダウンロードするアクションを実装する
 - [X] drag_action/search_image_google_drag_action.ts: 画像をGoogle画像検索するアクションを実装する
 - [X] drag_action/copy_image_url_drag_action.ts: 画像URLをコピーするアクションを実装する
-- [ ] super_drag_handler.ts内でdragTypeによるif分岐が複数箇所に存在するため、共通化・リファクタリングを検討する（例：選択値取得や判定処理の関数化など）
+- [X] super_drag_handler.ts内でdragTypeによるif分岐が複数箇所に存在するため、共通化・リファクタリングを検討する（例：選択値取得や判定処理の関数化など）
 
 # その他
-- [ ] src\content\handlers\action_notification.tsで表示するアクション名を画面表示用の名称にする
+- [X] src\content\handlers\action_notification.tsで表示するアクション名を画面表示用の名称にする
 - [ ] 設定画面の実装
 - [ ] ポップアップの実装
