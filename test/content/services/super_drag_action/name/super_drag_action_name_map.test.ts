@@ -45,7 +45,6 @@ describe('SuperDragActionNameMap', () => {
         });
 
 
-
         it('SEARCH_IMAGE_GOOGLEに対して正しい日本語名を返すこと', () => {
             const result = SuperDragActionNameMap.get(SuperDragActionType.SEARCH_IMAGE_GOOGLE);
             expect(result).toBe('Googleで画像検索');

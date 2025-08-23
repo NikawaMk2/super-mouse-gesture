@@ -8,7 +8,6 @@ import { OpenInBackgroundTabSuperDragActionName } from "./open_in_background_tab
 import { OpenInForegroundTabSuperDragActionName } from "./open_in_foreground_tab_super_drag_action_name";
 import { CopyLinkUrlSuperDragActionName } from "./copy_link_url_super_drag_action_name";
 import { OpenImageInNewTabSuperDragActionName } from "./open_image_in_new_tab_super_drag_action_name";
-
 import { SearchImageGoogleSuperDragActionName } from "./search_image_google_super_drag_action_name";
 import { CopyImageUrlSuperDragActionName } from "./copy_image_url_super_drag_action_name";
 
@@ -22,7 +21,6 @@ export class SuperDragActionNameMap {
         [SuperDragActionType.OPEN_IN_FOREGROUND_TAB, new OpenInForegroundTabSuperDragActionName()],
         [SuperDragActionType.COPY_LINK_URL, new CopyLinkUrlSuperDragActionName()],
         [SuperDragActionType.OPEN_IMAGE_IN_NEW_TAB, new OpenImageInNewTabSuperDragActionName()],
-
         [SuperDragActionType.SEARCH_IMAGE_GOOGLE, new SearchImageGoogleSuperDragActionName()],
         [SuperDragActionType.COPY_IMAGE_URL, new CopyImageUrlSuperDragActionName()],
     ]);

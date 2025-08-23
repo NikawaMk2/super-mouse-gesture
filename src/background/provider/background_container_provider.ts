@@ -10,7 +10,6 @@ import { DownloadService } from '../services/download_service';
 import { OpenInBackgroundTabDragAction } from '../services/drag_action/open_in_background_tab_drag_action';
 import { OpenInForegroundTabDragAction } from '../services/drag_action/open_in_foreground_tab_drag_action';
 import { OpenImageInNewTabDragAction } from '../services/drag_action/open_image_in_new_tab_drag_action';
-
 import { SearchImageGoogleDragAction } from '../services/drag_action/search_image_google_drag_action';
 import Logger from '../../common/logger/logger';
 import { NewTabGestureAction } from '../services/gesture_action/new_tab_gesture_action';
@@ -56,7 +55,6 @@ export class BackgroundContainerProvider {
             container.bind(OpenInBackgroundTabDragAction).toSelf().inSingletonScope();
             container.bind(OpenInForegroundTabDragAction).toSelf().inSingletonScope();
             container.bind(OpenImageInNewTabDragAction).toSelf().inSingletonScope();
-
             container.bind(SearchImageGoogleDragAction).toSelf().inSingletonScope();
             container.bind(NewTabGestureAction).toSelf().inSingletonScope();
             container.bind(CloseTabGestureAction).toSelf().inSingletonScope();

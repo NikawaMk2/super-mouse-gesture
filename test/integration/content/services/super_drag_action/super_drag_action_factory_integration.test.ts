@@ -9,7 +9,6 @@ import { OpenInBackgroundTabDragAction } from '../../../../../src/content/servic
 import { OpenInForegroundTabDragAction } from '../../../../../src/content/services/super_drag_action/link/open_in_foreground_tab_drag_action';
 import { CopyLinkUrlDragAction } from '../../../../../src/content/services/super_drag_action/link/copy_link_url_drag_action';
 import { OpenImageInNewTabDragAction } from '../../../../../src/content/services/super_drag_action/image/open_image_in_new_tab_drag_action';
-
 import { SearchImageGoogleDragAction } from '../../../../../src/content/services/super_drag_action/image/search_image_google_drag_action';
 import { CopyImageUrlDragAction } from '../../../../../src/content/services/super_drag_action/image/copy_image_url_drag_action';
 
@@ -30,7 +29,6 @@ describe('SuperDragActionFactory (content integration)', () => {
         expect(SuperDragActionFactory.create(SuperDragActionType.OPEN_IN_FOREGROUND_TAB, container)).toBeInstanceOf(OpenInForegroundTabDragAction);
         expect(SuperDragActionFactory.create(SuperDragActionType.COPY_LINK_URL, container)).toBeInstanceOf(CopyLinkUrlDragAction);
         expect(SuperDragActionFactory.create(SuperDragActionType.OPEN_IMAGE_IN_NEW_TAB, container)).toBeInstanceOf(OpenImageInNewTabDragAction);
-
         expect(SuperDragActionFactory.create(SuperDragActionType.SEARCH_IMAGE_GOOGLE, container)).toBeInstanceOf(SearchImageGoogleDragAction);
         expect(SuperDragActionFactory.create(SuperDragActionType.COPY_IMAGE_URL, container)).toBeInstanceOf(CopyImageUrlDragAction);
     });

@@ -5,7 +5,6 @@ export const DragActionType = {
     OPEN_IN_BACKGROUND_TAB: 'openInBackgroundTab',
     OPEN_IN_FOREGROUND_TAB: 'openInForegroundTab',
     OPEN_IMAGE_IN_NEW_TAB: 'openImageInNewTab',
-
     SEARCH_IMAGE_GOOGLE: 'searchImageGoogle',
 } as const;
 

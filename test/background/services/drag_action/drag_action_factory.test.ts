@@ -8,7 +8,6 @@ import { OpenAsUrlDragAction } from '../../../../src/background/services/drag_ac
 import { OpenInBackgroundTabDragAction } from '../../../../src/background/services/drag_action/open_in_background_tab_drag_action';
 import { OpenInForegroundTabDragAction } from '../../../../src/background/services/drag_action/open_in_foreground_tab_drag_action';
 import { OpenImageInNewTabDragAction } from '../../../../src/background/services/drag_action/open_image_in_new_tab_drag_action';
-
 import { ITabOperator } from '../../../../src/common/provider/tab_operator';
 import { IDownloadService } from '../../../../src/background/services/download_service_interface';
 import { SearchImageGoogleDragAction } from '../../../../src/background/services/drag_action/search_image_google_drag_action';
@@ -41,7 +40,6 @@ describe('DragActionFactory', () => {
         container.bind(OpenInBackgroundTabDragAction).toDynamicValue(() => new OpenInBackgroundTabDragAction(tabOperatorMock));
         container.bind(OpenInForegroundTabDragAction).toDynamicValue(() => new OpenInForegroundTabDragAction(tabOperatorMock));
         container.bind(OpenImageInNewTabDragAction).toDynamicValue(() => new OpenImageInNewTabDragAction(tabOperatorMock));
-
         container.bind(SearchImageGoogleDragAction).toDynamicValue(() => new SearchImageGoogleDragAction(tabOperatorMock));
     });
 
