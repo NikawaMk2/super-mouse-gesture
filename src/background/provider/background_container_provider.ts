@@ -9,7 +9,6 @@ import { OpenAsUrlDragAction } from '../services/drag_action/open_as_url_drag_ac
 import { DownloadService } from '../services/download_service';
 import { OpenInBackgroundTabDragAction } from '../services/drag_action/open_in_background_tab_drag_action';
 import { OpenInForegroundTabDragAction } from '../services/drag_action/open_in_foreground_tab_drag_action';
-import { DownloadLinkDragAction } from '../services/drag_action/download_link_drag_action';
 import { OpenImageInNewTabDragAction } from '../services/drag_action/open_image_in_new_tab_drag_action';
 import { DownloadImageDragAction } from '../services/drag_action/download_image_drag_action';
 import { SearchImageGoogleDragAction } from '../services/drag_action/search_image_google_drag_action';
@@ -56,7 +55,6 @@ export class BackgroundContainerProvider {
             container.bind('IDownloadService').to(DownloadService).inSingletonScope();
             container.bind(OpenInBackgroundTabDragAction).toSelf().inSingletonScope();
             container.bind(OpenInForegroundTabDragAction).toSelf().inSingletonScope();
-            container.bind(DownloadLinkDragAction).toSelf().inSingletonScope();
             container.bind(OpenImageInNewTabDragAction).toSelf().inSingletonScope();
             container.bind(DownloadImageDragAction).toSelf().inSingletonScope();
             container.bind(SearchImageGoogleDragAction).toSelf().inSingletonScope();

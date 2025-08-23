@@ -28,7 +28,7 @@ describe('SuperDragSettingsService', () => {
                 right: { action: 'openInBackgroundTab', params: {} },
                 left: { action: 'openInForegroundTab', params: {} },
                 up: { action: 'copyLinkUrl', params: {} },
-                down: { action: 'downloadLink', params: {} },
+                down: { action: 'openInBackgroundTab', params: {} },
                 none: { action: '', params: {} },
             },
             image: {

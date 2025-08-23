@@ -7,7 +7,6 @@ import { SearchBingDragAction } from '../../../../src/background/services/drag_a
 import { OpenAsUrlDragAction } from '../../../../src/background/services/drag_action/open_as_url_drag_action';
 import { OpenInBackgroundTabDragAction } from '../../../../src/background/services/drag_action/open_in_background_tab_drag_action';
 import { OpenInForegroundTabDragAction } from '../../../../src/background/services/drag_action/open_in_foreground_tab_drag_action';
-import { DownloadLinkDragAction } from '../../../../src/background/services/drag_action/download_link_drag_action';
 import { OpenImageInNewTabDragAction } from '../../../../src/background/services/drag_action/open_image_in_new_tab_drag_action';
 import { DownloadImageDragAction } from '../../../../src/background/services/drag_action/download_image_drag_action';
 import { ITabOperator } from '../../../../src/common/provider/tab_operator';
@@ -41,7 +40,6 @@ describe('DragActionFactory', () => {
         container.bind(OpenAsUrlDragAction).toDynamicValue(() => new OpenAsUrlDragAction(tabOperatorMock));
         container.bind(OpenInBackgroundTabDragAction).toDynamicValue(() => new OpenInBackgroundTabDragAction(tabOperatorMock));
         container.bind(OpenInForegroundTabDragAction).toDynamicValue(() => new OpenInForegroundTabDragAction(tabOperatorMock));
-        container.bind(DownloadLinkDragAction).toDynamicValue(() => new DownloadLinkDragAction(downloadServiceMock));
         container.bind(OpenImageInNewTabDragAction).toDynamicValue(() => new OpenImageInNewTabDragAction(tabOperatorMock));
         container.bind(DownloadImageDragAction).toDynamicValue(() => new DownloadImageDragAction(downloadServiceMock));
         container.bind(SearchImageGoogleDragAction).toDynamicValue(() => new SearchImageGoogleDragAction(tabOperatorMock));
@@ -66,10 +64,6 @@ describe('DragActionFactory', () => {
     it('OPEN_IN_FOREGROUND_TABでOpenInForegroundTabDragActionを返す', () => {
         const action = DragActionFactory.create(DragActionType.OPEN_IN_FOREGROUND_TAB, container);
         expect(action).toBeInstanceOf(OpenInForegroundTabDragAction);
-    });
-    it('DOWNLOAD_LINKでDownloadLinkDragActionを返す', () => {
-        const action = DragActionFactory.create(DragActionType.DOWNLOAD_LINK, container);
-        expect(action).toBeInstanceOf(DownloadLinkDragAction);
     });
     it('OPEN_IMAGE_IN_NEW_TABでOpenImageInNewTabDragActionを返す', () => {
         const action = DragActionFactory.create(DragActionType.OPEN_IMAGE_IN_NEW_TAB, container);

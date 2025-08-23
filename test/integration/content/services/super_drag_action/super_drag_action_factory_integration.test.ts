@@ -7,7 +7,6 @@ import { OpenAsUrlDragAction } from '../../../../../src/content/services/super_d
 import { CopyTextDragAction } from '../../../../../src/content/services/super_drag_action/text/copy_text_drag_action';
 import { OpenInBackgroundTabDragAction } from '../../../../../src/content/services/super_drag_action/link/open_in_background_tab_drag_action';
 import { OpenInForegroundTabDragAction } from '../../../../../src/content/services/super_drag_action/link/open_in_foreground_tab_drag_action';
-import { DownloadLinkDragAction } from '../../../../../src/content/services/super_drag_action/link/download_link_drag_action';
 import { CopyLinkUrlDragAction } from '../../../../../src/content/services/super_drag_action/link/copy_link_url_drag_action';
 import { OpenImageInNewTabDragAction } from '../../../../../src/content/services/super_drag_action/image/open_image_in_new_tab_drag_action';
 import { DownloadImageDragAction } from '../../../../../src/content/services/super_drag_action/image/download_image_drag_action';
@@ -29,7 +28,6 @@ describe('SuperDragActionFactory (content integration)', () => {
         expect(SuperDragActionFactory.create(SuperDragActionType.COPY_TEXT, container)).toBeInstanceOf(CopyTextDragAction);
         expect(SuperDragActionFactory.create(SuperDragActionType.OPEN_IN_BACKGROUND_TAB, container)).toBeInstanceOf(OpenInBackgroundTabDragAction);
         expect(SuperDragActionFactory.create(SuperDragActionType.OPEN_IN_FOREGROUND_TAB, container)).toBeInstanceOf(OpenInForegroundTabDragAction);
-        expect(SuperDragActionFactory.create(SuperDragActionType.DOWNLOAD_LINK, container)).toBeInstanceOf(DownloadLinkDragAction);
         expect(SuperDragActionFactory.create(SuperDragActionType.COPY_LINK_URL, container)).toBeInstanceOf(CopyLinkUrlDragAction);
         expect(SuperDragActionFactory.create(SuperDragActionType.OPEN_IMAGE_IN_NEW_TAB, container)).toBeInstanceOf(OpenImageInNewTabDragAction);
         expect(SuperDragActionFactory.create(SuperDragActionType.DOWNLOAD_IMAGE, container)).toBeInstanceOf(DownloadImageDragAction);

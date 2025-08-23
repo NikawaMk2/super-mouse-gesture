@@ -20,7 +20,7 @@ export const DEFAULT_SUPER_DRAG_SETTINGS: SuperDragSettings = {
   },
   link: {
     right: { action: 'copyLinkUrl', params: {} },
-    left: { action: 'downloadLink', params: {} },
+    left: { action: 'openInBackgroundTab', params: {} },
     up: { action: 'openInForegroundTab', params: {} },
     down: { action: 'openInBackgroundTab', params: {} },
     none: { action: '', params: {} },

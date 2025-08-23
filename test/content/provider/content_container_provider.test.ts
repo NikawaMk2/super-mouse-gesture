@@ -132,7 +132,6 @@ describe('ContentContainerProvider', () => {
         { name: 'OpenInBackgroundTabDragAction', path: '../../../src/content/services/super_drag_action/link/open_in_background_tab_drag_action' },
         { name: 'OpenInForegroundTabDragAction', path: '../../../src/content/services/super_drag_action/link/open_in_foreground_tab_drag_action' },
         { name: 'CopyLinkUrlDragAction', path: '../../../src/content/services/super_drag_action/link/copy_link_url_drag_action' },
-        { name: 'DownloadLinkDragAction', path: '../../../src/content/services/super_drag_action/link/download_link_drag_action' },
         // --- SuperDragAction（テキスト） ---
         { name: 'SearchGoogleDragAction', path: '../../../src/content/services/super_drag_action/text/search_google_drag_action' },
         { name: 'CopyTextDragAction', path: '../../../src/content/services/super_drag_action/text/copy_text_drag_action' },

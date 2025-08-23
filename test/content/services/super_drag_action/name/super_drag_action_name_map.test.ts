@@ -33,10 +33,6 @@ describe('SuperDragActionNameMap', () => {
             expect(result).toBe('フォアグラウンドタブで開く');
         });
 
-        it('DOWNLOAD_LINKに対して正しい日本語名を返すこと', () => {
-            const result = SuperDragActionNameMap.get(SuperDragActionType.DOWNLOAD_LINK);
-            expect(result).toBe('リンクをダウンロード');
-        });
 
         it('COPY_LINK_URLに対して正しい日本語名を返すこと', () => {
             const result = SuperDragActionNameMap.get(SuperDragActionType.COPY_LINK_URL);
