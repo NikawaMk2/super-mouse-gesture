@@ -28,7 +28,6 @@ import { MinimizeWindowGestureAction } from '../services/gesture_action/minimize
 import { MaximizeWindowGestureAction } from '../services/gesture_action/maximize_window_gesture_action';
 import { ToggleFullscreenGestureAction } from '../services/gesture_action/toggle_fullscreen_gesture_action';
 // SuperDragAction（画像）
-import { DownloadImageDragAction } from '../services/super_drag_action/image/download_image_drag_action';
 import { OpenImageInNewTabDragAction } from '../services/super_drag_action/image/open_image_in_new_tab_drag_action';
 import { SearchImageGoogleDragAction } from '../services/super_drag_action/image/search_image_google_drag_action';
 import { CopyImageUrlDragAction } from '../services/super_drag_action/image/copy_image_url_drag_action';
@@ -36,7 +35,6 @@ import { CopyImageUrlDragAction } from '../services/super_drag_action/image/copy
 import { OpenInBackgroundTabDragAction } from '../services/super_drag_action/link/open_in_background_tab_drag_action';
 import { OpenInForegroundTabDragAction } from '../services/super_drag_action/link/open_in_foreground_tab_drag_action';
 import { CopyLinkUrlDragAction } from '../services/super_drag_action/link/copy_link_url_drag_action';
-import { DownloadLinkDragAction } from '../services/super_drag_action/link/download_link_drag_action';
 // SuperDragAction（テキスト）
 import { SearchGoogleDragAction } from '../services/super_drag_action/text/search_google_drag_action';
 import { CopyTextDragAction } from '../services/super_drag_action/text/copy_text_drag_action';
@@ -91,7 +89,6 @@ export class ContentContainerProvider implements IContainerProvider {
             container.bind(NoneGestureAction).toSelf().inSingletonScope();
 
             // --- SuperDragAction（画像） ---
-            container.bind(DownloadImageDragAction).toSelf().inSingletonScope();
             container.bind(OpenImageInNewTabDragAction).toDynamicValue(ctx => {
                 const sender = ctx.get<ChromeMessageSender>('ChromeMessageSender');
                 return new OpenImageInNewTabDragAction(sender);
@@ -105,7 +102,6 @@ export class ContentContainerProvider implements IContainerProvider {
             container.bind(OpenInBackgroundTabDragAction).toSelf().inSingletonScope();
             container.bind(OpenInForegroundTabDragAction).toSelf().inSingletonScope();
             container.bind(CopyLinkUrlDragAction).toSelf().inSingletonScope();
-            container.bind(DownloadLinkDragAction).toSelf().inSingletonScope();
             // --- SuperDragAction（テキスト） ---
             container.bind(SearchGoogleDragAction).toDynamicValue(ctx => {
                 const sender = ctx.get<ChromeMessageSender>('ChromeMessageSender');

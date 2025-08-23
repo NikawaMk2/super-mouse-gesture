@@ -33,10 +33,6 @@ describe('SuperDragActionNameMap', () => {
             expect(result).toBe('フォアグラウンドタブで開く');
         });
 
-        it('DOWNLOAD_LINKに対して正しい日本語名を返すこと', () => {
-            const result = SuperDragActionNameMap.get(SuperDragActionType.DOWNLOAD_LINK);
-            expect(result).toBe('リンクをダウンロード');
-        });
 
         it('COPY_LINK_URLに対して正しい日本語名を返すこと', () => {
             const result = SuperDragActionNameMap.get(SuperDragActionType.COPY_LINK_URL);
@@ -48,10 +44,6 @@ describe('SuperDragActionNameMap', () => {
             expect(result).toBe('画像を新しいタブで開く');
         });
 
-        it('DOWNLOAD_IMAGEに対して正しい日本語名を返すこと', () => {
-            const result = SuperDragActionNameMap.get(SuperDragActionType.DOWNLOAD_IMAGE);
-            expect(result).toBe('画像をダウンロード');
-        });
 
         it('SEARCH_IMAGE_GOOGLEに対して正しい日本語名を返すこと', () => {
             const result = SuperDragActionNameMap.get(SuperDragActionType.SEARCH_IMAGE_GOOGLE);
@@ -61,6 +53,11 @@ describe('SuperDragActionNameMap', () => {
         it('COPY_IMAGE_URLに対して正しい日本語名を返すこと', () => {
             const result = SuperDragActionNameMap.get(SuperDragActionType.COPY_IMAGE_URL);
             expect(result).toBe('画像URLをコピー');
+        });
+
+        it('NONEに対して正しい日本語名を返すこと', () => {
+            const result = SuperDragActionNameMap.get(SuperDragActionType.NONE);
+            expect(result).toBe('なし');
         });
 
         it('nullのactionTypeに対してエラーを投げること', () => {

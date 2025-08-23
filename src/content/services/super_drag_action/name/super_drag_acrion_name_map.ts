@@ -6,12 +6,11 @@ import { OpenAsUrlSuperDragActionName } from "./open_as_url_super_drag_action_na
 import { CopyTextSuperDragActionName } from "./copy_text_super_drag_action_name";
 import { OpenInBackgroundTabSuperDragActionName } from "./open_in_background_tab_super_drag_action_name";
 import { OpenInForegroundTabSuperDragActionName } from "./open_in_foreground_tab_super_drag_action_name";
-import { DownloadLinkSuperDragActionName } from "./download_link_super_drag_action_name";
 import { CopyLinkUrlSuperDragActionName } from "./copy_link_url_super_drag_action_name";
 import { OpenImageInNewTabSuperDragActionName } from "./open_image_in_new_tab_super_drag_action_name";
-import { DownloadImageSuperDragActionName } from "./download_image_super_drag_action_name";
 import { SearchImageGoogleSuperDragActionName } from "./search_image_google_super_drag_action_name";
 import { CopyImageUrlSuperDragActionName } from "./copy_image_url_super_drag_action_name";
+import { NoneSuperDragActionName } from "./none_super_drag_action_name";
 
 export class SuperDragActionNameMap {
     private static readonly map: Map<SuperDragActionType, SuperDragActionName> = new Map([
@@ -21,12 +20,11 @@ export class SuperDragActionNameMap {
         [SuperDragActionType.COPY_TEXT, new CopyTextSuperDragActionName()],
         [SuperDragActionType.OPEN_IN_BACKGROUND_TAB, new OpenInBackgroundTabSuperDragActionName()],
         [SuperDragActionType.OPEN_IN_FOREGROUND_TAB, new OpenInForegroundTabSuperDragActionName()],
-        [SuperDragActionType.DOWNLOAD_LINK, new DownloadLinkSuperDragActionName()],
         [SuperDragActionType.COPY_LINK_URL, new CopyLinkUrlSuperDragActionName()],
         [SuperDragActionType.OPEN_IMAGE_IN_NEW_TAB, new OpenImageInNewTabSuperDragActionName()],
-        [SuperDragActionType.DOWNLOAD_IMAGE, new DownloadImageSuperDragActionName()],
         [SuperDragActionType.SEARCH_IMAGE_GOOGLE, new SearchImageGoogleSuperDragActionName()],
         [SuperDragActionType.COPY_IMAGE_URL, new CopyImageUrlSuperDragActionName()],
+        [SuperDragActionType.NONE, new NoneSuperDragActionName()],
     ]);
 
     public static get(actionType: SuperDragActionType): string {

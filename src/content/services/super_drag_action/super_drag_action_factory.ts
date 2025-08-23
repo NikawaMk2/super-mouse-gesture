@@ -7,12 +7,11 @@ import { OpenAsUrlDragAction } from './text/open_as_url_drag_action';
 import { CopyTextDragAction } from './text/copy_text_drag_action';
 import { OpenInBackgroundTabDragAction } from './link/open_in_background_tab_drag_action';
 import { OpenInForegroundTabDragAction } from './link/open_in_foreground_tab_drag_action';
-import { DownloadLinkDragAction } from './link/download_link_drag_action';
 import { CopyLinkUrlDragAction } from './link/copy_link_url_drag_action';
 import { OpenImageInNewTabDragAction } from './image/open_image_in_new_tab_drag_action';
-import { DownloadImageDragAction } from './image/download_image_drag_action';
 import { SearchImageGoogleDragAction } from './image/search_image_google_drag_action';
 import { CopyImageUrlDragAction } from './image/copy_image_url_drag_action';
+import { NoneDragAction } from './none/none_drag_action';
 
 export class SuperDragActionFactory {
     static create(actionName: SuperDragActionTypeAlias, container: Container): SuperDragAction {
@@ -29,18 +28,16 @@ export class SuperDragActionFactory {
                 return container.get(OpenInBackgroundTabDragAction);
             case SuperDragActionType.OPEN_IN_FOREGROUND_TAB:
                 return container.get(OpenInForegroundTabDragAction);
-            case SuperDragActionType.DOWNLOAD_LINK:
-                return container.get(DownloadLinkDragAction);
             case SuperDragActionType.COPY_LINK_URL:
                 return container.get(CopyLinkUrlDragAction);
             case SuperDragActionType.OPEN_IMAGE_IN_NEW_TAB:
                 return container.get(OpenImageInNewTabDragAction);
-            case SuperDragActionType.DOWNLOAD_IMAGE:
-                return container.get(DownloadImageDragAction);
             case SuperDragActionType.SEARCH_IMAGE_GOOGLE:
                 return container.get(SearchImageGoogleDragAction);
             case SuperDragActionType.COPY_IMAGE_URL:
                 return container.get(CopyImageUrlDragAction);
+            case SuperDragActionType.NONE:
+                return container.get(NoneDragAction);
             default:
                 throw new Error(`未対応のSuperDragAction: ${actionName}`);
         }

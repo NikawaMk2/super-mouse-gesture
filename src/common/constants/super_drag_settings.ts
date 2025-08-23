@@ -20,14 +20,14 @@ export const DEFAULT_SUPER_DRAG_SETTINGS: SuperDragSettings = {
   },
   link: {
     right: { action: 'copyLinkUrl', params: {} },
-    left: { action: 'downloadLink', params: {} },
+    left: { action: 'openInBackgroundTab', params: {} },
     up: { action: 'openInForegroundTab', params: {} },
     down: { action: 'openInBackgroundTab', params: {} },
     none: { action: '', params: {} },
   },
   image: {
     right: { action: 'copyImageUrl', params: {} },
-    left: { action: 'downloadImage', params: {} },
+    left: { action: '', params: {} },
     up: { action: 'openImageInNewTab', params: {} },
     down: { action: 'searchImageGoogle', params: { url: 'https://www.google.com/searchbyimage?image_url=%s' } },
     none: { action: '', params: {} },

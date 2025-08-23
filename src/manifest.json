@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Super Mouse Gesture",
     "description": "スーパードラッグ機能付きマウスジェスチャー",
-    "version": "0.2",
+    "version": "0.3",
     "icons": {
     },
     "action": {
