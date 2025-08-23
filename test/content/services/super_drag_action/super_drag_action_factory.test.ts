@@ -10,6 +10,7 @@ import { CopyLinkUrlDragAction } from '../../../../src/content/services/super_dr
 import { OpenImageInNewTabDragAction } from '../../../../src/content/services/super_drag_action/image/open_image_in_new_tab_drag_action';
 import { SearchImageGoogleDragAction } from '../../../../src/content/services/super_drag_action/image/search_image_google_drag_action';
 import { CopyImageUrlDragAction } from '../../../../src/content/services/super_drag_action/image/copy_image_url_drag_action';
+import { NoneDragAction } from '../../../../src/content/services/super_drag_action/none/none_drag_action';
 
 const mockContainer = {
     get: (clazz: any) => new clazz(),
@@ -27,6 +28,7 @@ describe('SuperDragActionFactory', () => {
         expect(SuperDragActionFactory.create(SuperDragActionType.OPEN_IMAGE_IN_NEW_TAB, mockContainer)).toBeInstanceOf(OpenImageInNewTabDragAction);
         expect(SuperDragActionFactory.create(SuperDragActionType.SEARCH_IMAGE_GOOGLE, mockContainer)).toBeInstanceOf(SearchImageGoogleDragAction);
         expect(SuperDragActionFactory.create(SuperDragActionType.COPY_IMAGE_URL, mockContainer)).toBeInstanceOf(CopyImageUrlDragAction);
+        expect(SuperDragActionFactory.create(SuperDragActionType.NONE, mockContainer)).toBeInstanceOf(NoneDragAction);
     });
 
     it('未定義のアクションタイプを渡すと例外を投げること', () => {

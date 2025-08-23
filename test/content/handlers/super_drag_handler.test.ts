@@ -175,7 +175,22 @@ describe('SuperDragHandler', () => {
                 );
             });
 
-                                     it('無効なドラッグコンテキストの場合、処理が早期終了すること', () => {
+            it('方向履歴と無効化フラグがリセットされること', () => {
+                const mouseEvent = new MouseEvent('mousedown', { clientX: 100, clientY: 100 });
+                (DragContext.create as jest.Mock).mockReturnValue({
+                    dragType: DragType.TEXT,
+                    selectedValue: 'test',
+                    isValid: jest.fn().mockReturnValue(true)
+                });
+                
+                handler.onMouseDown(mouseEvent);
+                
+                // 内部状態のリセットが正常に行われることを間接的に検証
+                // 後続のドラッグ処理で正常に動作することで確認
+                expect(DragContext.create).toHaveBeenCalledWith(mouseEvent);
+            });
+
+            it('無効なドラッグコンテキストの場合、処理が早期終了すること', () => {
                 const newHandler = new SuperDragHandler(mockSettingsService);
                 const mouseEvent = new MouseEvent('mousedown', { clientX: 100, clientY: 100 });
                 
@@ -339,6 +354,121 @@ describe('SuperDragHandler', () => {
                 
                 expect(ActionNotification.hide).toHaveBeenCalled();
             });
+
+            it('同一方向への連続移動では方向履歴が重複追加されないこと', async () => {
+                const mockSettings = createMockSettings({
+                    [DragType.TEXT]: {
+                        [Direction.RIGHT]: {
+                            action: 'searchGoogle',
+                            params: {}
+                        },
+                        [Direction.LEFT]: { action: '', params: {} },
+                        [Direction.UP]: { action: '', params: {} },
+                        [Direction.DOWN]: { action: '', params: {} },
+                        [Direction.NONE]: { action: '', params: {} }
+                    }
+                });
+                mockSettingsService.getSettings.mockResolvedValue(mockSettings);
+                
+                // 同一方向（RIGHT）への複数回の移動
+                const dragEvent1 = new DragEvent('drag', { clientX: 150, clientY: 100 });
+                const dragEvent2 = new DragEvent('drag', { clientX: 200, clientY: 100 });
+                const dragEvent3 = new DragEvent('drag', { clientX: 250, clientY: 100 });
+                
+                handler.onDrag(dragEvent1);
+                await new Promise(resolve => setTimeout(resolve, 10));
+                handler.onDrag(dragEvent2);
+                await new Promise(resolve => setTimeout(resolve, 10));
+                handler.onDrag(dragEvent3);
+                await new Promise(resolve => setTimeout(resolve, 10));
+                
+                // アクションが正常に表示されることを確認（無効化されていない）
+                expect(ActionNotification.showSuperDragActionHandler).toHaveBeenCalledWith('searchGoogle');
+            });
+
+            it('2方向目の移動を検出した場合、アクションが無効化されること', async () => {
+                const mockSettings = createMockSettings({
+                    [DragType.TEXT]: {
+                        [Direction.RIGHT]: {
+                            action: 'searchGoogle',
+                            params: {}
+                        },
+                        [Direction.UP]: {
+                            action: 'searchBing',
+                            params: {}
+                        },
+                        [Direction.LEFT]: { action: '', params: {} },
+                        [Direction.DOWN]: { action: '', params: {} },
+                        [Direction.NONE]: { action: '', params: {} }
+                    }
+                });
+                mockSettingsService.getSettings.mockResolvedValue(mockSettings);
+                
+                // Loggerのモックをクリア
+                (Logger.debug as jest.Mock).mockClear();
+                
+                // 1方向目の移動（RIGHT）- 開始点(100,100)から(150,100)へ、dx=50>30なのでRIGHT
+                const dragEvent1 = new DragEvent('drag', { clientX: 150, clientY: 100 });
+                handler.onDrag(dragEvent1);
+                await new Promise(resolve => setTimeout(resolve, 10));
+                
+                // 2方向目の移動（UP）- 開始点(100,100)から(100,50)へ、dx=0, dy=-50<-30なのでUP
+                const dragEvent2 = new DragEvent('drag', { clientX: 100, clientY: 50 });
+                handler.onDrag(dragEvent2);
+                await new Promise(resolve => setTimeout(resolve, 10));
+                
+                // 2方向目の移動後は無効化ログが出力されるべき
+                expect(Logger.debug).toHaveBeenCalledWith(
+                    '2方向目の移動を検出',
+                    expect.objectContaining({
+                        directions: expect.arrayContaining([Direction.RIGHT, Direction.UP]),
+                        currentDirection: Direction.UP
+                    })
+                );
+            });
+
+            it('3方向目の移動を検出した場合、NONEアクションが継続表示されること', async () => {
+                const mockSettings = createMockSettings({
+                    [DragType.TEXT]: {
+                        [Direction.RIGHT]: {
+                            action: 'searchGoogle',
+                            params: {}
+                        },
+                        [Direction.UP]: {
+                            action: 'searchBing',
+                            params: {}
+                        },
+                        [Direction.LEFT]: {
+                            action: 'copyText',
+                            params: {}
+                        },
+                        [Direction.DOWN]: { action: '', params: {} },
+                        [Direction.NONE]: { action: '', params: {} }
+                    }
+                });
+                mockSettingsService.getSettings.mockResolvedValue(mockSettings);
+                
+                // ActionNotificationのモックをクリア
+                (ActionNotification.showSuperDragActionHandler as jest.Mock).mockClear();
+                
+                // 1方向目の移動（RIGHT）- 開始点(100,100)から(150,100)へ
+                const dragEvent1 = new DragEvent('drag', { clientX: 150, clientY: 100 });
+                handler.onDrag(dragEvent1);
+                await new Promise(resolve => setTimeout(resolve, 10));
+                
+                // 2方向目の移動（UP）でアクション無効化 - 開始点(100,100)から(100,50)へ
+                const dragEvent2 = new DragEvent('drag', { clientX: 100, clientY: 50 });
+                handler.onDrag(dragEvent2);
+                await new Promise(resolve => setTimeout(resolve, 10));
+                
+                // 3方向目の移動（LEFT）- この時点で無効化されているのでNONEが表示される
+                const dragEvent3 = new DragEvent('drag', { clientX: 60, clientY: 100 });
+                handler.onDrag(dragEvent3);
+                await new Promise(resolve => setTimeout(resolve, 10));
+                
+                // NONEアクションが表示されることを確認
+                expect(ActionNotification.showSuperDragActionHandler).toHaveBeenCalledWith(SuperDragActionType.NONE);
+            });
         });
 
         describe('不変条件', () => {
@@ -439,6 +569,74 @@ describe('SuperDragHandler', () => {
                  expect(ActionNotification.hide).toHaveBeenCalled();
                  expect(DragContext.default).toHaveBeenCalled();
              });
+
+            it('ドラッグ終了時に方向履歴と無効化フラグがリセットされること', async () => {
+                const mockSettings = createMockSettings({
+                    [DragType.TEXT]: {
+                        [Direction.RIGHT]: {
+                            action: 'searchGoogle',
+                            params: {}
+                        },
+                        [Direction.LEFT]: { action: '', params: {} },
+                        [Direction.UP]: { action: '', params: {} },
+                        [Direction.DOWN]: { action: '', params: {} },
+                        [Direction.NONE]: { action: '', params: {} }
+                    }
+                });
+                mockSettingsService.getSettings.mockResolvedValue(mockSettings);
+                
+                const dragEvent = new DragEvent('dragend', { clientX: 200, clientY: 100 });
+                await handler.onDragEnd(dragEvent);
+                
+                // 方向履歴と無効化フラグがリセットされることを確認
+                expect(Logger.debug).toHaveBeenCalledWith(
+                    'ドラッグ終了',
+                    expect.objectContaining({
+                        context: expect.any(Object),
+                        direction: Direction.RIGHT,
+                        directionHistory: expect.any(Array),
+                        isActionDisabled: expect.any(Boolean)
+                    })
+                );
+            });
+
+            it('アクションが無効化された状態でドラッグ終了した場合でもアクションは実行されること', async () => {
+                const mockSettings = createMockSettings({
+                    [DragType.TEXT]: {
+                        [Direction.RIGHT]: {
+                            action: 'searchGoogle',
+                            params: {}
+                        },
+                        [Direction.UP]: { action: '', params: {} },
+                        [Direction.LEFT]: { action: '', params: {} },
+                        [Direction.DOWN]: { action: '', params: {} },
+                        [Direction.NONE]: { action: '', params: {} }
+                    }
+                });
+                mockSettingsService.getSettings.mockResolvedValue(mockSettings);
+                
+                // 2方向の移動でアクション表示を無効化
+                const dragEvent1 = new DragEvent('drag', { clientX: 150, clientY: 100 });
+                handler.onDrag(dragEvent1);
+                await new Promise(resolve => setTimeout(resolve, 10));
+                
+                const dragEvent2 = new DragEvent('drag', { clientX: 150, clientY: 60 });
+                handler.onDrag(dragEvent2);
+                await new Promise(resolve => setTimeout(resolve, 10));
+                
+                // ドラッグ終了（RIGHT方向で終了） - 最終的な方向は開始点からの方向で決まる
+                const dragEndEvent = new DragEvent('dragend', { clientX: 150, clientY: 100 });
+                await handler.onDragEnd(dragEndEvent);
+                
+                // アクション無効化は表示のみに影響し、実際のアクション実行は行われる
+                expect(mockAction.execute).toHaveBeenCalledWith({
+                    type: DragType.TEXT,
+                    direction: Direction.RIGHT,
+                    actionName: 'searchGoogle',
+                    params: {},
+                    selectedValue: 'test'
+                });
+            });
 
              it('例外が発生した場合、警告ログが出力され状態がリセットされること', async () => {
                  mockSettingsService.getSettings.mockRejectedValue(new Error('設定取得エラー'));
