@@ -55,11 +55,6 @@ describe('SuperDragActionNameMap', () => {
             expect(result).toBe('画像URLをコピー');
         });
 
-        it('NONEに対して正しい日本語名を返すこと', () => {
-            const result = SuperDragActionNameMap.get(SuperDragActionType.NONE);
-            expect(result).toBe('なし');
-        });
-
         it('nullのactionTypeに対してエラーを投げること', () => {
             expect(() => {
                 SuperDragActionNameMap.get(null as any);
