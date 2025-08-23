@@ -13,6 +13,8 @@ export class SuperDragHandler {
     private dragStartPos: Point = Point.NONE;
     private dragContext: DragContext = DragContext.default();
     private superDragSettingsService: SuperDragSettingsService;
+    private directionHistory: Set<Direction> = new Set(); // 移動方向の履歴
+    private isActionDisabled: boolean = false; // アクションが無効化されているかどうか
 
     constructor(superDragSettingsService: SuperDragSettingsService) {
         this.superDragSettingsService = superDragSettingsService;
@@ -26,6 +28,9 @@ export class SuperDragHandler {
         }
 
         this.dragStartPos = new Point(e.clientX, e.clientY);
+        // 方向履歴と無効化フラグをリセット
+        this.directionHistory.clear();
+        this.isActionDisabled = false;
         Logger.debug('スーパードラッグの要素を選択', { context: this.dragContext, x: e.clientX, y: e.clientY });
     }
 
@@ -46,6 +51,27 @@ export class SuperDragHandler {
             return;
         }
 
+        // 方向追跡：新しい方向が検出された場合に履歴に追加
+        if (!this.directionHistory.has(direction)) {
+            this.directionHistory.add(direction);
+            
+            // 2方向目の移動を検出した場合、アクションを無効化
+            if (this.directionHistory.size >= 2 && !this.isActionDisabled) {
+                this.isActionDisabled = true;
+                Logger.debug('2方向目の移動を検出', { 
+                    directions: Array.from(this.directionHistory),
+                    currentDirection: direction 
+                });
+                return;
+            }
+        }
+
+        // アクションが無効化されている場合は、無効化メッセージを継続表示
+        if (this.isActionDisabled) {
+            ActionNotification.showSuperDragActionHandler(SuperDragActionType.NONE);
+            return;
+        }
+
         this.superDragSettingsService.getSettings().then((settings) => {
             const actionConfig = settings?.[this.dragContext.dragType]?.[direction] || { action: '', params: {} };
             const actionName: string = actionConfig.action;
@@ -63,7 +89,12 @@ export class SuperDragHandler {
         if (this.isNotDrag()) return;
         const currentPoint = new Point(e.clientX, e.clientY);
         const direction = this.dragStartPos.getDirection(currentPoint);
-        Logger.debug('ドラッグ終了', { context: this.dragContext, direction });
+        Logger.debug('ドラッグ終了', { 
+            context: this.dragContext, 
+            direction,
+            directionHistory: Array.from(this.directionHistory),
+            isActionDisabled: this.isActionDisabled
+        });
 
         try {
 
@@ -92,6 +123,9 @@ export class SuperDragHandler {
             ActionNotification.hide();
             this.dragContext = DragContext.default();
             this.dragStartPos = Point.NONE;
+            // 方向履歴と無効化フラグをリセット
+            this.directionHistory.clear();
+            this.isActionDisabled = false;
         }
     }
 

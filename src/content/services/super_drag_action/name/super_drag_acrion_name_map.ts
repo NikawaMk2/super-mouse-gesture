@@ -10,6 +10,7 @@ import { CopyLinkUrlSuperDragActionName } from "./copy_link_url_super_drag_actio
 import { OpenImageInNewTabSuperDragActionName } from "./open_image_in_new_tab_super_drag_action_name";
 import { SearchImageGoogleSuperDragActionName } from "./search_image_google_super_drag_action_name";
 import { CopyImageUrlSuperDragActionName } from "./copy_image_url_super_drag_action_name";
+import { NoneSuperDragActionName } from "./none_super_drag_action_name";
 
 export class SuperDragActionNameMap {
     private static readonly map: Map<SuperDragActionType, SuperDragActionName> = new Map([
@@ -23,6 +24,7 @@ export class SuperDragActionNameMap {
         [SuperDragActionType.OPEN_IMAGE_IN_NEW_TAB, new OpenImageInNewTabSuperDragActionName()],
         [SuperDragActionType.SEARCH_IMAGE_GOOGLE, new SearchImageGoogleSuperDragActionName()],
         [SuperDragActionType.COPY_IMAGE_URL, new CopyImageUrlSuperDragActionName()],
+        [SuperDragActionType.NONE, new NoneSuperDragActionName()],
     ]);
 
     public static get(actionType: SuperDragActionType): string {
