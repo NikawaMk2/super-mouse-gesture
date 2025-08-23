@@ -7,7 +7,7 @@ export const SuperDragActionType = {
     OPEN_IN_FOREGROUND_TAB: 'openInForegroundTab',
     COPY_LINK_URL: 'copyLinkUrl',
     OPEN_IMAGE_IN_NEW_TAB: 'openImageInNewTab',
-    DOWNLOAD_IMAGE: 'downloadImage',
+
     SEARCH_IMAGE_GOOGLE: 'searchImageGoogle',
     COPY_IMAGE_URL: 'copyImageUrl',
 } as const;

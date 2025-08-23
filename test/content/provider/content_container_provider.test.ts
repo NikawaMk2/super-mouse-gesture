@@ -124,7 +124,7 @@ describe('ContentContainerProvider', () => {
         { name: 'MaximizeWindowGestureAction', path: '../../../src/content/services/gesture_action/maximize_window_gesture_action' },
         { name: 'ToggleFullscreenGestureAction', path: '../../../src/content/services/gesture_action/toggle_fullscreen_gesture_action' },
         // --- SuperDragAction（画像） ---
-        { name: 'DownloadImageDragAction', path: '../../../src/content/services/super_drag_action/image/download_image_drag_action' },
+
         { name: 'OpenImageInNewTabDragAction', path: '../../../src/content/services/super_drag_action/image/open_image_in_new_tab_drag_action' },
         { name: 'SearchImageGoogleDragAction', path: '../../../src/content/services/super_drag_action/image/search_image_google_drag_action' },
         { name: 'CopyImageUrlDragAction', path: '../../../src/content/services/super_drag_action/image/copy_image_url_drag_action' },

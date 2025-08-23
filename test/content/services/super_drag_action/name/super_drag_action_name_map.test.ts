@@ -44,10 +44,7 @@ describe('SuperDragActionNameMap', () => {
             expect(result).toBe('画像を新しいタブで開く');
         });
 
-        it('DOWNLOAD_IMAGEに対して正しい日本語名を返すこと', () => {
-            const result = SuperDragActionNameMap.get(SuperDragActionType.DOWNLOAD_IMAGE);
-            expect(result).toBe('画像をダウンロード');
-        });
+
 
         it('SEARCH_IMAGE_GOOGLEに対して正しい日本語名を返すこと', () => {
             const result = SuperDragActionNameMap.get(SuperDragActionType.SEARCH_IMAGE_GOOGLE);

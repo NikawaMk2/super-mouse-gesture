@@ -9,7 +9,7 @@ import { OpenInBackgroundTabDragAction } from './link/open_in_background_tab_dra
 import { OpenInForegroundTabDragAction } from './link/open_in_foreground_tab_drag_action';
 import { CopyLinkUrlDragAction } from './link/copy_link_url_drag_action';
 import { OpenImageInNewTabDragAction } from './image/open_image_in_new_tab_drag_action';
-import { DownloadImageDragAction } from './image/download_image_drag_action';
+
 import { SearchImageGoogleDragAction } from './image/search_image_google_drag_action';
 import { CopyImageUrlDragAction } from './image/copy_image_url_drag_action';
 
@@ -32,8 +32,7 @@ export class SuperDragActionFactory {
                 return container.get(CopyLinkUrlDragAction);
             case SuperDragActionType.OPEN_IMAGE_IN_NEW_TAB:
                 return container.get(OpenImageInNewTabDragAction);
-            case SuperDragActionType.DOWNLOAD_IMAGE:
-                return container.get(DownloadImageDragAction);
+
             case SuperDragActionType.SEARCH_IMAGE_GOOGLE:
                 return container.get(SearchImageGoogleDragAction);
             case SuperDragActionType.COPY_IMAGE_URL:

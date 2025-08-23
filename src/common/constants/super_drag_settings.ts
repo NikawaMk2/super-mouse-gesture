@@ -27,7 +27,7 @@ export const DEFAULT_SUPER_DRAG_SETTINGS: SuperDragSettings = {
   },
   image: {
     right: { action: 'copyImageUrl', params: {} },
-    left: { action: 'downloadImage', params: {} },
+    left: { action: '', params: {} },
     up: { action: 'openImageInNewTab', params: {} },
     down: { action: 'searchImageGoogle', params: { url: 'https://www.google.com/searchbyimage?image_url=%s' } },
     none: { action: '', params: {} },

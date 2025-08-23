@@ -35,7 +35,7 @@ describe('SuperDragSettingsService', () => {
                 right: { action: 'openImageInNewTab', params: {} },
                 left: { action: 'searchImageGoogle', params: {} },
                 up: { action: 'copyImageUrl', params: {} },
-                down: { action: 'downloadImage', params: {} },
+                down: { action: '', params: {} },
                 none: { action: '', params: {} },
             },
             none: {
