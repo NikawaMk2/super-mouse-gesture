@@ -11,7 +11,6 @@ import { CopyLinkUrlDragAction } from './link/copy_link_url_drag_action';
 import { OpenImageInNewTabDragAction } from './image/open_image_in_new_tab_drag_action';
 import { SearchImageGoogleDragAction } from './image/search_image_google_drag_action';
 import { CopyImageUrlDragAction } from './image/copy_image_url_drag_action';
-import { NoneDragAction } from './none/none_drag_action';
 
 export class SuperDragActionFactory {
     static create(actionName: SuperDragActionTypeAlias, container: Container): SuperDragAction {
@@ -36,8 +35,6 @@ export class SuperDragActionFactory {
                 return container.get(SearchImageGoogleDragAction);
             case SuperDragActionType.COPY_IMAGE_URL:
                 return container.get(CopyImageUrlDragAction);
-            case SuperDragActionType.NONE:
-                return container.get(NoneDragAction);
             default:
                 throw new Error(`未対応のSuperDragAction: ${actionName}`);
         }

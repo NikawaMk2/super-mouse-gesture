@@ -9,7 +9,6 @@ export const SuperDragActionType = {
     OPEN_IMAGE_IN_NEW_TAB: 'openImageInNewTab',
     SEARCH_IMAGE_GOOGLE: 'searchImageGoogle',
     COPY_IMAGE_URL: 'copyImageUrl',
-    NONE: 'none',
 } as const;
 
 export type SuperDragActionType = (typeof SuperDragActionType)[keyof typeof SuperDragActionType]; 
