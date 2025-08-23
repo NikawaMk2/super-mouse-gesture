@@ -102,6 +102,15 @@ export class SuperDragHandler {
                 return;
             }
 
+            // アクションが無効化されている場合は実行しない
+            if (this.isActionDisabled) {
+                Logger.debug('アクションが無効化されているため実行をスキップ', { 
+                    direction,
+                    directionHistory: Array.from(this.directionHistory)
+                });
+                return;
+            }
+
             // SuperDragSettingsからアクション名・paramsを取得
             const settings = await this.superDragSettingsService.getSettings();
             const actionConfig = settings?.[this.dragContext.dragType]?.[direction] || { action: '', params: {} };

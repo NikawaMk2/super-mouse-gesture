@@ -600,7 +600,7 @@ describe('SuperDragHandler', () => {
                 );
             });
 
-            it('アクションが無効化された状態でドラッグ終了した場合でもアクションは実行されること', async () => {
+            it('アクションが無効化後にドラッグ終了した場合はアクションが実行されないこと', async () => {
                 const mockSettings = createMockSettings({
                     [DragType.TEXT]: {
                         [Direction.RIGHT]: {
@@ -615,27 +615,36 @@ describe('SuperDragHandler', () => {
                 });
                 mockSettingsService.getSettings.mockResolvedValue(mockSettings);
                 
+                // マウスダウンイベントでドラッグ開始位置を設定
+                const mouseDownEvent = new MouseEvent('mousedown', { clientX: 100, clientY: 100 });
+                handler.onMouseDown(mouseDownEvent);
+                
                 // 2方向の移動でアクション表示を無効化
+                // 1回目：RIGHT方向に移動
                 const dragEvent1 = new DragEvent('drag', { clientX: 150, clientY: 100 });
                 handler.onDrag(dragEvent1);
                 await new Promise(resolve => setTimeout(resolve, 10));
                 
-                const dragEvent2 = new DragEvent('drag', { clientX: 150, clientY: 60 });
+                // 2回目：UP方向に移動（開始点から見てUPになるよう座標調整）
+                const dragEvent2 = new DragEvent('drag', { clientX: 100, clientY: 50 });
                 handler.onDrag(dragEvent2);
                 await new Promise(resolve => setTimeout(resolve, 10));
                 
-                // ドラッグ終了（RIGHT方向で終了） - 最終的な方向は開始点からの方向で決まる
-                const dragEndEvent = new DragEvent('dragend', { clientX: 150, clientY: 100 });
+                // ドラッグ終了（UP方向で終了） - 最終的な方向は開始点からの方向で決まる
+                const dragEndEvent = new DragEvent('dragend', { clientX: 100, clientY: 50 });
                 await handler.onDragEnd(dragEndEvent);
                 
-                // アクション無効化は表示のみに影響し、実際のアクション実行は行われる
-                expect(mockAction.execute).toHaveBeenCalledWith({
-                    type: DragType.TEXT,
-                    direction: Direction.RIGHT,
-                    actionName: 'searchGoogle',
-                    params: {},
-                    selectedValue: 'test'
-                });
+                // アクションが無効化されているため、アクションは実行されない
+                expect(mockAction.execute).not.toHaveBeenCalled();
+                
+                // 無効化のログが出力されることを確認
+                expect(Logger.debug).toHaveBeenCalledWith(
+                    'アクションが無効化されているため実行をスキップ',
+                    expect.objectContaining({
+                        direction: Direction.UP,
+                        directionHistory: expect.any(Array)
+                    })
+                );
             });
 
              it('例外が発生した場合、警告ログが出力され状態がリセットされること', async () => {
