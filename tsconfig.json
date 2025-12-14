@@ -1,0 +1,62 @@
+{
+  "compilerOptions": {
+    /* 言語と環境 */
+    "target": "ES2024",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    
+    /* 互換性 */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    
+    /* 型チェック - Strict */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    
+    /* モジュール解決 */
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": false,
+    "skipLibCheck": true,
+    
+    /* 出力 */
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": true,
+    
+    /* パス設定 */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@shared/*": ["src/shared/*"],
+      "@content/*": ["src/content/*"],
+      "@background/*": ["src/background/*"]
+    },
+    
+    /* 型定義 */
+    "types": ["chrome", "node", "vite/client"]
+  },
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "vite.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
