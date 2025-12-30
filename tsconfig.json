@@ -48,7 +48,7 @@
     },
     
     /* 型定義 */
-    "types": ["chrome", "node", "vite/client"]
+    "types": ["chrome", "node", "vite/client", "vitest/globals"]
   },
   "include": [
     "src/**/*",
