@@ -36,5 +36,8 @@ export default defineConfig(({ mode }) => ({
         globals: true,
         environment: 'jsdom',
         include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+        define: {
+            __DEV__: true,
+        },
     },
 }));
