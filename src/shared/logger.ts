@@ -30,7 +30,7 @@ interface LoggerConfig {
 /**
  * ロガー設定（モジュールスコープ）
  */
-let config: LoggerConfig = (() => {
+const config: LoggerConfig = (() => {
   // 開発環境では全レベル、本番環境ではINFO以上のみ出力
   const isDev = typeof __DEV__ !== 'undefined' && __DEV__;
   return {
@@ -143,14 +143,5 @@ export const logger = {
    */
   error(context: string, message: string, data?: unknown): void {
     log(LogLevel.ERROR, 'ERROR', context, message, data);
-  },
-
-  /**
-   * 設定を更新する
-   * 
-   * @param newConfig 新しい設定
-   */
-  configure(newConfig: Partial<LoggerConfig>): void {
-    config = { ...config, ...newConfig };
   },
 };
