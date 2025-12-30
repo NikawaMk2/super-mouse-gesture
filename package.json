@@ -17,6 +17,7 @@
     "@playwright/test": "^1.57.0",
     "@types/chrome": "^0.1.32",
     "@types/node": "^25.0.2",
+    "jsdom": "^27.4.0",
     "typescript": "^5.9.3",
     "vite": "^7.2.7",
     "vitest": "^4.0.15"
