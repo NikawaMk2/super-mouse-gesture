@@ -31,6 +31,8 @@
 │   │
 │   └── shared/             # フロント/バックエンド共通モジュール
 │       ├── types/          # 型定義
+│       │   ├── gesture-action.ts    # ジェスチャアクションの種類定義
+│       │   └── gesture-direction.ts # ジェスチャの方向定義
 │       ├── utils/          # ユーティリティ
 │       ├── constants.ts
 │       └── logger.ts       # ロガー
