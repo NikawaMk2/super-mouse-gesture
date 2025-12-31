@@ -16,7 +16,7 @@
 │
 ├── src/                    # ソースコード
 │   ├── background/         # Service Worker (Background Process)
-│   │   ├── handlers.ts     # メッセージハンドラー
+│   │   ├── handlers/       # メッセージハンドラー
 │   │   └── index.ts        # エントリーポイント
 │   │
 │   ├── content/            # Content Scripts (Webページ上で動作)
@@ -34,6 +34,7 @@
 │       │   ├── gesture-action.ts    # ジェスチャアクションの種類定義
 │       │   └── gesture-direction.ts # ジェスチャの方向定義
 │       ├── utils/          # ユーティリティ
+│       │   └── settings.ts # 設定値の取得・管理
 │       ├── constants.ts
 │       └── logger.ts       # ロガー
 │
