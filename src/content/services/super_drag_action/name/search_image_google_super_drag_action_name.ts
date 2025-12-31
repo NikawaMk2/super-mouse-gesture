@@ -1,7 +1,0 @@
-import { SuperDragActionName } from './super_drag_action_name';
-
-export class SearchImageGoogleSuperDragActionName implements SuperDragActionName {
-    public getJapaneseName(): string {
-        return 'Googleで画像検索';
-    }
-} 

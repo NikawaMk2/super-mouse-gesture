@@ -1,38 +1,35 @@
-import { BackgroundContainerProvider } from './provider/background_container_provider';
-import { MessageListener, IGestureActionHandler, IDragActionHandler } from './services/message_listener';
-import Logger from '../common/logger/logger';
+/**
+ * バックグラウンド Service Worker のエントリーポイント
+ * 
+ * 拡張機能起動時に初期化処理を実行する。
+ */
 
-// 開発環境かどうかを確認
-Logger.info('バックグラウンドスクリプト開始');
+import { logger } from "@/shared/logger";
+import { settings } from "@/shared/utils/settings";
+import { setupMessageHandlers } from "./handlers";
 
-// 初期化処理を非同期関数でラップ
-async function initialize() {
-    try {
-        Logger.info('バックグラウンド初期設定開始');
+/**
+ * 拡張機能の初期化処理
+ */
+async function initialize(): Promise<void> {
+  try {
+    logger.info('background', 'バックグラウンド Service Worker を初期化しています...');
 
-        const containerProvider = new BackgroundContainerProvider();
-        const container = containerProvider.getContainer();
+    // 設定を初期化
+    await settings.initialize();
 
-        const gestureActionHandler = container.get<IGestureActionHandler>('IGestureActionHandler');
-        const dragActionHandler = container.get<IDragActionHandler>('IDragActionHandler');
-        const messageListener = new MessageListener(gestureActionHandler, dragActionHandler);
+    // メッセージハンドラーを設定
+    setupMessageHandlers();
 
-        messageListener.listen();
-
-        Logger.info('バックグラウンド初期設定完了');
-    } catch (error) {
-        Logger.error('バックグラウンド初期化エラー', { error });
-    }
+    logger.info('background', 'バックグラウンド Service Worker の初期化が完了しました');
+  } catch (error) {
+    logger.error('background', '初期化中にエラーが発生しました', error);
+    throw error;
+  }
 }
 
-// Service Workerのライフサイクルイベントをリッスン
-chrome.runtime.onInstalled.addListener(() => {
-    Logger.info('拡張機能がインストール/アップデートされました');
+// 拡張機能起動時に初期化を実行
+initialize().catch((error) => {
+  logger.error('background', '初期化に失敗しました', error);
 });
 
-// Service Workerがアクティブになったときのイベント
-self.addEventListener('activate', (event) => {
-    Logger.info('Service Workerがアクティブになりました');
-});
-
-initialize();
