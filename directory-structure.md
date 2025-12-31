@@ -16,13 +16,20 @@
 │
 ├── src/                    # ソースコード
 │   ├── background/         # Service Worker (Background Process)
-│   │   ├── handlers/       # メッセージハンドラー
+│   │   ├── drag/           # スーパードラッグ機能
+│   │   │   └── actions/    # アクション実行ロジック
+│   │   ├── gestures/       # マウスジェスチャ機能
+│   │   │   └── actions/    # アクション実行ロジック
+│   │   ├── handlers.ts     # メッセージハンドラー
 │   │   └── index.ts        # エントリーポイント
 │   │
 │   ├── content/            # Content Scripts (Webページ上で動作)
-│   │   ├── actions/        # アクション実行ロジック
 │   │   ├── drag/           # スーパードラッグ機能
+│   │   │   ├── actions/    # アクション実行ロジック
+│   │   │   ├── core.ts     # 認識ロジック
+│   │   │   └── visual.ts   # 描画ロジック
 │   │   ├── gestures/       # マウスジェスチャ機能
+│   │   │   ├── actions/    # アクション実行ロジック
 │   │   │   ├── core.ts     # 認識ロジック
 │   │   │   ├── definitions.ts
 │   │   │   └── visual.ts   # 描画ロジック
