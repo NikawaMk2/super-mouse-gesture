@@ -34,6 +34,8 @@ export const GestureActionType = {
   RELOAD: 'reload',
   /** タブ復元 */
   RESTORE_TAB: 'restore-tab',
+  /** 無し */
+  NONE: 'none',
 } as const;
 
 export type GestureActionType = typeof GestureActionType[keyof typeof GestureActionType];
