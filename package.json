@@ -5,7 +5,7 @@
   "type": "module",
   "description": "A Chrome Extension for mouse gestures using Manifest V3",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite build",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
