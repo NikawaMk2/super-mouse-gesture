@@ -16,7 +16,7 @@ import { scrollToBottomAction } from "./events/scroll_to_bottom_action";
 import { reloadAction } from "./events/reload_action";
 import { restoreTabAction } from "./events/restore_tab_action";
 import { GestureActionEvent } from "./events/gesture_action";
-import { DirectionTrail } from "../gestures/models/direction_trail";
+import { DirectionTrail } from "../models/direction_trail";
 import { settings } from "@/shared/utils/settings";
 import { noopAction } from "./events/noop_action";
 
