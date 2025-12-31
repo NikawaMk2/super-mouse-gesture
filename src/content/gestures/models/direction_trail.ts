@@ -41,4 +41,12 @@ export class DirectionTrail {
     public reset(): void {
         this.directions = [];
     }
+
+    /**
+     * 方向履歴をジェスチャパス文字列に変換する
+     * @returns ジェスチャパス文字列（例: "U", "LR"）。空の場合は空文字列
+     */
+    public toPath(): string {
+        return this.directions.join('');
+    }
 }
