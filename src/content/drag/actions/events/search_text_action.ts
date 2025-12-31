@@ -20,7 +20,7 @@ export const searchTextAction: DragActionEvent = {
     };
 
     chrome.runtime.sendMessage({
-      type: ExtensionMessageType.SEARCH_TEXT,
+      type: ExtensionMessageType.DRAG_SEARCH_TEXT,
       payload,
     }).catch((error) => {
       logger.error('SearchTextAction', 'メッセージ送信エラー', error);

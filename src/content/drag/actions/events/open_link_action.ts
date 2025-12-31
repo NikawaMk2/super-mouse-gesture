@@ -20,7 +20,7 @@ export const openLinkAction: DragActionEvent = {
     };
 
     chrome.runtime.sendMessage({
-      type: ExtensionMessageType.OPEN_NEW_TAB,
+      type: ExtensionMessageType.DRAG_OPEN_LINK,
       payload,
     }).catch((error) => {
       logger.error('OpenLinkAction', 'メッセージ送信エラー', error);

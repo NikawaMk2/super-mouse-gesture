@@ -2,10 +2,12 @@
  * 拡張機能メッセージのアクション種別
  */
 export const ExtensionMessageType = {
-  /** 新しいタブを開く */
+  /** 新しいタブを開く（ジェスチャーアクション用） */
   OPEN_NEW_TAB: 'OPEN_NEW_TAB',
-  /** 指定テキストで検索を行う（新しいタブ） */
-  SEARCH_TEXT: 'SEARCH_TEXT',
+  /** リンクを開く（ドラッグアクション用） */
+  DRAG_OPEN_LINK: 'DRAG_OPEN_LINK',
+  /** 指定テキストで検索を行う（ドラッグアクション用） */
+  DRAG_SEARCH_TEXT: 'DRAG_SEARCH_TEXT',
   /** 前のタブを選択 */
   TAB_PREV: 'TAB_PREV',
   /** 次のタブを選択 */
@@ -39,11 +41,16 @@ export interface CloseTabPayload {
   selectLeft: boolean;
 }
 
+export interface OpenNewTabPayload {
+  url: string;
+  active: boolean;
+}
+
 /**
  * 拡張機能メッセージ
  */
 export interface ExtensionMessage {
   type: ExtensionMessageType;
-  payload?: SearchTextPayload | CloseTabPayload | null;
+  payload?: SearchTextPayload | CloseTabPayload | OpenNewTabPayload | null;
 }
 
