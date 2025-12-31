@@ -45,6 +45,11 @@ let gestureState: GestureState = {
 };
 
 /**
+ * 次のコンテキストメニューを抑制するかどうか
+ */
+let preventNextContextMenu = false;
+
+/**
  * 要素が編集可能かどうかを判定する
  * @param element 判定対象の要素
  * @returns 編集可能な場合true
@@ -91,6 +96,9 @@ function handleGestureStart(event: MouseEvent): void {
   if (event.button !== 2) {
     return;
   }
+
+  // コンテキストメニュー抑制フラグを初期化
+  preventNextContextMenu = false;
 
   const target = event.target as HTMLElement;
 
@@ -184,6 +192,9 @@ function handleGestureEnd(event: MouseEvent): void {
     return;
   }
 
+  // ジェスチャが有効な場合、次のコンテキストメニューを抑制
+  preventNextContextMenu = true;
+
   // アクション名を非表示
   hideActionName();
 
@@ -276,10 +287,11 @@ function handleKeyDown(event: KeyboardEvent): void {
  * @param event コンテキストメニューイベント
  */
 function handleContextMenu(event: MouseEvent): void {
-  // ジェスチャがアクティブな場合のみ、コンテキストメニューを抑制
-  if (gestureState.isActive) {
+  // ジェスチャがアクティブな場合、または抑制フラグが立っている場合はコンテキストメニューを抑制
+  if (gestureState.isActive || preventNextContextMenu) {
     event.preventDefault();
     event.stopPropagation();
+    preventNextContextMenu = false;
   }
 }
 
