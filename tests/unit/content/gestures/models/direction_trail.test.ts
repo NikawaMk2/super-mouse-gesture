@@ -98,4 +98,40 @@ describe('DirectionTrail', () => {
             expect(trail.isEmpty()).toBe(true);
         });
     });
+
+    describe('toPath', () => {
+        it('履歴が空の場合_空文字列を返すこと', () => {
+            expect(trail.toPath()).toBe('');
+        });
+
+        it('履歴に1つの方向がある場合_その方向の文字列を返すこと', () => {
+            trail.add(GestureDirection.UP);
+
+            expect(trail.toPath()).toBe('U');
+        });
+
+        it('履歴に複数の方向がある場合_全ての方向を結合した文字列を返すこと', () => {
+            trail.add(GestureDirection.LEFT);
+            trail.add(GestureDirection.RIGHT);
+
+            expect(trail.toPath()).toBe('LR');
+        });
+
+        it('異なる方向を追加した場合_正しいパス文字列を返すこと', () => {
+            trail.add(GestureDirection.UP);
+            trail.add(GestureDirection.RIGHT);
+            trail.add(GestureDirection.DOWN);
+            trail.add(GestureDirection.LEFT);
+
+            expect(trail.toPath()).toBe('URDL');
+        });
+
+        it('同じ方向が連続する場合_最初の1つのみが含まれること', () => {
+            trail.add(GestureDirection.UP);
+            trail.add(GestureDirection.UP);
+            trail.add(GestureDirection.UP);
+
+            expect(trail.toPath()).toBe('U');
+        });
+    });
 });
