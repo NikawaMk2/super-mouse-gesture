@@ -1,4 +1,5 @@
 import { logger } from '@/shared/logger';
+import { sendMessageWithRetry } from '@/shared/utils/message-sender';
 import { GestureActionEvent } from './gesture_action';
 
 /**
@@ -8,7 +9,7 @@ export const closeTabAndGoLeftAction: GestureActionEvent = {
   execute(): void {
     logger.debug('CloseTabAndGoLeftAction', 'タブを閉じて左へ');
 
-    chrome.runtime.sendMessage({
+    sendMessageWithRetry({
       type: 'CLOSE_TAB_AND_GO_LEFT',
       payload: null,
     }).catch((error) => {

@@ -1,4 +1,5 @@
 import { logger } from '@/shared/logger';
+import { sendMessageWithRetry } from '@/shared/utils/message-sender';
 import { GestureActionEvent } from './gesture_action';
 
 /**
@@ -8,7 +9,7 @@ export const restoreTabAction: GestureActionEvent = {
   execute(): void {
     logger.debug('RestoreTabAction', 'タブを復元');
 
-    chrome.runtime.sendMessage({
+    sendMessageWithRetry({
       type: 'RESTORE_TAB',
       payload: null,
     }).catch((error) => {

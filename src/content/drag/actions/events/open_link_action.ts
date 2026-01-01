@@ -1,5 +1,6 @@
 import { logger } from '@/shared/logger';
 import { ExtensionMessageType, OpenNewTabPayload } from '@/shared/types/extension-message';
+import { sendMessageWithRetry } from '@/shared/utils/message-sender';
 import { DragActionEvent } from './drag_action';
 
 /**
@@ -19,7 +20,7 @@ export const openLinkAction: DragActionEvent = {
       active: true,
     };
 
-    chrome.runtime.sendMessage({
+    sendMessageWithRetry({
       type: ExtensionMessageType.DRAG_OPEN_LINK,
       payload,
     }).catch((error) => {
