@@ -23,3 +23,7 @@ out/
 # Python Cache
 __pycache__/
 venv/
+
+# Test Output
+playwright-report/
+test-results/
