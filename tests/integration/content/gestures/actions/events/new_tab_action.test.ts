@@ -33,35 +33,14 @@ vi.mock('@/shared/utils/settings/settings-state', () => ({
 }));
 
 // chrome API をモック化（トップレベルで初期化）
+import { setupInitialChromeMock, setupChromeMock } from '../../../../helpers/chrome-mock';
+
 let mockSendMessage: Mock;
 let mockOnMessageListeners: Array<(message: unknown, sender: unknown, sendResponse: (response: unknown) => void) => boolean>;
 let mockTabsCreate: Mock;
 
-// リスナー配列を初期化
-mockOnMessageListeners = [];
-
 // chrome.storage API をモック化（トップレベルで初期化）
-global.chrome = {
-  storage: {
-    local: {
-      get: vi.fn(),
-      set: vi.fn(),
-    },
-    onChanged: {
-      addListener: vi.fn(),
-    },
-  },
-  runtime: {
-    sendMessage: vi.fn().mockResolvedValue({ success: true }),
-    onMessage: {
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-    },
-  },
-  tabs: {
-    create: vi.fn().mockResolvedValue({ id: 1 }),
-  },
-} as unknown as typeof chrome;
+setupInitialChromeMock();
 
 // モック設定後にインポート
 import { newTabAction } from '@/content/gestures/actions/events/new_tab_action';
@@ -71,39 +50,15 @@ import { logger } from '@/shared/logger';
 
 describe('newTabAction', () => {
   beforeEach(() => {
-    // chrome.runtime.sendMessage のモック
-    mockSendMessage = vi.fn().mockResolvedValue({ success: true });
-    
-    // chrome.runtime.onMessage のリスナーを保存する配列をリセット
-    mockOnMessageListeners.length = 0;
-    
     // chrome.tabs.create API のモック
     mockTabsCreate = vi.fn().mockResolvedValue({ id: 1 });
     
     // グローバルなchromeオブジェクトをモック化
-    global.chrome = {
-      storage: {
-        local: {
-          get: vi.fn(),
-          set: vi.fn(),
-        },
-        onChanged: {
-          addListener: vi.fn(),
-        },
-      },
-      runtime: {
-        sendMessage: mockSendMessage,
-        onMessage: {
-          addListener: vi.fn((listener) => {
-            mockOnMessageListeners.push(listener);
-          }),
-          removeListener: vi.fn(),
-        },
-      },
-      tabs: {
-        create: mockTabsCreate,
-      },
-    } as unknown as typeof chrome;
+    const result = setupChromeMock({
+      tabsCreate: mockTabsCreate,
+    });
+    mockSendMessage = result.mockSendMessage;
+    mockOnMessageListeners = result.mockOnMessageListeners;
     
     // モックをリセット
     vi.clearAllMocks();

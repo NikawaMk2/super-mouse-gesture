@@ -33,39 +33,16 @@ vi.mock('@/shared/utils/settings/settings-state', () => ({
 }));
 
 // chrome API をモック化（トップレベルで初期化）
+import { setupInitialChromeMock, setupChromeMock } from '../../../../helpers/chrome-mock';
+
 let mockSendMessage: Mock;
 let mockOnMessageListeners: Array<(message: unknown, sender: unknown, sendResponse: (response: unknown) => void) => boolean>;
 let mockTabsQuery: Mock;
 let mockTabsGetZoom: Mock;
 let mockTabsSetZoom: Mock;
 
-// リスナー配列を初期化
-mockOnMessageListeners = [];
-
 // chrome.storage API をモック化（トップレベルで初期化）
-global.chrome = {
-  storage: {
-    local: {
-      get: vi.fn(),
-      set: vi.fn(),
-    },
-    onChanged: {
-      addListener: vi.fn(),
-    },
-  },
-  runtime: {
-    sendMessage: vi.fn().mockResolvedValue({ success: true }),
-    onMessage: {
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-    },
-  },
-  tabs: {
-    query: vi.fn(),
-    getZoom: vi.fn(),
-    setZoom: vi.fn().mockResolvedValue(undefined),
-  },
-} as unknown as typeof chrome;
+setupInitialChromeMock();
 
 // モック設定後にインポート
 import { zoomOutAction } from '@/content/gestures/actions/events/zoom_out_action';
@@ -75,43 +52,19 @@ import { logger } from '@/shared/logger';
 
 describe('zoomOutAction', () => {
   beforeEach(() => {
-    // chrome.runtime.sendMessage のモック
-    mockSendMessage = vi.fn().mockResolvedValue({ success: true });
-    
-    // chrome.runtime.onMessage のリスナーを保存する配列をリセット
-    mockOnMessageListeners.length = 0;
-    
     // chrome.tabs API のモック
     mockTabsQuery = vi.fn();
     mockTabsGetZoom = vi.fn();
     mockTabsSetZoom = vi.fn().mockResolvedValue(undefined);
     
     // グローバルなchromeオブジェクトをモック化
-    global.chrome = {
-      storage: {
-        local: {
-          get: vi.fn(),
-          set: vi.fn(),
-        },
-        onChanged: {
-          addListener: vi.fn(),
-        },
-      },
-      runtime: {
-        sendMessage: mockSendMessage,
-        onMessage: {
-          addListener: vi.fn((listener) => {
-            mockOnMessageListeners.push(listener);
-          }),
-          removeListener: vi.fn(),
-        },
-      },
-      tabs: {
-        query: mockTabsQuery,
-        getZoom: mockTabsGetZoom,
-        setZoom: mockTabsSetZoom,
-      },
-    } as unknown as typeof chrome;
+    const result = setupChromeMock({
+      tabsQuery: mockTabsQuery,
+      tabsGetZoom: mockTabsGetZoom,
+      tabsSetZoom: mockTabsSetZoom,
+    });
+    mockSendMessage = result.mockSendMessage;
+    mockOnMessageListeners = result.mockOnMessageListeners;
     
     // モックをリセット
     vi.clearAllMocks();
