@@ -1,11 +1,14 @@
-import { test, expect, chromium, type BrowserContext, type Page } from '@playwright/test';
-import { resolve } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { createServer } from 'http';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { test, expect, type BrowserContext, type Page } from '@playwright/test';
+import {
+  getExtensionPath,
+  createBrowserContext,
+  createPage,
+  createTestServer,
+  closeTestServer,
+  waitForPageLoad,
+  setupContextMenuListener,
+  verifyContextMenuSuppressed,
+} from '../helpers/test-setup';
 
 /**
  * 新規タブを開くジェスチャーのE2Eテスト
@@ -13,28 +16,11 @@ const __dirname = dirname(__filename);
 test.describe('新規タブを開くジェスチャー', () => {
   let context: BrowserContext;
   let page: Page;
-  const extensionPath = resolve(__dirname, '../../../dist');
+  const extensionPath = getExtensionPath(import.meta.url);
 
   test.beforeAll(async () => {
-    // Chrome拡張機能を読み込んだコンテキストを作成
-    try {
-      context = await chromium.launchPersistentContext('', {
-        headless: false,
-        args: [
-          `--disable-extensions-except=${extensionPath}`,
-          `--load-extension=${extensionPath}`,
-        ],
-      });
-
-      // 拡張機能が読み込まれるまで待機
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // 新しいページを作成
-      page = await context.newPage();
-    } catch (error) {
-      console.error('ブラウザコンテキストの作成に失敗しました:', error);
-      throw error;
-    }
+    context = await createBrowserContext(extensionPath);
+    page = await createPage(context);
   });
 
   test.afterAll(async () => {
@@ -70,52 +56,23 @@ test.describe('新規タブを開くジェスチャー', () => {
     `;
 
     // HTTPサーバーを起動
-    const server = createServer((_req, res) => {
+    const { server, baseUrl: url } = await createTestServer((_req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(htmlContent);
     });
-
-    // ランダムなポートでサーバーを起動
-    await new Promise<void>((resolve) => {
-      server.listen(0, () => {
-        resolve();
-      });
-    });
-
-    const address = server.address();
-    const port = typeof address === 'object' && address ? address.port : 0;
-    const url = `http://localhost:${port}`;
 
     try {
       // HTTP URLとしてページを読み込む
       await page.goto(url);
 
       // ページが完全に読み込まれるまで待機
-      await page.waitForLoadState('networkidle');
-
-      // Content Scriptが読み込まれるまで待機
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await waitForPageLoad(page);
 
       // コンテキストメニューが表示されないことを確認するためのリスナーを設定
-      await page.evaluate(() => {
-        // contextmenuイベントリスナーを追加して、preventDefaultが呼ばれているかを確認
-        (window as any).__contextMenuEventFired = false;
-        (window as any).__contextMenuPrevented = false;
-        document.addEventListener(
-          'contextmenu',
-          (e) => {
-            (window as any).__contextMenuEventFired = true;
-            // preventDefaultが呼ばれている場合、defaultPreventedがtrueになる
-            if (e.defaultPrevented) {
-              (window as any).__contextMenuPrevented = true;
-            }
-          },
-          true
-        );
-      });
+      await setupContextMenuListener(page);
 
-      // ジェスチャー実行前のタブ数を取得
-      const pagesBefore = context.pages();
+      // ジェスチャー実行前のタブ数を取得（ページ読み込み完了後、ジェスチャー実行直前）
+      const pagesBefore = [...context.pages()];
       const tabCountBefore = pagesBefore.length;
 
       // 右クリックを押しながら右→上方向にマウスを動かす（RUジェスチャー）
@@ -182,26 +139,13 @@ test.describe('新規タブを開くジェスチャー', () => {
       await new Promise((resolve) => setTimeout(resolve, 200));
 
       // コンテキストメニューが抑制されたことを確認
-      // contextmenuイベントが発火した場合、preventDefaultされている必要がある
-      // または、contextmenuイベントが発火しない（これも正常な動作）
-      const contextMenuState = await page.evaluate(() => {
-        return {
-          eventFired: (window as any).__contextMenuEventFired === true,
-          prevented: (window as any).__contextMenuPrevented === true,
-        };
-      });
-      
-      // contextmenuイベントが発火した場合、preventDefaultされている必要がある
-      if (contextMenuState.eventFired) {
-        expect(contextMenuState.prevented).toBe(true);
-      }
-      // contextmenuイベントが発火しない場合も正常（ジェスチャが正常に動作している）
+      await verifyContextMenuSuppressed(page);
 
       // 新しいタブが開かれるまで待機
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // 新しいタブが開かれたことを確認
-      const pagesAfter = context.pages();
+      const pagesAfter = [...context.pages()];
       const tabCountAfter = pagesAfter.length;
       expect(tabCountAfter).toBe(tabCountBefore + 1);
 
@@ -220,13 +164,7 @@ test.describe('新規タブを開くジェスチャー', () => {
       }
     } finally {
       // サーバーを閉じる
-      server.closeAllConnections();
-      await new Promise<void>((resolve) => {
-        server.close(() => resolve());
-        // タイムアウトを設定（1秒）
-        setTimeout(() => resolve(), 1000);
-      });
+      await closeTestServer(server);
     }
   });
 });
-

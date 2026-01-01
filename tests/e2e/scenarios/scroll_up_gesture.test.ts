@@ -1,11 +1,14 @@
-import { test, expect, chromium, type BrowserContext, type Page } from '@playwright/test';
-import { resolve } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { createServer } from 'http';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { test, expect, type BrowserContext, type Page } from '@playwright/test';
+import {
+  getExtensionPath,
+  createBrowserContext,
+  createPage,
+  createTestServer,
+  closeTestServer,
+  waitForPageLoad,
+  setupContextMenuListener,
+  verifyContextMenuSuppressed,
+} from '../helpers/test-setup';
 
 /**
  * 上へスクロールジェスチャーのE2Eテスト
@@ -13,28 +16,11 @@ const __dirname = dirname(__filename);
 test.describe('上へスクロールジェスチャー', () => {
   let context: BrowserContext;
   let page: Page;
-  const extensionPath = resolve(__dirname, '../../../dist');
+  const extensionPath = getExtensionPath(import.meta.url);
 
   test.beforeAll(async () => {
-    // Chrome拡張機能を読み込んだコンテキストを作成
-    try {
-      context = await chromium.launchPersistentContext('', {
-        headless: false,
-        args: [
-          `--disable-extensions-except=${extensionPath}`,
-          `--load-extension=${extensionPath}`,
-        ],
-      });
-
-      // 拡張機能が読み込まれるまで待機
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // 新しいページを作成
-      page = await context.newPage();
-    } catch (error) {
-      console.error('ブラウザコンテキストの作成に失敗しました:', error);
-      throw error;
-    }
+    context = await createBrowserContext(extensionPath);
+    page = await createPage(context);
   });
 
   test.afterAll(async () => {
@@ -81,49 +67,20 @@ test.describe('上へスクロールジェスチャー', () => {
     `;
 
     // URLではContent Scriptが読み込まれない可能性があるため、HTTPサーバーを起動してContent Scriptが読み込まれるようにする
-    const server = createServer((_req, res) => {
+    const { server, baseUrl: url } = await createTestServer((_req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(htmlContent);
     });
-
-    // ランダムなポートでサーバーを起動
-    await new Promise<void>((resolve) => {
-      server.listen(0, () => {
-        resolve();
-      });
-    });
-
-    const address = server.address();
-    const port = typeof address === 'object' && address ? address.port : 0;
-    const url = `http://localhost:${port}`;
 
     try {
       // HTTP URLとしてページを読み込む
       await page.goto(url);
 
-    // ページが完全に読み込まれるまで待機
-    await page.waitForLoadState('networkidle');
+      // ページが完全に読み込まれるまで待機
+      await waitForPageLoad(page);
 
-    // Content Scriptが読み込まれるまで待機
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // コンテキストメニューが表示されないことを確認するためのリスナーを設定
-    await page.evaluate(() => {
-      // contextmenuイベントリスナーを追加して、preventDefaultが呼ばれているかを確認
-      (window as any).__contextMenuEventFired = false;
-      (window as any).__contextMenuPrevented = false;
-      document.addEventListener(
-        'contextmenu',
-        (e) => {
-          (window as any).__contextMenuEventFired = true;
-          // preventDefaultが呼ばれている場合、defaultPreventedがtrueになる
-          if (e.defaultPrevented) {
-            (window as any).__contextMenuPrevented = true;
-          }
-        },
-        true
-      );
-    });
+      // コンテキストメニューが表示されないことを確認するためのリスナーを設定
+      await setupContextMenuListener(page);
 
     // 初期スクロール位置を確認（最上部であることを確認）
     const initialScrollY = await page.evaluate(() => window.scrollY);
@@ -196,20 +153,7 @@ test.describe('上へスクロールジェスチャー', () => {
     await new Promise((resolve) => setTimeout(resolve, 200));
 
     // コンテキストメニューが抑制されたことを確認
-    // contextmenuイベントが発火した場合、preventDefaultされている必要がある
-    // または、contextmenuイベントが発火しない（これも正常な動作）
-    const contextMenuState = await page.evaluate(() => {
-      return {
-        eventFired: (window as any).__contextMenuEventFired === true,
-        prevented: (window as any).__contextMenuPrevented === true,
-      };
-    });
-    
-    // contextmenuイベントが発火した場合、preventDefaultされている必要がある
-    if (contextMenuState.eventFired) {
-      expect(contextMenuState.prevented).toBe(true);
-    }
-    // contextmenuイベントが発火しない場合も正常（ジェスチャが正常に動作している）
+    await verifyContextMenuSuppressed(page);
 
     // スクロールアニメーションが完了するまで待機
     // smoothスクロールの場合、スクロール位置が変化し、その後安定するまで待機
@@ -251,12 +195,7 @@ test.describe('上へスクロールジェスチャー', () => {
     expect(scrollYAfterGesture).toBeGreaterThanOrEqual(0);
     } finally {
       // サーバーを閉じる
-      server.closeAllConnections();
-      await new Promise<void>((resolve) => {
-        server.close(() => resolve());
-        // タイムアウトを設定（1秒）
-        setTimeout(() => resolve(), 1000);
-      });
+      await closeTestServer(server);
     }
   });
 });

@@ -1,11 +1,14 @@
-import { test, expect, chromium, type BrowserContext, type Page } from '@playwright/test';
-import { resolve } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { createServer } from 'http';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { test, expect, type BrowserContext, type Page } from '@playwright/test';
+import {
+  getExtensionPath,
+  createBrowserContext,
+  createPage,
+  createTestServer,
+  closeTestServer,
+  waitForPageLoad,
+  setupContextMenuListener,
+  verifyContextMenuSuppressed,
+} from '../helpers/test-setup';
 
 /**
  * 閉じたタブを開くジェスチャーのE2Eテスト
@@ -13,28 +16,11 @@ const __dirname = dirname(__filename);
 test.describe('閉じたタブを開くジェスチャー', () => {
   let context: BrowserContext;
   let page: Page;
-  const extensionPath = resolve(__dirname, '../../../dist');
+  const extensionPath = getExtensionPath(import.meta.url);
 
   test.beforeAll(async () => {
-    // Chrome拡張機能を読み込んだコンテキストを作成
-    try {
-      context = await chromium.launchPersistentContext('', {
-        headless: false,
-        args: [
-          `--disable-extensions-except=${extensionPath}`,
-          `--load-extension=${extensionPath}`,
-        ],
-      });
-
-      // 拡張機能が読み込まれるまで待機
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // 新しいページを作成
-      page = await context.newPage();
-    } catch (error) {
-      console.error('ブラウザコンテキストの作成に失敗しました:', error);
-      throw error;
-    }
+    context = await createBrowserContext(extensionPath);
+    page = await createPage(context);
   });
 
   test.afterAll(async () => {
@@ -71,31 +57,17 @@ test.describe('閉じたタブを開くジェスチャー', () => {
     `;
 
     // HTTPサーバーを起動
-    const server = createServer((_req, res) => {
+    const { server, baseUrl: url } = await createTestServer((_req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(htmlContent);
     });
-
-    // ランダムなポートでサーバーを起動
-    await new Promise<void>((resolve) => {
-      server.listen(0, () => {
-        resolve();
-      });
-    });
-
-    const address = server.address();
-    const port = typeof address === 'object' && address ? address.port : 0;
-    const url = `http://localhost:${port}`;
 
     try {
       // ページに移動
       await page.goto(url);
 
       // ページが完全に読み込まれるまで待機
-      await page.waitForLoadState('networkidle');
-
-      // Content Scriptが読み込まれるまで待機
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await waitForPageLoad(page);
 
       // ページが読み込まれたことを確認
       const initialTitle = await page.title();
@@ -126,41 +98,17 @@ test.describe('閉じたタブを開くジェスチャー', () => {
         </body>
         </html>
       `;
-      const newPageServer = createServer((_req, res) => {
+      const { server: newPageServer, baseUrl: newPageUrl } = await createTestServer((_req, res) => {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(newPageContent);
       });
-      await new Promise<void>((resolve) => {
-        newPageServer.listen(0, () => {
-          resolve();
-        });
-      });
-      const newPageAddress = newPageServer.address();
-      const newPagePort = typeof newPageAddress === 'object' && newPageAddress ? newPageAddress.port : 0;
-      const newPageUrl = `http://localhost:${newPagePort}`;
 
       const newPage = await context.newPage();
       await newPage.goto(newPageUrl);
-      await newPage.waitForLoadState('networkidle');
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await waitForPageLoad(newPage);
 
       // コンテキストメニューが表示されないことを確認するためのリスナーを設定
-      await newPage.evaluate(() => {
-        // contextmenuイベントリスナーを追加して、preventDefaultが呼ばれているかを確認
-        (window as any).__contextMenuEventFired = false;
-        (window as any).__contextMenuPrevented = false;
-        document.addEventListener(
-          'contextmenu',
-          (e) => {
-            (window as any).__contextMenuEventFired = true;
-            // preventDefaultが呼ばれている場合、defaultPreventedがtrueになる
-            if (e.defaultPrevented) {
-              (window as any).__contextMenuPrevented = true;
-            }
-          },
-          true
-        );
-      });
+      await setupContextMenuListener(newPage);
 
       // 新しいページを作成した後のタブ数を取得（復元されたタブを識別するため）
       const pagesAfterNewPage = context.pages();
@@ -233,27 +181,10 @@ test.describe('閉じたタブを開くジェスチャー', () => {
       await new Promise((resolve) => setTimeout(resolve, 200));
 
       // コンテキストメニューが抑制されたことを確認
-      // contextmenuイベントが発火した場合、preventDefaultされている必要がある
-      // または、contextmenuイベントが発火しない（これも正常な動作）
-      const contextMenuState = await newPage.evaluate(() => {
-        return {
-          eventFired: (window as any).__contextMenuEventFired === true,
-          prevented: (window as any).__contextMenuPrevented === true,
-        };
-      });
-      
-      // contextmenuイベントが発火した場合、preventDefaultされている必要がある
-      if (contextMenuState.eventFired) {
-        expect(contextMenuState.prevented).toBe(true);
-      }
-      // contextmenuイベントが発火しない場合も正常（ジェスチャが正常に動作している）
+      await verifyContextMenuSuppressed(newPage);
 
       // 新しいページのサーバーを閉じる
-      newPageServer.closeAllConnections();
-      await new Promise<void>((resolve) => {
-        newPageServer.close(() => resolve());
-        setTimeout(() => resolve(), 1000);
-      });
+      await closeTestServer(newPageServer);
 
       // タブが復元されるまで待機
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -299,12 +230,7 @@ test.describe('閉じたタブを開くジェスチャー', () => {
       expect(restoredMarker).toBe('このページはタブ復元テストページです。');
     } finally {
       // サーバーを閉じる
-      server.closeAllConnections();
-      await new Promise<void>((resolve) => {
-        server.close(() => resolve());
-        // タイムアウトを設定（1秒）
-        setTimeout(() => resolve(), 1000);
-      });
+      await closeTestServer(server);
     }
   });
 });

@@ -1,11 +1,14 @@
-import { test, expect, chromium, type BrowserContext, type Page } from '@playwright/test';
-import { resolve } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { createServer } from 'http';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { test, expect, type BrowserContext, type Page } from '@playwright/test';
+import {
+  getExtensionPath,
+  createBrowserContext,
+  createPages,
+  createTestServer,
+  closeTestServer,
+  waitForPageLoad,
+  setupContextMenuListener,
+  verifyContextMenuSuppressed,
+} from '../helpers/test-setup';
 
 /**
  * 次のタブへジェスチャーのE2Eテスト
@@ -15,29 +18,15 @@ test.describe('次のタブへジェスチャー', () => {
   let page1: Page;
   let page2: Page;
   let page3: Page;
-  const extensionPath = resolve(__dirname, '../../../dist');
+  const extensionPath = getExtensionPath(import.meta.url);
 
   test.beforeAll(async () => {
-    // Chrome拡張機能を読み込んだコンテキストを作成
-    try {
-      context = await chromium.launchPersistentContext('', {
-        headless: false,
-        args: [
-          `--disable-extensions-except=${extensionPath}`,
-          `--load-extension=${extensionPath}`,
-        ],
-      });
-
-      // 拡張機能が読み込まれるまで待機
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // 複数のページ（タブ）を作成
-      page1 = await context.newPage();
-      page2 = await context.newPage();
-      page3 = await context.newPage();
-    } catch (error) {
-      console.error('ブラウザコンテキストの作成に失敗しました:', error);
-      throw error;
+    context = await createBrowserContext(extensionPath);
+    const pages = await createPages(context, 3);
+    if (pages.length === 3) {
+      [page1, page2, page3] = pages;
+    } else {
+      throw new Error('Failed to create 3 pages');
     }
   });
 
@@ -125,7 +114,7 @@ test.describe('次のタブへジェスチャー', () => {
     `;
 
     // HTTPサーバーを起動
-    const server = createServer((req, res) => {
+    const { server, baseUrl } = await createTestServer((req, res) => {
       if (req.url === '/tab1') {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(tab1Content);
@@ -141,17 +130,6 @@ test.describe('次のタブへジェスチャー', () => {
       }
     });
 
-    // ランダムなポートでサーバーを起動
-    await new Promise<void>((resolve) => {
-      server.listen(0, () => {
-        resolve();
-      });
-    });
-
-    const address = server.address();
-    const port = typeof address === 'object' && address ? address.port : 0;
-    const baseUrl = `http://localhost:${port}`;
-
     try {
       // 各タブに異なるページを読み込む
       await page1.goto(`${baseUrl}/tab1`);
@@ -159,30 +137,10 @@ test.describe('次のタブへジェスチャー', () => {
       await page3.goto(`${baseUrl}/tab3`);
 
       // 各ページが完全に読み込まれるまで待機
-      await page1.waitForLoadState('networkidle');
-      await page2.waitForLoadState('networkidle');
-      await page3.waitForLoadState('networkidle');
-
-      // Content Scriptが読み込まれるまで待機
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await waitForPageLoad([page1, page2, page3]);
 
       // コンテキストメニューが表示されないことを確認するためのリスナーを設定
-      await page1.evaluate(() => {
-        // contextmenuイベントリスナーを追加して、preventDefaultが呼ばれているかを確認
-        (window as any).__contextMenuEventFired = false;
-        (window as any).__contextMenuPrevented = false;
-        document.addEventListener(
-          'contextmenu',
-          (e) => {
-            (window as any).__contextMenuEventFired = true;
-            // preventDefaultが呼ばれている場合、defaultPreventedがtrueになる
-            if (e.defaultPrevented) {
-              (window as any).__contextMenuPrevented = true;
-            }
-          },
-          true
-        );
-      });
+      await setupContextMenuListener(page1);
 
       // タブ1をアクティブにする（現在のタブをタブ1にする）
       await page1.bringToFront();
@@ -259,20 +217,7 @@ test.describe('次のタブへジェスチャー', () => {
       await new Promise((resolve) => setTimeout(resolve, 200));
 
       // コンテキストメニューが抑制されたことを確認
-      // contextmenuイベントが発火した場合、preventDefaultされている必要がある
-      // または、contextmenuイベントが発火しない（これも正常な動作）
-      const contextMenuState = await page1.evaluate(() => {
-        return {
-          eventFired: (window as any).__contextMenuEventFired === true,
-          prevented: (window as any).__contextMenuPrevented === true,
-        };
-      });
-      
-      // contextmenuイベントが発火した場合、preventDefaultされている必要がある
-      if (contextMenuState.eventFired) {
-        expect(contextMenuState.prevented).toBe(true);
-      }
-      // contextmenuイベントが発火しない場合も正常（ジェスチャが正常に動作している）
+      await verifyContextMenuSuppressed(page1);
 
       // タブが切り替わるまで待機（タブ2に切り替わる）
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -290,12 +235,7 @@ test.describe('次のタブへジェスチャー', () => {
       expect(tab2Marker).toBe('このページはタブ2です。');
     } finally {
       // サーバーを閉じる
-      server.closeAllConnections();
-      await new Promise<void>((resolve) => {
-        server.close(() => resolve());
-        // タイムアウトを設定（1秒）
-        setTimeout(() => resolve(), 1000);
-      });
+      await closeTestServer(server);
     }
   });
 });

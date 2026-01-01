@@ -1,11 +1,12 @@
-import { test, expect, chromium, type BrowserContext, type Page } from '@playwright/test';
-import { resolve } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { createServer } from 'http';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { test, expect, type BrowserContext, type Page } from '@playwright/test';
+import {
+  getExtensionPath,
+  createBrowserContext,
+  createPages,
+  createTestServer,
+  closeTestServer,
+  waitForPageLoad,
+} from '../helpers/test-setup';
 
 /**
  * タブを閉じて右へジェスチャーのE2Eテスト
@@ -15,29 +16,15 @@ test.describe('タブを閉じて右へジェスチャー', () => {
   let page1: Page;
   let page2: Page;
   let page3: Page;
-  const extensionPath = resolve(__dirname, '../../../dist');
+  const extensionPath = getExtensionPath(import.meta.url);
 
   test.beforeAll(async () => {
-    // Chrome拡張機能を読み込んだコンテキストを作成
-    try {
-      context = await chromium.launchPersistentContext('', {
-        headless: false,
-        args: [
-          `--disable-extensions-except=${extensionPath}`,
-          `--load-extension=${extensionPath}`,
-        ],
-      });
-
-      // 拡張機能が読み込まれるまで待機
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // 複数のページ（タブ）を作成
-      page1 = await context.newPage();
-      page2 = await context.newPage();
-      page3 = await context.newPage();
-    } catch (error) {
-      console.error('ブラウザコンテキストの作成に失敗しました:', error);
-      throw error;
+    context = await createBrowserContext(extensionPath);
+    const pages = await createPages(context, 3);
+    if (pages.length === 3) {
+      [page1, page2, page3] = pages as [Page, Page, Page];
+    } else {
+      throw new Error('Failed to create 3 pages');
     }
   });
 
@@ -125,7 +112,7 @@ test.describe('タブを閉じて右へジェスチャー', () => {
     `;
 
     // HTTPサーバーを起動
-    const server = createServer((req, res) => {
+    const { server, baseUrl } = await createTestServer((req, res) => {
       if (req.url === '/tab1') {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(tab1Content);
@@ -141,17 +128,6 @@ test.describe('タブを閉じて右へジェスチャー', () => {
       }
     });
 
-    // ランダムなポートでサーバーを起動
-    await new Promise<void>((resolve) => {
-      server.listen(0, () => {
-        resolve();
-      });
-    });
-
-    const address = server.address();
-    const port = typeof address === 'object' && address ? address.port : 0;
-    const baseUrl = `http://localhost:${port}`;
-
     try {
       // 各タブに異なるページを読み込む
       await page1.goto(`${baseUrl}/tab1`);
@@ -159,12 +135,7 @@ test.describe('タブを閉じて右へジェスチャー', () => {
       await page3.goto(`${baseUrl}/tab3`);
 
       // 各ページが完全に読み込まれるまで待機
-      await page1.waitForLoadState('networkidle');
-      await page2.waitForLoadState('networkidle');
-      await page3.waitForLoadState('networkidle');
-
-      // Content Scriptが読み込まれるまで待機
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await waitForPageLoad([page1, page2, page3]);
 
       // タブ2をアクティブにする（現在のタブをタブ2にする）
       await page2.bringToFront();
@@ -261,12 +232,7 @@ test.describe('タブを閉じて右へジェスチャー', () => {
       expect(tab1Title).toBe('Tab 1');
     } finally {
       // サーバーを閉じる
-      server.closeAllConnections();
-      await new Promise<void>((resolve) => {
-        server.close(() => resolve());
-        // タイムアウトを設定（1秒）
-        setTimeout(() => resolve(), 1000);
-      });
+      await closeTestServer(server);
     }
   });
 });
