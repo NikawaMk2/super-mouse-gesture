@@ -127,6 +127,24 @@ test.describe('戻るジェスチャー', () => {
       // Content Scriptが読み込まれるまで待機
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
+      // コンテキストメニューが表示されないことを確認するためのリスナーを設定
+      await page.evaluate(() => {
+        // contextmenuイベントリスナーを追加して、preventDefaultが呼ばれているかを確認
+        (window as any).__contextMenuEventFired = false;
+        (window as any).__contextMenuPrevented = false;
+        document.addEventListener(
+          'contextmenu',
+          (e) => {
+            (window as any).__contextMenuEventFired = true;
+            // preventDefaultが呼ばれている場合、defaultPreventedがtrueになる
+            if (e.defaultPrevented) {
+              (window as any).__contextMenuPrevented = true;
+            }
+          },
+          true
+        );
+      });
+
       // ページ1にいることを確認
       const page1Title = await page.title();
       expect(page1Title).toBe('Page 1');
@@ -196,6 +214,25 @@ test.describe('戻るジェスチャー', () => {
 
       // 右クリックを離す
       await page.mouse.up({ button: 'right' });
+
+      // 少し待機してからコンテキストメニューが抑制されたかを確認
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      // コンテキストメニューが抑制されたことを確認
+      // contextmenuイベントが発火した場合、preventDefaultされている必要がある
+      // または、contextmenuイベントが発火しない（これも正常な動作）
+      const contextMenuState = await page.evaluate(() => {
+        return {
+          eventFired: (window as any).__contextMenuEventFired === true,
+          prevented: (window as any).__contextMenuPrevented === true,
+        };
+      });
+      
+      // contextmenuイベントが発火した場合、preventDefaultされている必要がある
+      if (contextMenuState.eventFired) {
+        expect(contextMenuState.prevented).toBe(true);
+      }
+      // contextmenuイベントが発火しない場合も正常（ジェスチャが正常に動作している）
 
       // ページが戻るまで待機（ページ1に戻る）
       await page.waitForFunction(

@@ -107,6 +107,23 @@ test.describe('上へスクロールジェスチャー', () => {
     // Content Scriptが読み込まれるまで待機
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
+    // コンテキストメニューが表示されないことを確認するためのリスナーを設定
+    await page.evaluate(() => {
+      // contextmenuイベントリスナーを追加して、preventDefaultが呼ばれているかを確認
+      (window as any).__contextMenuEventFired = false;
+      (window as any).__contextMenuPrevented = false;
+      document.addEventListener(
+        'contextmenu',
+        (e) => {
+          (window as any).__contextMenuEventFired = true;
+          // preventDefaultが呼ばれている場合、defaultPreventedがtrueになる
+          if (e.defaultPrevented) {
+            (window as any).__contextMenuPrevented = true;
+          }
+        },
+        true
+      );
+    });
 
     // 初期スクロール位置を確認（最上部であることを確認）
     const initialScrollY = await page.evaluate(() => window.scrollY);
@@ -174,6 +191,25 @@ test.describe('上へスクロールジェスチャー', () => {
 
     // 右クリックを離す
     await page.mouse.up({ button: 'right' });
+
+    // 少し待機してからコンテキストメニューが抑制されたかを確認
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    // コンテキストメニューが抑制されたことを確認
+    // contextmenuイベントが発火した場合、preventDefaultされている必要がある
+    // または、contextmenuイベントが発火しない（これも正常な動作）
+    const contextMenuState = await page.evaluate(() => {
+      return {
+        eventFired: (window as any).__contextMenuEventFired === true,
+        prevented: (window as any).__contextMenuPrevented === true,
+      };
+    });
+    
+    // contextmenuイベントが発火した場合、preventDefaultされている必要がある
+    if (contextMenuState.eventFired) {
+      expect(contextMenuState.prevented).toBe(true);
+    }
+    // contextmenuイベントが発火しない場合も正常（ジェスチャが正常に動作している）
 
     // スクロールアニメーションが完了するまで待機
     // smoothスクロールの場合、スクロール位置が変化し、その後安定するまで待機
