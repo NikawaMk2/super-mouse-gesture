@@ -8,7 +8,7 @@
     "dev": "vite build && vite build -c vite.content.config.ts",
     "build": "tsc && vite build && vite build -c vite.content.config.ts",
     "preview": "vite preview",
-    "test": "vitest",
+    "test": "vitest run",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
     "test:e2e": "playwright test"
