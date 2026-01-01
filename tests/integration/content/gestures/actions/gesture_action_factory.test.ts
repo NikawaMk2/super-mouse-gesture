@@ -235,7 +235,7 @@ describe('createGestureAction', () => {
   it.each([
     {
       description: '設定に存在しないジェスチャパスを指定した場合',
-      directions: [GestureDirection.UP, GestureDirection.UP, GestureDirection.UP],
+      directions: [GestureDirection.UP, GestureDirection.LEFT, GestureDirection.DOWN],
       customGestures: undefined,
       expectedAction: noopAction,
     },

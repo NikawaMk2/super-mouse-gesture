@@ -145,17 +145,17 @@ describe('openLinkAction', () => {
   });
   
   it('メッセージ送信エラーが発生した場合_エラーがログに記録されること', async () => {
-    // エラーを発生させる
+    // エラーを発生させる（常にエラーを返すように設定）
     const error = new Error('Send message failed');
-    mockSendMessage.mockRejectedValue(error);
+    mockSendMessage.mockImplementation(() => Promise.reject(error));
     
     const testUrl = 'https://example.com';
     
     // コンテンツスクリプト側のアクションを実行
     openLinkAction.execute(testUrl);
     
-    // エラーが処理されるまで待つ
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    // エラーが処理されるまで待つ（sendMessageWithRetryは最大3回再試行し、各再試行間に100ms待機するため、最大400ms待つ）
+    await new Promise((resolve) => setTimeout(resolve, 400));
     
     // logger.errorが正しい引数で呼ばれたことを確認
     expect(vi.mocked(logger.error)).toHaveBeenCalledWith(
