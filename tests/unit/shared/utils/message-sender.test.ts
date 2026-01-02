@@ -93,19 +93,14 @@ describe('sendMessageWithRetry', () => {
 
     const promise = sendMessageWithRetry(testMessage);
 
-    // 最初の試行が失敗するのを待つ
-    await vi.runOnlyPendingTimersAsync();
+    // Promiseの拒否を適切に処理するために、expectを先に設定
+    const rejectionPromise = expect(promise).rejects.toThrow('Service Worker not available');
 
-    // 2回目の再試行のタイマーを進める
-    await vi.advanceTimersByTimeAsync(100);
-    await vi.runOnlyPendingTimersAsync();
+    // すべてのタイマーを進めて、3回の試行を完了させる
+    await vi.runAllTimersAsync();
 
-    // 3回目の再試行のタイマーを進める
-    await vi.advanceTimersByTimeAsync(100);
-    await vi.runOnlyPendingTimersAsync();
-
-    // Promiseの拒否を適切に処理
-    await expect(promise).rejects.toThrow('Service Worker not available');
+    // Promise rejectionの処理を待つ
+    await rejectionPromise;
 
     expect(mockSendMessage).toHaveBeenCalledTimes(3);
     expect(mockSendMessage).toHaveBeenCalledWith(testMessage);
