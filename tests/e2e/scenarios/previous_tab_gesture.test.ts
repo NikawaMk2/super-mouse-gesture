@@ -24,7 +24,7 @@ test.describe('前のタブへジェスチャー', () => {
     context = await createBrowserContext(extensionPath);
     const pages = await createPages(context, 3);
     if (pages.length === 3) {
-      [page1, page2, page3] = pages;
+      [page1, page2, page3] = pages as [Page, Page, Page];
     } else {
       throw new Error('Failed to create 3 pages');
     }
