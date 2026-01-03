@@ -44,7 +44,11 @@ export async function createBrowserContext(extensionPath: string): Promise<Brows
     // 3. 実行速度: headlessモードの方が高速で、CI環境でのテスト実行時間を短縮できる
     // 4. 安定性: CI環境ではGUI関連のエラー（X11ディスプレイエラーなど）が発生しやすいため、headlessモードで回避できる
     // GitHub ActionsではCI環境変数が設定されているが、値は'true'とは限らないため、存在チェックを行う
-    const isHeadless = !!process.env.CI;
+    // Chrome拡張はheadless Chromiumでは読み込まれないため、デフォルトでheadfulで実行する。
+    // デバッグなどでheadlessを明示的に使いたい場合のみPLAYWRIGHT_HEADLESSを指定する。
+    const isHeadless =
+      process.env.PLAYWRIGHT_HEADLESS === '1' ||
+      process.env.PLAYWRIGHT_HEADLESS?.toLowerCase() === 'true';
     
     // 一時ディレクトリを作成（launchPersistentContextにはユーザーデータディレクトリのパスが必要）
     const userDataDir = mkdtempSync(join(tmpdir(), 'playwright-chrome-'));
