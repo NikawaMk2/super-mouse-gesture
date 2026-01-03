@@ -6,6 +6,9 @@ import { resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { createServer, type Server } from 'http';
+import { mkdtempSync } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
 
 /**
  * 拡張機能のパスを取得する
@@ -32,7 +35,11 @@ export async function createBrowserContext(extensionPath: string): Promise<Brows
     // 3. 実行速度: headlessモードの方が高速で、CI環境でのテスト実行時間を短縮できる
     // 4. 安定性: CI環境ではGUI関連のエラー（X11ディスプレイエラーなど）が発生しやすいため、headlessモードで回避できる
     const isHeadless = process.env.CI === 'true';
-    const context = await chromium.launchPersistentContext('', {
+    
+    // 一時ディレクトリを作成（launchPersistentContextにはユーザーデータディレクトリのパスが必要）
+    const userDataDir = mkdtempSync(join(tmpdir(), 'playwright-chrome-'));
+    
+    const context = await chromium.launchPersistentContext(userDataDir, {
       headless: isHeadless,
       args: [
         `--disable-extensions-except=${extensionPath}`,
