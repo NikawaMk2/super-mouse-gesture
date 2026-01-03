@@ -79,7 +79,12 @@ jobs:
           fi
           echo "Build artifacts verified successfully"
       - name: Test
-        run: npm run test:e2e
+        run: |
+          if ! command -v xvfb-run >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y xvfb
+          fi
+          xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" npm run test:e2e
   create-release-branch:
     runs-on: ubuntu-latest
     needs: [execute-test-code, execute-e2e-tests]
