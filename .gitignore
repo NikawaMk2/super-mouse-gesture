@@ -23,6 +23,3 @@ out/
 # Python Cache
 __pycache__/
 venv/
-# Other
-manifest.json.lock
-document/
