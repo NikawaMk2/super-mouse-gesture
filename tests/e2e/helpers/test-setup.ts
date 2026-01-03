@@ -28,13 +28,25 @@ export function getExtensionPath(testFilePath: string): string {
  */
 export async function createBrowserContext(extensionPath: string): Promise<BrowserContext> {
   try {
+    // 拡張機能パスの存在確認
+    const fs = await import('fs');
+    const path = await import('path');
+    if (!fs.existsSync(extensionPath)) {
+      throw new Error(`拡張機能のパスが存在しません: ${extensionPath}`);
+    }
+    const manifestPath = path.join(extensionPath, 'manifest.json');
+    if (!fs.existsSync(manifestPath)) {
+      throw new Error(`manifest.jsonが見つかりません: ${manifestPath}`);
+    }
+    
     // CI環境ではheadlessモードを使用
     // 理由:
     // 1. CI環境（GitHub Actionsなど）にはディスプレイがないため、GUIが必要なheadless: falseモードでは実行できない
     // 2. リソースの節約: headlessモードの方がメモリやCPUの使用量が少なく、CI環境のリソース制限内で実行できる
     // 3. 実行速度: headlessモードの方が高速で、CI環境でのテスト実行時間を短縮できる
     // 4. 安定性: CI環境ではGUI関連のエラー（X11ディスプレイエラーなど）が発生しやすいため、headlessモードで回避できる
-    const isHeadless = process.env.CI === 'true';
+    // GitHub ActionsではCI環境変数が設定されているが、値は'true'とは限らないため、存在チェックを行う
+    const isHeadless = !!process.env.CI;
     
     // 一時ディレクトリを作成（launchPersistentContextにはユーザーデータディレクトリのパスが必要）
     const userDataDir = mkdtempSync(join(tmpdir(), 'playwright-chrome-'));
