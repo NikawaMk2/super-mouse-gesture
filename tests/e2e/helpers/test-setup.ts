@@ -25,8 +25,15 @@ export function getExtensionPath(testFilePath: string): string {
  */
 export async function createBrowserContext(extensionPath: string): Promise<BrowserContext> {
   try {
+    // CI環境ではheadlessモードを使用
+    // 理由:
+    // 1. CI環境（GitHub Actionsなど）にはディスプレイがないため、GUIが必要なheadless: falseモードでは実行できない
+    // 2. リソースの節約: headlessモードの方がメモリやCPUの使用量が少なく、CI環境のリソース制限内で実行できる
+    // 3. 実行速度: headlessモードの方が高速で、CI環境でのテスト実行時間を短縮できる
+    // 4. 安定性: CI環境ではGUI関連のエラー（X11ディスプレイエラーなど）が発生しやすいため、headlessモードで回避できる
+    const isHeadless = process.env.CI === 'true';
     const context = await chromium.launchPersistentContext('', {
-      headless: false,
+      headless: isHeadless,
       args: [
         `--disable-extensions-except=${extensionPath}`,
         `--load-extension=${extensionPath}`,
