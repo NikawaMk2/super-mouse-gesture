@@ -6,7 +6,7 @@ import { resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { createServer, type Server } from 'http';
-import { mkdtempSync } from 'fs';
+import { existsSync, mkdtempSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
@@ -29,13 +29,11 @@ export function getExtensionPath(testFilePath: string): string {
 export async function createBrowserContext(extensionPath: string): Promise<BrowserContext> {
   try {
     // 拡張機能パスの存在確認
-    const fs = await import('fs');
-    const path = await import('path');
-    if (!fs.existsSync(extensionPath)) {
+    if (!existsSync(extensionPath)) {
       throw new Error(`拡張機能のパスが存在しません: ${extensionPath}`);
     }
-    const manifestPath = path.join(extensionPath, 'manifest.json');
-    if (!fs.existsSync(manifestPath)) {
+    const manifestPath = join(extensionPath, 'manifest.json');
+    if (!existsSync(manifestPath)) {
       throw new Error(`manifest.jsonが見つかりません: ${manifestPath}`);
     }
     
