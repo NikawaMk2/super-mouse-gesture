@@ -69,6 +69,15 @@ jobs:
         with:
           name: build
           path: dist
+      - name: Verify build artifacts
+        run: |
+          echo "Checking dist directory..."
+          ls -la dist/ || echo "dist directory does not exist"
+          if [ ! -f "dist/manifest.json" ]; then
+            echo "Error: manifest.json not found in dist directory"
+            exit 1
+          fi
+          echo "Build artifacts verified successfully"
       - name: Test
         run: npm run test:e2e
   create-release-branch:
