@@ -11,7 +11,9 @@
     "test": "vitest run",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:chromium": "playwright test --project=\"chromium\"",
+    "test:e2e:edge": "playwright test --project=\"Microsoft Edge\""
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
