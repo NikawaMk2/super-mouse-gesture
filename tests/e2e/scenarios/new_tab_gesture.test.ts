@@ -154,12 +154,33 @@ test.describe('新規タブを開くジェスチャー', () => {
       expect(newPages.length).toBe(1);
       
       const newPage = newPages[0];
-      if (newPage) {
-        await newPage.waitForLoadState('networkidle');
-        const newPageUrl = newPage.url();
-        // ChromeのバージョンによってURLが異なる可能性があるため、両方を受け入れる
+      expect(newPage).toBeDefined();
+      expect(newPage).not.toBeNull();
+
+      const openedPage = newPage as Page;
+      // MSN等の新規タブは networkidle が遅くなりうるため、load で十分
+      await openedPage.waitForLoadState('load');
+      const newPageUrl = openedPage.url();
+
+      // 実行中のブラウザを判定
+      const browserName = test.info().project.name;
+      if (browserName === 'Microsoft Edge') {
+        const isEdgeNewTab =
+          newPageUrl.startsWith('edge://newtab') ||
+          newPageUrl.startsWith('edge://new-tab-page') ||
+          newPageUrl.startsWith('chrome-search://local-ntp') ||
+          newPageUrl.startsWith('https://ntp.msn.com/edge/ntp');
         expect(
-          newPageUrl === 'chrome://newtab/' || newPageUrl === 'chrome://new-tab-page/'
+          isEdgeNewTab,
+          `Expected Edge new tab URL, but got: ${newPageUrl}`
+        ).toBe(true);
+      } else {
+        const isChromeNewTab =
+          newPageUrl.startsWith('chrome://newtab') ||
+          newPageUrl.startsWith('chrome://new-tab-page');
+        expect(
+          isChromeNewTab,
+          `Expected Chrome new tab URL, but got: ${newPageUrl}`
         ).toBe(true);
       }
     } finally {
