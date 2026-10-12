@@ -3,6 +3,12 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to recover (e.g. 0.5.0, without v)"
+        required: true
+        type: string
 permissions:
   contents: read
 jobs:
@@ -13,6 +19,7 @@ jobs:
     outputs:
       version: ${{ steps.get-version.outputs.VERSION }}
       should-release: ${{ steps.check-release.outputs.should-release }}
+      target-sha: ${{ steps.check-release.outputs.target-sha }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -21,8 +28,15 @@ jobs:
           fetch-depth: 0
       - name: Get version from package.json
         id: get-version
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REQUESTED_VERSION: ${{ inputs.version }}
         run: |
-          VERSION=$(cat package.json | jq -r '.version')
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            VERSION="$REQUESTED_VERSION"
+          else
+            VERSION=$(jq -r '.version' package.json)
+          fi
           /bin/bash .github/scripts/validate-version.sh "$VERSION"
           echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
       # mainブランチに直接プッシュした場合はタグを作成しないようにするため、
@@ -31,11 +45,33 @@ jobs:
         id: check-release
         env:
           VERSION: ${{ steps.get-version.outputs.VERSION }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           RELEASE_SHA=$(git rev-parse --verify "refs/remotes/origin/release/$VERSION" 2>/dev/null || true)
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            if [ -z "$RELEASE_SHA" ] || ! git merge-base --is-ancestor "$RELEASE_SHA" refs/remotes/origin/main; then
+              echo "Error: release/$VERSION is missing or has not been merged into main"
+              exit 1
+            fi
+            TARGET_SHA="$RELEASE_SHA"
+            if git rev-parse --verify "refs/tags/v$VERSION" >/dev/null 2>&1; then
+              TARGET_SHA=$(git rev-parse "v$VERSION^{commit}")
+              if ! git merge-base --is-ancestor "$RELEASE_SHA" "$TARGET_SHA" || ! git merge-base --is-ancestor "$TARGET_SHA" refs/remotes/origin/main; then
+                echo "Error: Tag v$VERSION does not match the merged release history"
+                exit 1
+              fi
+            fi
+            for FILE in package.json public/manifest.json package-lock.json; do
+              git show "$TARGET_SHA:$FILE" | jq -e --arg version "$VERSION" '.version == $version' >/dev/null
+            done
+            echo "target-sha=$TARGET_SHA" >> "$GITHUB_OUTPUT"
+            echo "should-release=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           read -r -a PARENTS <<< "$(git rev-list --parents -n 1 HEAD)"
           if [ -n "$RELEASE_SHA" ] && { [ "${PARENTS[0]}" = "$RELEASE_SHA" ] || { [ "${#PARENTS[@]}" -eq 3 ] && [ "${PARENTS[2]}" = "$RELEASE_SHA" ]; }; }; then
             echo "should-release=true" >> "$GITHUB_OUTPUT"
+            echo "target-sha=${PARENTS[0]}" >> "$GITHUB_OUTPUT"
           else
             echo "No release branch merge at this commit; skipping release"
             echo "should-release=false" >> "$GITHUB_OUTPUT"
@@ -44,8 +80,9 @@ jobs:
         if: steps.check-release.outputs.should-release == 'true'
         env:
           VERSION: ${{ steps.get-version.outputs.VERSION }}
+          TARGET_SHA: ${{ steps.check-release.outputs.target-sha }}
         run: |
-          if git rev-parse --verify "refs/tags/v$VERSION" >/dev/null 2>&1 && [ "$(git rev-parse "v$VERSION^{commit}")" != "$(git rev-parse HEAD)" ]; then
+          if git rev-parse --verify "refs/tags/v$VERSION" >/dev/null 2>&1 && [ "$(git rev-parse "v$VERSION^{commit}")" != "$TARGET_SHA" ]; then
             echo "Tag v$VERSION already exists at a different commit"
             exit 1
           fi
@@ -53,10 +90,11 @@ jobs:
         if: steps.check-release.outputs.should-release == 'true'
         env:
           VERSION: ${{ steps.get-version.outputs.VERSION }}
+          TARGET_SHA: ${{ steps.check-release.outputs.target-sha }}
         run: |
           /bin/bash .github/scripts/configure-git.sh
           if ! git rev-parse --verify "refs/tags/v$VERSION" >/dev/null 2>&1; then
-            git tag -a "v$VERSION" -m "Release v$VERSION"
+            git tag -a "v$VERSION" "$TARGET_SHA" -m "Release v$VERSION"
             git push origin "v$VERSION"
           fi
   create-build-artifacts:
@@ -69,7 +107,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ needs.create-release-tag.outputs.target-sha }}
       - name: Install dependencies
         run: npm ci
       - name: Build
