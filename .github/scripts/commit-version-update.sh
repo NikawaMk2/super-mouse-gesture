@@ -20,12 +20,12 @@ if [ -z "$BRANCH" ]; then
 fi
 
 # Git設定
-bash .github/scripts/configure-git.sh
+bash "$(dirname "${BASH_SOURCE[0]}")/configure-git.sh"
 
 # 変更をステージング
 git add package.json
 git add package-lock.json
-git add src/manifest.json
+git add public/manifest.json
 
 # コミット
 git commit -m "$VERSIONにアップデート"

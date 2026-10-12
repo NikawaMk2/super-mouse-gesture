@@ -2,7 +2,7 @@
 
 # バージョンを更新するスクリプト
 # 使用方法: ./update-version.sh <version>
-# 更新対象: package.json, src/manifest.json, package-lock.json
+# 更新対象: package.json, public/manifest.json, package-lock.json
 
 set -e
 
@@ -22,12 +22,12 @@ else
   exit 1
 fi
 
-# src/manifest.jsonのバージョンを更新
-if [ -f "src/manifest.json" ]; then
-  sed -i "s/\"version\": \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\": \"$VERSION\"/" src/manifest.json
-  echo "Updated src/manifest.json version to $VERSION"
+# public/manifest.jsonのバージョンを更新
+if [ -f "public/manifest.json" ]; then
+  sed -i "s/\"version\": \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\": \"$VERSION\"/" public/manifest.json
+  echo "Updated public/manifest.json version to $VERSION"
 else
-  echo "Error: src/manifest.json not found"
+  echo "Error: public/manifest.json not found"
   exit 1
 fi
 
@@ -37,8 +37,8 @@ if ! grep -q "\"version\": \"$VERSION\"" package.json; then
   exit 1
 fi
 
-if ! grep -q "\"version\": \"$VERSION\"" src/manifest.json; then
-  echo "Error: Version update failed in src/manifest.json"
+if ! grep -q "\"version\": \"$VERSION\"" public/manifest.json; then
+  echo "Error: Version update failed in public/manifest.json"
   exit 1
 fi
 
