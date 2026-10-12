@@ -134,7 +134,7 @@ jobs:
       GH_REPO: ${{ github.repository }}
     steps:
       - name: Download zip file
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: super-mouse-gesture-${{ env.VERSION }}.zip
           path: artifacts

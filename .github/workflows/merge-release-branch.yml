@@ -67,7 +67,7 @@ jobs:
       - name: Install Playwright
         run: npx playwright install --with-deps chromium
       - name: Download build artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: build
           path: dist
