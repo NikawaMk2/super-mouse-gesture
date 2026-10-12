@@ -1,4 +1,5 @@
 import { logger } from '@/shared/logger';
+import { sendMessageWithRetry } from '@/shared/utils/message-sender';
 import { GestureActionEvent } from './gesture_action';
 
 /**
@@ -8,7 +9,7 @@ export const previousTabAction: GestureActionEvent = {
   execute(): void {
     logger.debug('PreviousTabAction', '前のタブへ切り替え');
 
-    chrome.runtime.sendMessage({
+    sendMessageWithRetry({
       type: 'TAB_PREV',
       payload: null,
     }).catch((error) => {

@@ -1,4 +1,5 @@
 import { logger } from '@/shared/logger';
+import { getHTMLElementFromEventTarget } from '@/shared/utils/dom-utils';
 import { DragDataType, createDragAction } from './actions/drag_action_factory';
 import { showActionName, hideActionName } from './visual';
 import { DragActionEvent } from './actions/events/drag_action';
@@ -46,6 +47,11 @@ function isEditableElement(element: HTMLElement | null): boolean {
     return false;
   }
 
+  // tagNameが存在しない場合は編集可能ではない
+  if (!element.tagName) {
+    return false;
+  }
+
   // input要素、textarea要素、contenteditable属性を持つ要素を編集可能とみなす
   const tagName = element.tagName.toLowerCase();
   if (tagName === 'input' || tagName === 'textarea') {
@@ -73,7 +79,10 @@ function isEditableElement(element: HTMLElement | null): boolean {
 function detectDragData(
   event: DragEvent
 ): { dataType: DragDataType; data: string } | null {
-  const target = event.target as HTMLElement;
+  const target = getHTMLElementFromEventTarget(event.target);
+  if (!target) {
+    return null;
+  }
 
   // リンク要素のチェック
   const linkElement = target.closest('a');
@@ -86,7 +95,7 @@ function detectDragData(
   }
 
   // 画像リンクのチェック（imgタグがaタグ内にある場合）
-  if (target.tagName.toLowerCase() === 'img') {
+  if (target.tagName && target.tagName.toLowerCase() === 'img') {
     const parentLink = target.closest('a');
     if (parentLink && parentLink.href) {
       const url = parentLink.href.trim();
@@ -138,7 +147,10 @@ function calculateDistance(
  * @param event ドラッグイベント
  */
 function handleDragStart(event: DragEvent): void {
-  const target = event.target as HTMLElement;
+  const target = getHTMLElementFromEventTarget(event.target);
+  if (!target) {
+    return;
+  }
 
   // 編集可能な要素内でのドラッグは無効化
   if (isEditableElement(target)) {

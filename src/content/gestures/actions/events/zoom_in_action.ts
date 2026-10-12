@@ -1,4 +1,5 @@
 import { logger } from '@/shared/logger';
+import { sendMessageWithRetry } from '@/shared/utils/message-sender';
 import { GestureActionEvent } from './gesture_action';
 
 /**
@@ -8,7 +9,7 @@ export const zoomInAction: GestureActionEvent = {
   execute(): void {
     logger.debug('ZoomInAction', 'ページ拡大');
 
-    chrome.runtime.sendMessage({
+    sendMessageWithRetry({
       type: 'ZOOM_IN',
       payload: null,
     }).catch((error) => {
