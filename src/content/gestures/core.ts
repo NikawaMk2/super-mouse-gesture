@@ -1,4 +1,5 @@
 import { logger } from '@/shared/logger';
+import { getHTMLElementFromEventTarget } from '@/shared/utils/dom-utils';
 import { Point } from './models/point';
 import { DirectionTrail } from './models/direction_trail';
 import { createGestureAction } from './actions/gesture_action_factory';
@@ -59,6 +60,11 @@ function isEditableElement(element: HTMLElement | null): boolean {
     return false;
   }
 
+  // tagNameが存在しない場合は編集可能ではない
+  if (!element.tagName) {
+    return false;
+  }
+
   // input要素、textarea要素、contenteditable属性を持つ要素を編集可能とみなす
   const tagName = element.tagName.toLowerCase();
   if (tagName === 'input' || tagName === 'textarea') {
@@ -100,10 +106,8 @@ function handleGestureStart(event: MouseEvent): void {
   // コンテキストメニュー抑制フラグを初期化
   preventNextContextMenu = false;
 
-  const target = event.target as HTMLElement;
-
   // 編集可能な要素内でのジェスチャは無効化
-  if (isEditableElement(target)) {
+  if (isEditableElement(getHTMLElementFromEventTarget(event.target))) {
     logger.debug('gesture-core', '編集可能な要素内でのジェスチャは無効化');
     return;
   }
